@@ -138,6 +138,85 @@
   }
   .error-box pre{background:rgba(0,0,0,0.08);padding:9px;border-radius:3px;overflow-x:auto;font-size:11.5px;font-weight:400;margin:8px 0 0;white-space:pre-wrap;word-break:break-word;}
 
+  /* ---------- investigation board (shown while the checks run) ---------- */
+  #board{display:none;padding:0;overflow:hidden;}
+  #board.show{display:block;animation:rise 0.35s cubic-bezier(0.22,1,0.36,1);}
+  .board-head{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:12px 18px;border-bottom:2px solid var(--line);background:var(--ink);color:var(--card);
+    font-family:'Courier Prime',monospace;font-size:11.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  }
+  .board-head .rec{display:inline-flex;align-items:center;gap:8px;}
+  .board-head .rec::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--redink);animation:blink 1s steps(2,start) infinite;}
+  #board.done .board-head .rec::before{animation:none;background:var(--greenink);}
+  #board.stalled .board-head .rec::before{background:var(--redink);}
+  .board-head .clock{font-variant-numeric:tabular-nums;opacity:0.85;}
+  @keyframes blink{to{visibility:hidden;}}
+
+  .scene{
+    position:relative;height:118px;border-bottom:2px dashed var(--line);overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 23px, rgba(42,33,20,0.07) 23px 24px),
+      var(--paper-raised);
+  }
+  .scene-name{
+    font-family:'Special Elite',monospace;font-size:clamp(26px,8vw,40px);letter-spacing:0.06em;
+    color:var(--ink);opacity:0.22;white-space:nowrap;max-width:88%;overflow:hidden;text-overflow:ellipsis;
+  }
+  .lens{
+    position:absolute;top:22px;left:0;width:64px;height:64px;border-radius:50%;
+    border:5px solid var(--ink);background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55), rgba(255,255,255,0.08) 55%, transparent 70%);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,0.25), 3px 4px 0 rgba(42,33,20,0.25);
+    animation:sweep 2.4s ease-in-out infinite alternate;pointer-events:none;
+  }
+  .lens::after{
+    content:'';position:absolute;width:34px;height:9px;background:var(--ink);border-radius:3px;
+    bottom:-14px;right:-26px;transform:rotate(45deg);
+  }
+  @keyframes sweep{
+    0%{left:4%;transform:translateY(4px) rotate(-6deg);}
+    50%{transform:translateY(-8px) rotate(4deg);}
+    100%{left:calc(96% - 90px);transform:translateY(6px) rotate(-3deg);}
+  }
+  #board.done .lens{animation:none;opacity:0;transition:opacity 0.4s;}
+  .scene-stamp{
+    position:absolute;right:18px;bottom:14px;font-family:'Courier Prime',monospace;font-weight:700;font-size:13px;
+    letter-spacing:0.08em;color:var(--redink);border:3px double currentColor;padding:4px 10px;transform:rotate(-8deg);
+    background:var(--redink-soft);opacity:0;
+  }
+  #board.done .scene-stamp{opacity:1;animation:stamp-in 0.35s cubic-bezier(0.2,1.3,0.4,1);}
+  #board.done .scene-name{opacity:0.9;transition:opacity 0.5s;}
+
+  .leads{list-style:none;margin:0;padding:10px 18px 14px;}
+  .lead{
+    display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed rgba(42,33,20,0.35);
+    font-family:'Courier Prime',monospace;font-size:12.5px;color:var(--ink-soft);
+    opacity:0.35;transition:opacity 0.25s, color 0.25s;
+  }
+  .lead:last-child{border-bottom:none;}
+  .lead.active, .lead.solved{opacity:1;color:var(--ink);}
+  .lead-icon{width:16px;flex:none;text-align:center;font-weight:700;}
+  .lead.active .lead-icon::before{content:'';display:inline-block;width:9px;height:9px;border:2px solid var(--ink);border-radius:50%;border-right-color:transparent;animation:spin 0.6s linear infinite;}
+  .lead.queued .lead-icon::before{content:'·';}
+  .lead.solved .lead-icon::before{content:'✓';color:var(--greenink);}
+  .lead.solved.bad .lead-icon::before{content:'✗';color:var(--redink);}
+  .lead.solved.meh .lead-icon::before{content:'?';color:var(--amberink);}
+  .lead-text{flex:1;min-width:0;}
+  .lead-text b{font-weight:700;color:var(--ink);overflow-wrap:anywhere;}
+  .lead-status{flex:none;}
+  .lead.active .lead-status::after{
+    content:'searching...';display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;
+    width:12ch;font-size:11px;color:var(--ink-soft);animation:dots 1.2s steps(4) infinite;
+  }
+  @keyframes dots{from{width:9ch;}to{width:13ch;}}
+  .lead .domain-badge{display:inline-block;animation:stamp-in 0.3s cubic-bezier(0.2,1.3,0.4,1);white-space:nowrap;}
+  .domain-badge.warn{color:var(--amberink);background:var(--amberink-soft);}
+
+  @media (prefers-reduced-motion: reduce){
+    .lens,.board-head .rec::before,.lead.active .lead-icon::before,.lead .domain-badge,#board.done .scene-stamp{animation:none !important;}
+  }
+
   #result{display:none;}
   #result.show{display:block;animation:rise 0.45s cubic-bezier(0.22,1,0.36,1);}
   @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
@@ -242,6 +321,19 @@
     <div class="error-box" id="errorBox"></div>
   </div>
 
+  <div class="card" id="board" aria-live="polite">
+    <div class="board-head">
+      <span class="rec" id="boardStatus">investigation in progress</span>
+      <span class="clock" id="boardClock">00:00.0</span>
+    </div>
+    <div class="scene">
+      <div class="scene-name" id="sceneName">—</div>
+      <div class="lens"></div>
+      <div class="scene-stamp" id="sceneStamp">case closed</div>
+    </div>
+    <ul class="leads" id="leadsEl"></ul>
+  </div>
+
   <div id="result">
     <div class="stamp-block">
       <div class="case-label">case closed —</div>
@@ -287,7 +379,7 @@
   </div>
 
   <footer>
-    Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The trademark section is a web-search signal, not a trademark search — still run a proper one before you file anything.
+    Every lead on the investigation board is a real lookup. Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The trademark section is a web-search signal, not a trademark search — still run a proper one before you file anything.
   </footer>
 
 </div>
@@ -520,8 +612,151 @@
       pct(g) + ' too generic, ' + pct(c) + ' brand collision risk).';
   }
 
+  // ---------- investigation board ----------
+  // The API answers in one go, so while it's in flight each lead is
+  // "worked" in turn; once the real data lands every lead is stamped with
+  // what was actually found, then the case file opens.
+  const board = $('board');
+  const boardStatus = $('boardStatus');
+  const boardClock = $('boardClock');
+  const sceneName = $('sceneName');
+  const sceneStamp = $('sceneStamp');
+  const leadsEl = $('leadsEl');
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sleep = (ms) => new Promise(r => setTimeout(r, reduceMotion ? 0 : ms));
+  let boardTimers = [];
+  let boardT0 = 0;
+
+  function showClock(){
+    const ms = performance.now() - boardT0;
+    const sec = Math.floor(ms / 1000);
+    boardClock.textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0') + '.' + Math.floor((ms % 1000) / 100);
+  }
+
+  function slugify(n){ return (n || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+  function badge(cls, text){ return '<span class="domain-badge ' + cls + '">' + escapeHtml(text) + '</span>'; }
+
+  function buildLeads(name){
+    const slug = slugify(name) || name;
+    const domainVerbs = ['Dusting for prints on', 'Running the plates on', 'Checking the alibi of', 'Pulling records on', 'Staking out', 'Knocking on'];
+    const leads = TLD_ORDER.map(function(tld, i){
+      return { id: 'dom-' + tld, html: domainVerbs[i % domainVerbs.length] + ' <b>' + escapeHtml(slug + '.' + tld) + '</b>',
+        solve: function(d){
+          const r = d.domains && d.domains[tld];
+          if (!r) return ['meh', badge('unknown', 'no answer')];
+          const st = domainStatus(r);
+          return [r.available === true ? 'ok' : r.available === false ? 'bad' : 'meh', badge(st.cls, st.label + (st.title ? ' · dns' : ''))];
+        } };
+    });
+    [['x', 'Tailing <b>@' + escapeHtml(slug) + '</b> on X'], ['instagram', 'Shaking down <b>@' + escapeHtml(slug) + '</b> on Instagram']].forEach(function(pair){
+      leads.push({ id: 'soc-' + pair[0], html: pair[1], solve: function(d){
+        const s = d.socials && d.socials[pair[0]];
+        if (!s || s.taken === null) return ['meh', badge('unknown', s && s.note ? 'too long' : 'no answer')];
+        return s.taken ? ['bad', badge('taken', 'taken')] : ['ok', badge('avail', 'open')];
+      } });
+    });
+    leads.push({ id: 'niche', html: 'Canvassing your niche for lookalikes', solve: function(d){
+      const n = (d.niche_matches || []).length;
+      if (!n && d.serp_error) return ['meh', badge('unknown', 'cold trail')];
+      return n ? ['meh', badge('warn', n + (n === 1 ? ' sighting' : ' sightings'))] : ['ok', badge('avail', 'no trace')];
+    } });
+    leads.push({ id: 'tm', html: 'Pulling trademark chatter <span style="color:var(--ink-soft)">(web signal)</span>', solve: function(d){
+      const n = (d.trademark_matches || []).length;
+      if (!n && d.trademark_error) return ['meh', badge('unknown', 'cold trail')];
+      return n ? ['meh', badge('warn', n + (n === 1 ? ' mention' : ' mentions'))] : ['ok', badge('avail', 'nothing found')];
+    } });
+    leads.push({ id: 'assoc', html: 'Questioning known associates (close variants)', solve: function(d){
+      const v = d.variants || [];
+      if (!v.length) return ['meh', badge('unknown', 'none found')];
+      const clearCom = v.filter(x => x.domains && x.domains.com && x.domains.com.available === true).length;
+      return [clearCom ? 'ok' : 'meh', badge(clearCom ? 'avail' : 'warn', clearCom + '/' + v.length + ' have .com')];
+    } });
+    leads.push({ id: 'jev', html: 'Sending it to the profiler (Jev)', solve: function(d){
+      return d.scores ? ['ok', badge('avail', 'profile ready')] : ['bad', badge('taken', 'no read')];
+    } });
+    return leads;
+  }
+
+  let currentLeads = [];
+
+  function startBoard(name){
+    boardTimers.forEach(clearTimeout); boardTimers = [];
+    currentLeads = buildLeads(name);
+    sceneName.textContent = name;
+    sceneStamp.textContent = 'case closed';
+    boardStatus.textContent = 'investigation in progress';
+    board.classList.remove('done', 'stalled');
+    leadsEl.innerHTML = currentLeads.map(function(l){
+      return '<li class="lead queued" id="lead-' + l.id + '"><span class="lead-icon"></span><span class="lead-text">' + l.html + '</span><span class="lead-status"></span></li>';
+    }).join('');
+    board.classList.remove('show'); void board.offsetWidth;
+    board.style.display = '';
+    board.classList.add('show');
+    board.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+
+    boardT0 = performance.now();
+    showClock();
+    const tick = setInterval(showClock, 100);
+    boardTimers.push({ interval: tick });
+
+    currentLeads.forEach(function(l, i){
+      boardTimers.push(setTimeout(function(){
+        const el = $('lead-' + l.id);
+        if (el && el.classList.contains('queued')){ el.classList.remove('queued'); el.classList.add('active'); }
+      }, reduceMotion ? 0 : 180 + i * 260));
+    });
+  }
+
+  function stopBoardTimers(){
+    boardTimers.forEach(function(t){ if (t && t.interval) clearInterval(t.interval); else clearTimeout(t); });
+    boardTimers = [];
+  }
+
+  async function solveBoard(data){
+    stopBoardTimers();
+    showClock();
+    if (data.cached){
+      leadsEl.insertAdjacentHTML('afterbegin', '<li class="lead solved"><span class="lead-icon"></span><span class="lead-text">Case already on file — pulled from the cabinet</span><span class="lead-status">' + badge('unknown', 'cached') + '</span></li>');
+    }
+    for (const l of currentLeads){
+      const el = $('lead-' + l.id);
+      if (!el) continue;
+      let out;
+      try{ out = l.solve(data); }catch(e){ out = ['meh', badge('unknown', 'no answer')]; }
+      el.classList.remove('queued', 'active');
+      el.classList.add('solved');
+      if (out[0] === 'bad') el.classList.add('bad');
+      if (out[0] === 'meh') el.classList.add('meh');
+      el.querySelector('.lead-status').innerHTML = out[1];
+      await sleep(data.cached ? 60 : 140);
+    }
+    boardStatus.textContent = 'investigation log — closed';
+    board.classList.add('done');
+    await sleep(650);
+  }
+
+  function failBoard(reason){
+    stopBoardTimers();
+    showClock();
+    leadsEl.querySelectorAll('.lead:not(.solved)').forEach(function(el){
+      el.classList.remove('queued', 'active');
+      el.classList.add('solved', 'meh');
+      el.querySelector('.lead-status').innerHTML = badge('unknown', 'cold trail');
+    });
+    boardStatus.textContent = 'investigation stalled';
+    sceneStamp.textContent = reason || 'case on hold';
+    board.classList.add('done', 'stalled');
+  }
+
+  function hideBoard(){
+    stopBoardTimers();
+    board.classList.remove('show', 'done', 'stalled');
+    board.style.display = 'none';
+  }
+
   async function run(){
     hideError();
+    hideBoard();
     resultEl.classList.remove('show');
     resultEl.style.display = 'none';
 
@@ -533,7 +768,8 @@
 
     runBtn.disabled = true;
     runBtn.classList.add('loading');
-    runBtnLabel.textContent = 'running the check...';
+    runBtnLabel.textContent = 'investigating...';
+    startBoard(name);
 
     try{
       const res = await fetch(RELAY_URL, {
@@ -547,20 +783,25 @@
       try{ data = JSON.parse(text); }catch(e){ data = { raw: text }; }
 
       if (res.status === 429){
+        failBoard('too many cases');
         showError('Too many checks right now', data.error || 'Give it a minute and try again.');
         return;
       }
       if (!res.ok){
+        failBoard('case on hold');
         showError('Got an error back (' + res.status + ')', data.error || 'Something went wrong on the checker side.', JSON.stringify(data, null, 2));
         return;
       }
       if (!data.scores){
+        failBoard('case on hold');
         showError('Got a response but couldn\'t read the scores out of it', 'Raw response below.', JSON.stringify(data, null, 2));
         return;
       }
 
+      await solveBoard(data);
       renderResult(name, data.scores, data.domains, data.niche_matches, data.serp_error, data.variants, data.socials, data.trademark_matches, data.trademark_error, data.raw);
     }catch(err){
+      failBoard('case on hold');
       showError('Could not reach the checker', 'Try again in a moment.');
     }finally{
       runBtn.disabled = false;
@@ -571,6 +812,7 @@
 
   runBtn.addEventListener('click', run);
   runAgainBtn.addEventListener('click', function(){
+    hideBoard();
     resultEl.classList.remove('show');
     resultEl.style.display = 'none';
     nameEl.focus();
