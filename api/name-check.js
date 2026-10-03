@@ -23,11 +23,12 @@
 // visitor-supplied one — a question grounded in those real search results.
 //
 // Because every visitor runs on your key with no key of their own to bring,
-// this also does a basic per-IP rate limit below. It's in-memory, so it
-// resets on cold start and isn't shared across server instances — it's a
-// cheap first line of defense against a bot or a bad actor hammering the
-// endpoint, not a hard cap. If usage grows enough to need a real one
-// (persistent store, per-key quotas, etc.), that's the point to add it.
+// this also does a per-IP rate limit, stored in Upstash Redis (REST API,
+// UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN) so it survives cold
+// starts and is shared across instances. It's a fixed one-minute window:
+// one INCR + PEXPIRE pipeline per request. If Upstash isn't configured or
+// can't be reached, it falls back to a per-instance in-memory limit rather
+// than either blocking everyone or dropping the limit entirely.
 
 const crypto = require('crypto');
 const dns = require('dns');
@@ -40,7 +41,7 @@ const RATE_LIMIT_MAX = 8;        // requests
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // per minute, per IP
 const rateLimitBuckets = new Map();
 
-function isRateLimited(ip) {
+function isRateLimitedInMemory(ip) {
   const now = Date.now();
   const bucket = rateLimitBuckets.get(ip) || [];
   const recent = bucket.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
@@ -49,6 +50,43 @@ function isRateLimited(ip) {
   // keep the map from growing forever across a long-lived instance
   if (rateLimitBuckets.size > 5000) rateLimitBuckets.clear();
   return recent.length > RATE_LIMIT_MAX;
+}
+
+// Returns the request count for this IP in the current window, or null if
+// Upstash isn't configured / didn't answer cleanly.
+async function upstashHit(ip) {
+  const url = (process.env.UPSTASH_REDIS_REST_URL || '').replace(/\/+$/, '');
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  const windowId = Math.floor(Date.now() / RATE_LIMIT_WINDOW_MS);
+  const key = 'nwi:rl:' + ip + ':' + windowId;
+  try {
+    const res = await withTimeout(
+      fetch(url + '/pipeline', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        // key is unique per window, so re-setting the expiry on every hit is
+        // harmless — it just guarantees old windows get cleaned up.
+        body: JSON.stringify([
+          ['INCR', key],
+          ['PEXPIRE', key, String(RATE_LIMIT_WINDOW_MS * 2)]
+        ])
+      }),
+      2000
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const count = Array.isArray(data) && data[0] ? data[0].result : null;
+    return typeof count === 'number' ? count : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function isRateLimited(ip) {
+  const count = await upstashHit(ip);
+  if (count === null) return isRateLimitedInMemory(ip);
+  return count > RATE_LIMIT_MAX;
 }
 
 // Full-response cache so repeat lookups of the same name + context within
@@ -296,7 +334,7 @@ module.exports = async function handler(req, res) {
     .toString()
     .split(',')[0]
     .trim();
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     res.status(429).json({ error: 'Too many checks from this connection in the last minute. Wait a moment and try again.' });
     return;
   }
