@@ -7,1096 +7,628 @@
 <meta name="description" content="Open a case file on the name you're about to lock in. Domains, lookalikes, and a verdict — before you file for it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     color-scheme: light;
-    --desk:#F2EDE2;          /* page — warm paper */
-    --sheet:#FBF8F1;         /* loose sheets inside the file */
-    --manila:#E4D3A6;        /* folder stock */
-    --manila-deep:#D3BE87;   /* folder edge / tab shadow */
-    --manila-soft:#F1E6C8;
-    --ink:#221B13;
-    --ink-2:#5A5044;
-    --ink-3:#8D8372;
-    --rule:rgba(34,27,19,0.13);
-    --rule-strong:rgba(34,27,19,0.28);
-    --red:#9C2A20;
-    --red-soft:rgba(156,42,32,0.07);
+    --desk:#F3F0E8;          /* warm ivory desk */
+    --paper:#FFFEFA;         /* white paper */
+    --manila:#E7CF92;        /* real manila stock */
+    --manila-edge:#CDB06A;
+    --manila-in:#DDC383;
+    --ink:#1C1915;
+    --ink-2:#4E4840;
+    --ink-3:#8A8377;
+    --rule:rgba(28,25,21,0.14);
+    --rule-2:rgba(28,25,21,0.28);
+    --red:#A2261B;
+    --red-ink:rgba(162,38,27,0.88);
+    --green:#3F6A4B;
+    --felt:#E3E2DC;          /* pinboard felt */
+    --pad:#FBF4CF;           /* legal pad */
 
     --f-display:'Newsreader', 'Iowan Old Style', Georgia, serif;
     --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
     --f-sans:'IBM Plex Sans', system-ui, sans-serif;
     --f-cond:'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
     --f-hand:'Caveat', 'Bradley Hand', cursive;
+
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.075 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    /* speckled mask for uneven stamp ink */
+    --ink-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='120'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -4.2 3.15'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+    --ink-mask-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='120'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' seed='9'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -5 4.15'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+    --ease:cubic-bezier(.2,.8,.2,1);
   }
 
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--desk);
+    background-color:var(--desk);
+    background-image:var(--grain);
     color:var(--ink);
-    font-family:var(--f-sans);
-    font-size:15px;
-    line-height:1.55;
+    font-family:var(--f-sans);font-size:15px;line-height:1.55;
     -webkit-font-smoothing:antialiased;
+    overflow-x:clip;
   }
   a{color:inherit;}
-  .mono{font-family:var(--f-mono);}
+  button{font:inherit;color:inherit;}
 
-  .desk{max-width:1160px;margin:0 auto;padding:28px 48px 80px;}
+  .page{max-width:1220px;margin:0 auto;padding:22px 24px 64px;}
 
-  /* ---------- masthead: a compact folder label ---------- */
-  .masthead{
-    display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
-    padding-bottom:18px;border-bottom:1px solid var(--rule-strong);margin-bottom:56px;
+  .topline{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;
+    padding-bottom:14px;margin-bottom:26px;border-bottom:1px solid var(--rule);
   }
-  .mh-path{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.14em;color:var(--ink-3);margin-bottom:10px;}
-  .mh-path span{color:var(--red);padding:0 4px;}
-  .mh-name{font-family:var(--f-cond);font-weight:600;font-size:19px;letter-spacing:0.06em;line-height:1;display:block;}
-  .mh-tag{font-size:13px;color:var(--ink-2);display:block;margin-top:5px;}
-  .mh-case{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
-  .mh-case .label{font-family:var(--f-mono);font-size:10px;letter-spacing:0.16em;color:var(--ink-3);}
-  .case-stamp{
-    font-family:var(--f-mono);font-weight:500;font-size:20px;letter-spacing:0.12em;color:var(--red);
-    border:1.5px solid var(--red);padding:1px 8px 0 10px;line-height:1.35;transform:rotate(-2deg);
-    opacity:0.92;
-  }
-  .mh-status{white-space:nowrap;font-family:var(--f-mono);font-size:10px;letter-spacing:0.14em;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px;}
-  .mh-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);}
+  .topline b{color:var(--ink);font-weight:500;}
 
-  /* ---------- page grid ---------- */
-  .layout{
-    display:grid;
-    grid-template-columns:40px minmax(0,1fr) 248px;
-    grid-template-areas:
-      "rail hero   hero"
-      "rail folder aside"
-      "rail board  aside"
-      "rail result aside"
-      "rail foot   aside";
-    column-gap:44px;
-    align-items:start;
-  }
-  .hero{grid-area:hero;}
-  .folder{grid-area:folder;}
-  #board{grid-area:board;}
-  #result{grid-area:result;}
-  .foot{grid-area:foot;}
-  .aside{grid-area:aside;align-self:start;position:sticky;top:28px;}
+  /* ======================= THE DESK (closed state) ======================= */
+  .desk{position:relative;height:780px;}
+  .paper{background-color:var(--paper);background-image:var(--grain);}
+  .shadow-1{box-shadow:0 1px 1px rgba(28,25,21,0.08), 0 6px 14px -6px rgba(28,25,21,0.22);}
+  .shadow-2{box-shadow:0 1px 2px rgba(28,25,21,0.1), 0 18px 30px -16px rgba(28,25,21,0.35);}
 
-  /* vertical file margin — printed along the folder's edge */
-  .rail{
-    grid-area:rail;grid-row:1 / -1;align-self:stretch;
-    border-right:1px solid var(--rule-strong);position:relative;
-  }
-  .rail-text{
-    position:sticky;top:28px;
-    writing-mode:vertical-rl;transform:rotate(180deg);
-    font-family:var(--f-mono);font-size:10px;letter-spacing:0.18em;color:var(--ink-3);
-    display:flex;gap:22px;white-space:nowrap;padding:4px 0;
-  }
-  .rail-text b{font-weight:500;color:var(--ink);}
-  .rail-text .st-red b{color:var(--red);}
+  .obj{position:absolute;transition:opacity .45s var(--ease), transform .6s var(--ease);}
+  .obj svg{display:block;width:100%;height:auto;overflow:visible;}
 
-  /* ---------- hero ---------- */
-  .hero{margin-bottom:44px;}
-  h1{
-    font-family:var(--f-display);font-weight:500;font-optical-sizing:auto;
-    font-size:clamp(40px,6vw,72px);line-height:1.0;letter-spacing:-0.022em;
-    margin:0 0 22px;
-  }
-  .mark{position:relative;white-space:nowrap;font-style:italic;font-weight:400;}
-  .mark svg{position:absolute;left:-2%;bottom:-0.08em;width:104%;height:0.22em;overflow:visible;}
-  .mark path{fill:none;stroke:var(--red);stroke-width:2.2;stroke-linecap:round;opacity:0.85;}
-  p.lede{font-size:16.5px;line-height:1.65;color:var(--ink-2);margin:0;max-width:46ch;}
+  /* evidence paper stack */
+  .obj-stack{left:0;top:96px;width:200px;height:250px;}
+  .obj-stack .sh{position:absolute;inset:0;padding:18px 16px;}
+  .obj-stack .sh:nth-child(1){transform:rotate(-7deg) translate(-6px,8px);}
+  .obj-stack .sh:nth-child(2){transform:rotate(3deg) translate(4px,2px);}
+  .obj-stack .sh:nth-child(3){transform:rotate(-2deg);}
+  .sh-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--ink-3);}
+  .sh-t{font-family:var(--f-display);font-size:19px;margin:6px 0 14px;}
+  .sh-l{height:1px;background:var(--rule);margin:11px 0;}
+  .sh-l.s{width:62%;}
 
-  /* ---------- the intake folder ---------- */
-  .folder{position:relative;padding-top:30px;margin-bottom:28px;animation:file-in 0.5s ease-out both;}
-  @keyframes file-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  /* index cards */
+  .obj-cards{left:6px;top:452px;width:220px;height:170px;}
+  .icard{
+    position:absolute;inset:0;padding:14px 16px 12px;
+    background-color:var(--paper);background-image:var(--grain),
+      repeating-linear-gradient(to bottom, transparent 0 21px, rgba(60,100,150,0.16) 21px 22px);
+    background-position:0 0, 0 30px;
+  }
+  .icard::before{content:'';position:absolute;left:0;right:0;top:30px;height:1px;background:rgba(162,38,27,0.55);}
+  .obj-cards .icard:nth-child(1){transform:rotate(5deg) translate(14px,10px);}
+  .obj-cards .icard:nth-child(2){transform:rotate(-4deg);}
+  .icard-k{font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:0.18em;}
+  .icard ul{list-style:none;margin:12px 0 0;padding:0;font-family:var(--f-mono);font-size:12px;line-height:22px;}
+  .icard li::before{content:'□';margin-right:8px;color:var(--ink-2);}
+  .scrawl{font-family:var(--f-hand);color:var(--ink-2);font-size:19px;line-height:22px;}
+
+  .obj-lens{left:96px;top:548px;width:300px;transform:rotate(-22deg);z-index:6;filter:drop-shadow(0 10px 10px rgba(28,25,21,0.22));}
+  .obj-pencil{left:915px;top:118px;width:300px;transform:rotate(58deg);z-index:6;filter:drop-shadow(0 6px 5px rgba(28,25,21,0.2));}
+  .obj-pen{left:880px;top:700px;width:270px;transform:rotate(-9deg);z-index:6;filter:drop-shadow(0 6px 6px rgba(28,25,21,0.22));}
+
+  /* the manila folder */
+  .folder{position:absolute;left:190px;top:56px;width:660px;height:640px;z-index:2;transition:opacity .4s var(--ease);}
+  .folder-back{
+    position:absolute;inset:26px 0 0 0;background:var(--manila-in);border:1px solid var(--manila-edge);border-radius:3px;
+  }
   .folder-tab{
-    position:absolute;top:0;left:0;height:31px;padding:0 22px;display:flex;align-items:center;
-    background:var(--manila);border:1px solid var(--manila-deep);border-bottom:none;border-radius:6px 6px 0 0;
-    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.18em;color:var(--ink);
+    position:absolute;left:22px;top:0;height:34px;padding:0 22px;display:flex;align-items:center;gap:14px;
+    background-color:var(--manila);background-image:var(--grain);border:1px solid var(--manila-edge);border-bottom:none;border-radius:5px 5px 0 0;
+    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;z-index:1;
   }
-  .folder-tab::before{content:'';width:5px;height:5px;background:var(--red);border-radius:50%;margin-right:10px;}
-  .folder-shell{
-    background:var(--manila);border:1px solid var(--manila-deep);border-radius:0 6px 6px 6px;
-    padding:12px 12px 12px 12px;
-    box-shadow:0 1px 0 rgba(255,255,255,0.35) inset, 0 18px 30px -24px rgba(60,40,10,0.45);
+  .folder-tab b{font-weight:500;color:var(--red);}
+  .folder-tab .sep{width:1px;height:12px;background:var(--rule-2);}
+  .folder-cover{
+    position:absolute;inset:32px -4px 0 4px;transform-origin:left center;
+    background-color:var(--manila);background-image:var(--grain);
+    border:1px solid var(--manila-edge);border-radius:2px 4px 4px 2px;
+    box-shadow:0 1px 1px rgba(28,25,21,0.1), 0 26px 40px -24px rgba(60,40,10,0.55);
+    padding:64px 58px 40px;transition:transform .6s var(--ease), opacity .3s ease .45s;
+    backface-visibility:hidden;
   }
-  .sheet{
-    background:var(--sheet);border:1px solid rgba(34,27,19,0.10);
-    box-shadow:0 1px 2px rgba(60,40,10,0.06);
-    position:relative;
+  .folder-cover::after{ /* a soft fold line near the spine */
+    content:'';position:absolute;left:30px;top:0;bottom:0;width:1px;background:rgba(120,90,30,0.18);
   }
-  .intake{padding:30px 40px 34px;}
-  .intake-meta{
-    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  .cover-k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.18em;color:rgba(28,25,21,0.62);margin-bottom:26px;}
+  .cover-h{
+    font-family:var(--f-display);font-weight:500;font-size:58px;line-height:1;letter-spacing:-0.02em;margin:0;white-space:nowrap;
+  }
+  .cover-h em{font-style:italic;font-weight:400;}
+  .cover-p{font-size:15.5px;line-height:1.55;color:rgba(28,25,21,0.78);max-width:21ch;margin:22px 0 0;}
+  .cover-note{position:absolute;left:58px;bottom:150px;font-family:var(--f-hand);font-size:22px;color:var(--red);transform:rotate(-3deg);}
+  .cover-stamp{
+    position:absolute;left:58px;bottom:54px;font-family:var(--f-cond);font-weight:700;font-size:13px;letter-spacing:0.22em;
+    color:var(--red-ink);border:2px solid currentColor;padding:6px 10px 5px;transform:rotate(-4deg);
+    -webkit-mask-image:var(--ink-mask);mask-image:var(--ink-mask);
+  }
+
+  /* the intake sheet — this IS the form */
+  .intake{
+    position:absolute;left:604px;top:118px;width:452px;z-index:5;
+    --rot:1.4deg;transform:rotate(var(--rot));transform-origin:top left;
+    padding:38px 40px 34px;
+  }
+  .clip{position:absolute;top:-22px;left:44px;width:26px;z-index:2;filter:drop-shadow(0 2px 1px rgba(28,25,21,0.25));}
+  .intake-head{
+    display:flex;justify-content:space-between;gap:10px;
     font-family:var(--f-mono);font-size:10px;letter-spacing:0.16em;color:var(--ink-3);
-    padding-bottom:14px;border-bottom:1px solid var(--rule);margin-bottom:30px;
+    padding-bottom:12px;border-bottom:1.5px solid var(--ink);margin-bottom:28px;
   }
-  .intake-meta b{font-weight:500;color:var(--ink-2);}
+  .intake-head b{color:var(--ink);font-weight:500;}
+  .fld{margin-bottom:26px;position:relative;}
+  .fld label{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.18em;color:var(--ink-2);margin-bottom:4px;}
+  .fld .hint{font-family:var(--f-sans);letter-spacing:0;text-transform:none;color:var(--ink-3);font-size:11.5px;margin-left:6px;}
+  .fld input, .fld textarea{
+    width:100%;border:none;background:transparent;color:var(--ink);border-radius:0;padding:4px 0 6px;
+    border-bottom:1px solid var(--ink);
+  }
+  .fld input{font-family:var(--f-display);font-size:36px;font-weight:500;letter-spacing:-0.01em;line-height:1.15;}
+  .fld textarea{
+    font-family:var(--f-sans);font-size:16px;line-height:30px;resize:none;height:92px;padding:0;border-bottom:none;
+    background-image:repeating-linear-gradient(to bottom, transparent 0 29px, var(--ink) 29px 30px);
+    background-attachment:local;
+  }
+  .fld input:focus, .fld textarea:focus{outline:none;}
+  .fld input:focus{border-bottom-color:var(--red);}
+  .fld textarea:focus{background-image:repeating-linear-gradient(to bottom, transparent 0 29px, var(--red) 29px 30px);}
+  .fld:focus-within label{color:var(--red);}
+  .fld input::placeholder, .fld textarea::placeholder{color:var(--ink-3);opacity:0.6;}
 
-  /* registration mark — printer's crosshair at a sheet corner */
-  .reg{position:absolute;width:13px;height:13px;}
-  .reg::before,.reg::after{content:'';position:absolute;background:var(--red);opacity:0.55;}
-  .reg::before{left:6px;top:0;width:1px;height:13px;}
-  .reg::after{top:6px;left:0;height:1px;width:13px;}
-  .reg.tr{top:10px;right:10px;}
-  .reg.bl{bottom:10px;left:10px;}
-
-  .field{position:relative;margin-bottom:30px;}
-  .field-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px;}
-  .field-label{font-family:var(--f-mono);font-size:11px;letter-spacing:0.14em;color:var(--ink-2);text-transform:uppercase;}
-  .field-label .num{color:var(--red);}
-  .field-hint{font-size:12.5px;color:var(--ink-3);}
-  .annot{
-    font-family:var(--f-hand);font-size:21px;color:var(--red);line-height:1;white-space:nowrap;
-    position:absolute;right:calc(100% + 18px);top:-3px;transform:rotate(-4deg);pointer-events:none;
+  .stamp-btn{
+    margin-top:6px;display:inline-flex;align-items:center;gap:14px;cursor:pointer;
+    font-family:var(--f-cond);font-weight:700;font-size:15px;letter-spacing:0.18em;text-transform:uppercase;
+    color:#FFF8F0;background:var(--red);border:none;padding:16px 24px 15px;border-radius:2px;
+    transform:rotate(-1.2deg);box-shadow:0 3px 0 #6F190F;transition:transform .08s, box-shadow .08s;
+    -webkit-mask-image:var(--ink-mask-light);mask-image:var(--ink-mask-light);-webkit-mask-size:260px 130px;mask-size:260px 130px;
   }
-  /* red corner marker on the active field, instead of a glow */
-  .field::before{
-    content:'';position:absolute;left:-14px;top:-6px;width:9px;height:9px;
-    border-left:1.5px solid var(--red);border-top:1.5px solid var(--red);opacity:0;transition:opacity 0.15s;
-  }
-  .field:focus-within::before{opacity:1;}
-
-  input[type="text"], textarea{
-    width:100%;border:none;background:transparent;color:var(--ink);padding:6px 0 8px;
-    border-bottom:1px solid var(--rule-strong);border-radius:0;font-family:var(--f-sans);font-size:16px;line-height:1.6;
-    transition:border-color 0.15s;
-  }
-  input[type="text"]::placeholder, textarea::placeholder{color:var(--ink-3);opacity:0.7;}
-  input[type="text"]:focus, textarea:focus{outline:none;border-bottom-color:var(--red);}
-  input#nameInput{font-family:var(--f-display);font-size:38px;font-weight:500;letter-spacing:-0.01em;line-height:1.2;padding:2px 0 8px;}
-  textarea{
-    resize:vertical;min-height:84px;padding-top:2px;
-    /* typed onto ruled lines */
-    background-image:repeating-linear-gradient(to bottom, transparent 0, transparent calc(1.6em - 1px), var(--rule) calc(1.6em - 1px), var(--rule) 1.6em);
-    background-position:0 2px;background-attachment:local;border-bottom-color:transparent;
-  }
-  textarea:focus{border-bottom-color:var(--red);}
-
-  .intake-foot{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-top:8px;}
-  .run-btn{
-    font-family:var(--f-cond);font-weight:600;font-size:14px;letter-spacing:0.14em;text-transform:uppercase;
-    background:var(--red);color:#FBF6EC;border:1px solid #7E2018;border-radius:3px;
-    padding:15px 26px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:14px;
-    box-shadow:0 2px 0 #6E1C15;transition:transform 0.08s, box-shadow 0.08s;
-  }
-  .run-btn .arrow{font-family:var(--f-sans);letter-spacing:0;font-weight:500;}
-  .run-btn:not(:disabled):hover{transform:translateY(1px);box-shadow:0 1px 0 #6E1C15;}
-  .run-btn:not(:disabled):active{transform:translateY(2px);box-shadow:0 0 0 #6E1C15;}
-  .run-btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
-  .run-btn:disabled{cursor:default;opacity:0.85;}
-  .run-btn.loading .arrow{display:none;}
-  .spinner{display:none;}
-  .intake-note{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--ink-3);}
+  .stamp-btn .arr{font-family:var(--f-sans);letter-spacing:0;font-weight:500;}
+  .stamp-btn:not(:disabled):hover{transform:rotate(-1.2deg) translateY(2px);box-shadow:0 1px 0 #6F190F;}
+  .stamp-btn:not(:disabled):active{transform:rotate(-1.2deg) translateY(3px);box-shadow:none;}
+  .stamp-btn:focus-visible{outline:2px solid var(--ink);outline-offset:4px;}
+  .stamp-btn:disabled{cursor:default;opacity:0.85;}
+  .stamp-btn.loading .arr{display:none;}
+  .intake-foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .intake-foot .tiny{font-family:var(--f-mono);font-size:10px;letter-spacing:0.14em;color:var(--ink-3);}
 
   .error-box{
-    display:none;margin-top:22px;padding:14px 16px;border:1px solid var(--red);border-left-width:3px;
-    background:var(--red-soft);color:var(--red);font-size:13.5px;line-height:1.6;
+    display:none;margin-top:20px;padding:12px 14px;border-left:3px solid var(--red);background:rgba(162,38,27,0.06);
+    color:var(--red);font-size:13px;line-height:1.55;
   }
   .error-box strong{font-weight:600;}
-  .error-box pre{background:rgba(34,27,19,0.05);padding:10px;margin:8px 0 0;overflow-x:auto;font-size:11.5px;white-space:pre-wrap;word-break:break-word;font-family:var(--f-mono);color:var(--ink-2);}
+  .error-box pre{background:rgba(28,25,21,0.05);padding:8px;margin:8px 0 0;overflow:auto;font-size:11px;white-space:pre-wrap;word-break:break-word;font-family:var(--f-mono);color:var(--ink-2);max-height:180px;}
 
-  /* ---------- index card (aside) ---------- */
-  .index-card{
-    background:var(--sheet);border:1px solid rgba(34,27,19,0.10);padding:16px 18px 6px;
-    box-shadow:0 1px 2px rgba(60,40,10,0.06);margin-top:6px;
+  /* ======================= OPENING ======================= */
+  .desk.opening .folder-cover{transform:perspective(2000px) rotateY(-96deg);opacity:0;}
+  .desk.opening .obj-stack{opacity:0;transform:translate(-60px,-20px);}
+  .desk.opening .obj-cards{opacity:0;transform:translate(-60px,30px);}
+  .desk.opening .obj-lens{opacity:0;transform:rotate(-30deg) translate(-80px,60px);}
+  .desk.opening .obj-pen{opacity:0;transform:rotate(-14deg) translate(80px,60px);}
+
+  /* ======================= OPEN: intake aside, board revealed ======================= */
+  .desk.open{height:auto;display:grid;grid-template-columns:300px minmax(0,1fr);gap:30px;align-items:start;}
+  .desk.open .folder, .desk.open .obj-stack, .desk.open .obj-cards, .desk.open .obj-lens, .desk.open .obj-pen{display:none;}
+  .desk.open .intake{position:relative;left:auto;top:auto;width:auto;--rot:-1.2deg;padding:28px 24px 24px;margin-top:22px;}
+  .desk.open .fld input{font-size:26px;}
+  .desk.open .fld textarea{font-size:14px;line-height:26px;height:80px;background-image:repeating-linear-gradient(to bottom, transparent 0 25px, var(--ink) 25px 26px);}
+  .desk.open .intake .clip{left:26%;}
+  .desk.open .intake-head{margin-bottom:20px;font-size:9px;letter-spacing:0.12em;}
+  .desk.open .intake-head .form-id{display:none;}
+  .desk.open .stamp-btn{font-size:13px;padding:13px 18px 12px;}
+  .desk.open .obj-pencil{left:auto;right:-36px;top:-14px;transform:rotate(-4deg);width:260px;}
+  .board-shell{display:none;}
+  .desk.open .board-shell{display:block;animation:reveal .55s var(--ease) both;}
+  @keyframes reveal{from{opacity:0;transform:translateY(10px) scale(.985);}to{opacity:1;transform:none;}}
+
+  /* the board */
+  .board{
+    position:relative;padding:58px 38px 46px;min-height:640px;
+    background-color:var(--felt);background-image:var(--grain);
+    border:9px solid #F7F5EF;outline:1px solid rgba(28,25,21,0.18);
+    box-shadow:inset 0 2px 6px rgba(28,25,21,0.12), 0 22px 40px -26px rgba(28,25,21,0.45);
   }
-  .index-card h2{
-    font-family:var(--f-mono);font-weight:500;font-size:10.5px;letter-spacing:0.18em;margin:0 0 10px;
-    padding-bottom:9px;border-bottom:1.5px solid var(--red);color:var(--ink);
+  .tape{
+    position:absolute;left:28px;top:-15px;z-index:8;display:inline-flex;align-items:center;gap:14px;
+    background:var(--ink);color:#F4F1E8;font-family:var(--f-mono);font-size:11.5px;font-weight:500;letter-spacing:0.16em;
+    padding:7px 14px 6px;transform:rotate(-1deg);box-shadow:0 3px 6px -2px rgba(28,25,21,0.35);
   }
-  .index-card ol{list-style:none;margin:0;padding:0;}
-  .index-card li{display:grid;grid-template-columns:26px 1fr;padding:9px 0;border-bottom:1px solid var(--rule);font-size:13px;line-height:1.45;}
-  .index-card li:last-child{border-bottom:none;}
-  .index-card li .n{font-family:var(--f-mono);font-size:11px;color:var(--red);padding-top:1px;}
-  .index-card li b{font-weight:600;display:block;}
-  .index-card li span.d{color:var(--ink-3);font-size:12px;}
+  .tape .clock{opacity:.65;font-variant-numeric:tabular-nums;}
+  .tape .cur::after{content:'_';animation:blink 1s steps(2,start) infinite;}
+  @keyframes blink{to{visibility:hidden;}}
 
-  /* ---------- case log (while the checks run) ---------- */
-  #board{display:none;margin-bottom:22px;}
-  #board.show{display:block;animation:sheet-in 0.45s ease-out both;}
-  .log{padding:22px 32px 18px;}
-  .log-head{
-    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
-    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;
-    padding-bottom:12px;border-bottom:1px solid var(--rule-strong);
+  .grid{
+    position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px 26px;
+    grid-template-areas:
+      "dom  col  col"
+      "dom  subj mkt"
+      "soc  subj mkt"
+      "mem  rel  rel";
+    align-items:start;
   }
-  .log-head .who{color:var(--ink);}
-  .log-head .who #sceneName{text-transform:none;letter-spacing:0.02em;font-weight:500;}
-  .log-head .right{display:flex;align-items:center;gap:14px;}
-  .clock{font-variant-numeric:tabular-nums;color:var(--ink-2);}
-  .scene-stamp{
-    display:none;font-family:var(--f-mono);font-size:10px;letter-spacing:0.18em;color:var(--red);
-    border:1px solid var(--red);padding:2px 7px;transform:rotate(-2deg);
+  .strings{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:6;}
+  .strings path{fill:none;stroke:#B0291D;stroke-width:1.35;stroke-linecap:round;opacity:.9;}
+  .strings path.draw{animation:draw .7s var(--ease) forwards;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+
+  .slot{position:relative;min-width:0;}
+  .slot[data-k="domains"]{grid-area:dom;}
+  .slot[data-k="collisions"]{grid-area:col;}
+  .slot[data-k="handles"]{grid-area:soc;}
+  .slot[data-k="market"]{grid-area:mkt;}
+  .slot[data-k="memory"]{grid-area:mem;}
+  .slot[data-k="relatives"]{grid-area:rel;}
+  .pending{
+    border:1.5px dashed rgba(28,25,21,0.22);min-height:150px;display:flex;align-items:flex-start;padding:12px 14px;
+    font-family:var(--f-mono);font-size:10px;letter-spacing:0.16em;color:rgba(28,25,21,0.45);
   }
-  #board.done .scene-stamp{display:inline-block;}
-  #boardStatus{color:var(--ink-2);}
-  .leads{list-style:none;margin:0;padding:4px 0 0;}
-  .lead{
-    display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:10px;
-    padding:9px 0;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--ink-3);
-    transition:color 0.2s;
+  .slot[data-k="domains"] .pending{min-height:300px;}
+  .slot.cold .pending{border-color:rgba(162,38,27,0.35);color:rgba(162,38,27,0.6);}
+
+  .subject{
+    grid-area:subj;align-self:center;position:relative;z-index:4;
+    padding:26px 22px 22px;text-align:center;transform:rotate(-1.5deg);
   }
-  .lead:last-child{border-bottom:none;}
-  .lead.active,.lead.solved{color:var(--ink);}
-  .lead-icon{width:12px;height:12px;border:1px solid var(--rule-strong);display:grid;place-items:center;font-family:var(--f-mono);font-size:10px;line-height:1;}
-  .lead.active .lead-icon{border-color:var(--ink-2);}
-  .lead.solved .lead-icon{border-color:var(--ink);background:var(--ink);color:var(--sheet);}
-  .lead.solved .lead-icon::before{content:'✓';}
-  .lead.solved.bad .lead-icon{border-color:var(--red);background:var(--red);}
-  .lead.solved.bad .lead-icon::before{content:'×';}
-  .lead.solved.meh .lead-icon{background:transparent;color:var(--ink);border-color:var(--ink-2);}
-  .lead.solved.meh .lead-icon::before{content:'?';}
-  .lead-text b{font-family:var(--f-mono);font-weight:500;font-size:12.5px;overflow-wrap:anywhere;}
-  .lead.active .lead-status::after{content:'checking';font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--ink-3);text-transform:uppercase;}
+  .subject .k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.2em;color:var(--ink-3);}
+  .subject .k b{color:var(--red);font-weight:500;}
+  .subject .name{font-family:var(--f-display);font-weight:600;font-size:clamp(30px,3.6vw,46px);line-height:1;letter-spacing:-0.01em;margin:12px 0 10px;overflow-wrap:anywhere;text-transform:uppercase;}
+  .subject .ctx{font-size:12px;color:var(--ink-2);line-height:1.45;max-width:26ch;margin:0 auto;}
 
-  /* ---------- report sheets ---------- */
-  #result{display:none;}
-  #result.show{display:block;}
-  #result.show > .sheet, #result.show > .report-foot{animation:sheet-in 0.5s ease-out both;animation-delay:calc(var(--i, 0) * 70ms);}
-  @keyframes sheet-in{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
-  #result > .sheet{margin-bottom:14px;padding:30px 36px 28px;}
+  /* pushpins (flat: head, highlight, shadow) */
+  .pin{position:absolute;width:15px;height:15px;z-index:7;margin:-7px 0 0 -7px;}
+  .pin::before{content:'';position:absolute;inset:0;border-radius:50%;background:#B32A1E;box-shadow:0 0 0 1px rgba(80,10,5,0.35), 2px 3px 2px rgba(28,25,21,0.28);}
+  .pin::after{content:'';position:absolute;left:3.5px;top:3px;width:5px;height:4px;border-radius:50%;background:#E3776B;}
+  .pin.pop{animation:pop .3s var(--ease) both;}
+  @keyframes pop{from{transform:scale(1.9);opacity:0;}to{transform:scale(1);opacity:1;}}
 
-  .sheet-head{
-    display:flex;justify-content:space-between;align-items:baseline;gap:16px;
-    padding-bottom:12px;border-bottom:1px solid var(--rule-strong);margin-bottom:6px;
+  /* every piece of evidence lands on the board */
+  .piece{position:relative;transform:rotate(var(--r,0deg));}
+  .piece.land{animation:land .5s var(--ease) both;}
+  @keyframes land{
+    from{opacity:0;transform:translate(var(--fx,0px),-34px) rotate(calc(var(--r,0deg) + 6deg)) scale(1.03);}
+    to{opacity:1;transform:rotate(var(--r,0deg));}
   }
-  .sheet-title{font-family:var(--f-display);font-weight:500;font-size:25px;letter-spacing:-0.01em;margin:0;line-height:1.2;}
-  .sheet-title .n{font-family:var(--f-mono);font-size:12px;font-weight:400;letter-spacing:0.1em;color:var(--red);margin-right:12px;vertical-align:4px;}
-  .sub-head{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;margin:22px 0 4px;}
+  .lbl{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.18em;color:var(--ink-3);}
+  .ttl{font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:0.16em;color:var(--ink);}
+  .ok{color:var(--green);}
+  .bad{color:var(--red);}
+  .unk{color:var(--ink-3);}
+  .note{font-family:var(--f-hand);color:var(--red);font-size:18px;line-height:1;}
 
-  /* finding labels */
-  .status{
-    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.14em;white-space:nowrap;
-    padding:3px 8px 2px;border:1px solid currentColor;color:var(--ink);
+  /* DOMAIN TRAIL — typed registry slip with a torn perforation */
+  .slip{padding:16px 16px 12px;margin-bottom:12px;}
+  .slip::after{
+    content:'';position:absolute;left:0;right:0;bottom:-9px;height:10px;
+    background:
+      linear-gradient(-45deg, transparent 6px, var(--paper) 6px) 0 0 / 12px 10px repeat-x,
+      linear-gradient(45deg, transparent 6px, var(--paper) 6px) 0 0 / 12px 10px repeat-x;
   }
-  .status.clear{color:var(--ink);}
-  .status.flag{color:var(--red);background:var(--red-soft);}
-  .status.review{color:var(--ink-2);border-style:dashed;}
-  .status.evidence{color:var(--ink);background:var(--manila-soft);border-color:var(--manila-deep);}
-  .status.pending{color:var(--ink-3);border-style:dashed;}
+  .slip-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;white-space:nowrap;border-bottom:1px dashed var(--rule-2);padding-bottom:8px;margin-bottom:10px;}
+  .slip-row{display:flex;align-items:baseline;gap:6px;font-family:var(--f-mono);font-size:12.5px;padding:4px 0;}
+  .slip-row .d{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+  .slip-row .dots{flex:1;border-bottom:1px dotted var(--rule-2);transform:translateY(-3px);min-width:8px;}
+  .slip-row .v{font-weight:500;font-size:11.5px;letter-spacing:0.08em;white-space:nowrap;}
+  .slip-row a.v{text-decoration:none;}
+  .slip-row a.v:hover{text-decoration:underline;}
+  .slip-sep{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.18em;color:var(--ink-3);text-align:center;margin:10px 0 4px;}
+  .slip-foot{font-family:var(--f-mono);font-size:9.5px;color:var(--ink-3);margin-top:10px;border-top:1px dashed var(--rule-2);padding-top:8px;}
 
-  /* report cover */
-  .cover{padding:34px 36px 30px !important;}
-  .cover-top{
-    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
-    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);
-    padding-bottom:12px;border-bottom:1px solid var(--rule-strong);margin-bottom:26px;
+  /* NAME COLLISIONS — clipped search records */
+  .records{padding:18px 18px 14px;}
+  /* front sheet is ::after, an offset sheet peeks out behind it */
+  .records::before,.records::after{content:'';position:absolute;inset:0;background-color:var(--paper);background-image:var(--grain);box-shadow:0 1px 2px rgba(28,25,21,0.12), 0 8px 14px -8px rgba(28,25,21,0.3);}
+  .records::before{z-index:-2;transform:rotate(2.4deg) translate(8px,6px);}
+  .records::after{z-index:-1;}
+  .records .clip{left:auto;right:42px;top:-18px;width:22px;}
+  .rec{padding:9px 0;border-top:1px solid var(--rule);}
+  .rec-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.12em;color:var(--ink-3);display:flex;gap:8px;flex-wrap:wrap;}
+  .rec-k .risk{font-weight:500;}
+  .rec-t{display:block;font-family:var(--f-display);font-size:16px;font-weight:500;line-height:1.25;margin:3px 0 2px;text-decoration:none;}
+  .rec-t:hover{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;}
+  .rec-s{font-size:12px;color:var(--ink-2);line-height:1.45;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .more summary{cursor:pointer;font-family:var(--f-mono);font-size:10px;letter-spacing:0.14em;color:var(--ink-2);padding-top:8px;list-style:none;}
+  .more summary::-webkit-details-marker{display:none;}
+  .more summary::before{content:'+ ';color:var(--red);}
+
+  /* SOCIAL HANDLES — small torn note */
+  .torn{
+    padding:22px 16px 14px;
+    clip-path:polygon(0 6px,5% 1px,11% 5px,17% 0,24% 4px,31% 1px,38% 6px,45% 2px,52% 5px,60% 0,67% 4px,74% 1px,81% 6px,88% 2px,94% 5px,100% 1px,100% 100%,0 100%);
+    background-image:var(--grain), repeating-linear-gradient(to bottom, transparent 0 25px, rgba(60,100,150,0.15) 25px 26px);
+    background-position:0 0, 0 14px;
+    filter:drop-shadow(0 4px 5px rgba(28,25,21,0.18));
   }
-  .cover-top b{color:var(--ink);font-weight:500;}
-  .cover-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 28px;align-items:center;}
-  .case-label{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;margin-bottom:8px;}
-  .stamp-name{font-family:var(--f-display);font-weight:500;font-size:clamp(34px,5vw,50px);letter-spacing:-0.02em;line-height:1.05;margin-bottom:12px;overflow-wrap:anywhere;}
-  .stamp-sub{font-size:14.5px;color:var(--ink-2);max-width:44ch;line-height:1.6;}
-  .stamp{
-    font-family:var(--f-cond);font-weight:600;font-size:17px;letter-spacing:0.16em;text-transform:uppercase;
-    padding:10px 16px 9px;border:2px solid currentColor;outline:1px solid currentColor;outline-offset:3px;
-    transform:rotate(-3deg);white-space:nowrap;opacity:0.9;justify-self:end;
+  .h-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:baseline;padding:4px 0;}
+  .h-row .h{font-family:var(--f-mono);font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .h-row .p{font-size:11.5px;color:var(--ink-3);grid-column:1;}
+  .h-row .v{font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:0.1em;grid-row:1;grid-column:2;}
+  .h-row a{font-size:11.5px;color:var(--ink-2);grid-column:2;text-align:right;}
+
+  /* MARKET EVIDENCE — newspaper fragment */
+  .clipping{
+    padding:18px 18px 22px;background-color:#FBFAF5;
+    clip-path:polygon(0 2%,8% 0,22% 1.5%,40% 0,58% 1.2%,75% 0,92% 1.6%,100% 0,99% 22%,100% 48%,98.6% 74%,100% 100%,84% 98.6%,66% 100%,48% 98.8%,30% 100%,12% 98.5%,0 100%,1.2% 70%,0 44%,1.4% 20%);
+    filter:drop-shadow(0 4px 6px rgba(28,25,21,0.2));
   }
-  .stamp.good{color:var(--ink);}
-  .stamp.bad{color:var(--red);}
-  .stamp.mid{color:var(--ink-2);}
-  .contents{margin-top:28px;border-top:1px solid var(--rule);}
-  .contents a{
-    display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule);
-    text-decoration:none;font-size:14px;
+  .mast{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:4px;}
+  .mast .paper-name{font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:0.02em;}
+  .mast .ed{font-family:var(--f-mono);font-size:8.5px;letter-spacing:0.12em;color:var(--ink-3);}
+  .dek{font-family:var(--f-mono);font-size:9px;letter-spacing:0.12em;color:var(--ink-3);border-bottom:1px solid var(--rule-2);padding:4px 0;margin-bottom:10px;}
+  .hl{font-family:var(--f-display);font-weight:600;font-size:21px;line-height:1.12;letter-spacing:-0.01em;margin:0 0 8px;}
+  .hl a{text-decoration:none;}
+  .hl a:hover{text-decoration:underline;text-decoration-color:var(--red);}
+  .cols{column-count:2;column-gap:16px;column-rule:1px solid var(--rule);font-family:var(--f-display);font-size:13px;line-height:1.42;color:var(--ink-2);}
+  .cols p{margin:0 0 8px;break-inside:avoid;}
+  .cols b{color:var(--ink);font-weight:600;}
+  .cols a{text-decoration:none;}
+  .cols a:hover{text-decoration:underline;}
+
+  /* MEMORABILITY — investigator's handwritten note on a legal pad */
+  .pad{
+    padding:16px 18px 14px 44px;background-color:var(--pad);
+    background-image:var(--grain),
+      linear-gradient(to right, transparent 32px, rgba(162,38,27,0.5) 32px, rgba(162,38,27,0.5) 33px, transparent 33px),
+      repeating-linear-gradient(to bottom, transparent 0 27px, rgba(60,100,150,0.22) 27px 28px);
+    background-position:0 0, 0 0, 0 10px;
   }
-  .contents a:hover .c-name{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;}
-  .contents .c-n{font-family:var(--f-mono);font-size:11px;color:var(--red);width:22px;flex:none;}
-  .contents .c-lead{flex:1;border-bottom:1px dotted var(--rule-strong);transform:translateY(-4px);min-width:20px;}
+  .pad-top{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--ink-3);height:28px;}
+  .pad-row{display:flex;align-items:baseline;gap:8px;height:28px;font-family:var(--f-hand);font-size:22px;line-height:28px;color:#26303F;}
+  .pad-row .lbl2{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pad-row .pc{font-size:17px;color:#55606F;}
+  .pad-row .mk{width:22px;text-align:center;font-weight:600;font-size:24px;}
 
-  /* evidence rows (domains, handles) */
-  .domain-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--rule);font-family:var(--f-mono);font-size:13.5px;}
-  .domain-row:last-child{border-bottom:none;}
-  .domain-name{flex:1;display:flex;align-items:baseline;gap:6px;min-width:0;font-weight:500;}
-  .domain-name::after{content:'';flex:1;border-bottom:1px dotted var(--rule-strong);min-width:16px;transform:translateY(-3px);}
-  .domain-name span{font-weight:400;}
-  .domain-row > span:last-child{flex:none;}
-  .domain-row a{font-family:var(--f-sans);font-size:12.5px;color:var(--red);text-decoration:none;}
-  .domain-row a:hover{text-decoration:underline;text-underline-offset:3px;}
-  .domain-badge{
-    font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;
-    padding:2px 7px 1px;border:1px solid currentColor;white-space:nowrap;display:inline-block;
+  /* CLOSE RELATIVES — scattered index cards */
+  .icards{display:flex;flex-wrap:wrap;gap:10px 0;padding-top:4px;}
+  .icards .rc{
+    width:calc(33.333% + 4px);margin-right:-4px;position:relative;padding:12px 14px 12px;min-width:0;
+    background-color:var(--paper);background-image:var(--grain), repeating-linear-gradient(to bottom, transparent 0 19px, rgba(60,100,150,0.14) 19px 20px);
+    background-position:0 0, 0 40px;
   }
-  .domain-badge.avail{color:var(--ink);}
-  .domain-badge.taken{color:var(--red);}
-  .domain-badge.taken.minor{color:var(--ink-2);}
-  .domain-badge.warn{color:var(--ink);background:var(--manila-soft);border-color:var(--manila-deep);}
-  .domain-badge.unknown{color:var(--ink-3);border-style:dashed;}
+  .icards .rc::before{content:'';position:absolute;left:0;right:0;top:40px;height:1px;background:rgba(162,38,27,0.5);}
+  .icards .rc:nth-child(1){transform:rotate(-3deg);z-index:3;}
+  .icards .rc:nth-child(2){transform:rotate(2deg) translateY(10px);z-index:2;}
+  .icards .rc:nth-child(3){transform:rotate(-1deg) translateY(-2px);z-index:1;}
+  .rc-k{font-family:var(--f-mono);font-size:9px;letter-spacing:0.16em;color:var(--red);}
+  .rc-n{font-family:var(--f-display);font-weight:600;font-size:19px;line-height:1.1;margin:2px 0 12px;overflow-wrap:anywhere;}
+  .rc-tlds{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:2px 10px;font-family:var(--f-mono);font-size:10.5px;}
+  .rc-tlds a{text-decoration:none;}
+  .rc-s{font-size:11px;color:var(--ink-3);margin-top:8px;}
+  .rc details summary{cursor:pointer;list-style:none;}
+  .rc details summary::-webkit-details-marker{display:none;}
+  .rc details[open] summary{margin-bottom:4px;}
+  .rc details a{display:block;font-size:11.5px;color:var(--ink-2);line-height:1.35;margin-top:4px;text-decoration:none;}
+  .rc details a:hover{text-decoration:underline;}
 
-  .niche-item{padding:13px 0;border-bottom:1px solid var(--rule);}
-  .niche-item:last-child{border-bottom:none;}
-  .niche-title{font-size:14.5px;font-weight:500;line-height:1.4;margin-bottom:3px;}
-  .niche-title a{text-decoration:none;}
-  .niche-title a:hover{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;}
-  .niche-snippet{font-size:13.5px;color:var(--ink-2);line-height:1.55;}
-  .niche-empty{font-size:13.5px;color:var(--ink-3);font-style:italic;margin:10px 0 4px;}
-
-  .section-note{font-size:13px;color:var(--ink-2);line-height:1.6;margin:14px 0 6px;max-width:60ch;}
-  .section-note strong{color:var(--ink);font-weight:600;}
-  .note-annot{font-family:var(--f-hand);font-size:20px;color:var(--red);transform:rotate(-3deg);display:inline-block;margin-left:6px;}
-
-  /* memorability — read like a typed assessment, not a dashboard */
-  .checks{display:flex;flex-direction:column;}
-  .check-row{padding:14px 0;border-bottom:1px solid var(--rule);}
-  .check-row:last-child{border-bottom:none;}
-  .check-top{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
-  .check-name{font-size:14.5px;font-weight:500;flex:none;}
-  .check-top::after{content:'';flex:1;border-bottom:1px dotted var(--rule-strong);order:1;transform:translateY(-4px);}
-  .check-pct{order:2;font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;}
-  .meter{height:2px;background:var(--rule);}
-  .meter-fill{height:100%;width:0;transition:width 0.9s ease-out;}
-  .meter-fill.pos{background:var(--ink);}
-  .meter-fill.neg{background:var(--red);}
-  .check-note{font-size:12.5px;color:var(--ink-3);margin-top:7px;}
-
-  /* appendix: close relatives */
-  .variant{padding:18px 0;border-bottom:1px solid var(--rule);}
-  .variant:last-child{border-bottom:none;padding-bottom:4px;}
-  .variant-name{font-family:var(--f-display);font-size:23px;font-weight:500;margin-bottom:10px;}
-  .tld-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
-  .tld-chips .domain-badge{text-transform:none;letter-spacing:0.04em;text-decoration:none;}
-  .variant .niche-item{padding:10px 0;}
-
-  .report-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 0;}
-  .ghost-btn{
-    font-family:var(--f-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
-    background:transparent;border:1px solid var(--rule-strong);color:var(--ink);padding:11px 16px;cursor:pointer;border-radius:2px;
+  /* ======================= FINAL REPORT ======================= */
+  .report{
+    position:relative;z-index:9;width:450px;max-width:100%;margin:-36px 4px 0 auto;padding:30px 30px 22px;
+    transform:rotate(-1.4deg);display:none;
   }
-  .ghost-btn:hover{border-color:var(--ink);}
-  .ghost-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
-  .raw-toggle{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--ink-3);background:none;border:none;cursor:pointer;padding:0;margin-left:auto;text-decoration:underline;text-underline-offset:3px;}
-  #rawOutput{display:none;width:100%;margin-top:8px;}
-  #rawOutput pre{background:var(--sheet);border:1px solid var(--rule);padding:12px;font-size:11px;overflow:auto;white-space:pre-wrap;word-break:break-word;max-height:260px;font-family:var(--f-mono);color:var(--ink-2);}
+  .report.show{display:block;animation:slide-in .6s var(--ease) both;}
+  @keyframes slide-in{from{opacity:0;transform:translate(30px,40px) rotate(3deg);}to{opacity:1;transform:rotate(-1.4deg);}}
+  .report .clip{left:auto;right:38px;}
+  .rp-head{border-bottom:1.5px solid var(--ink);padding-bottom:12px;margin-bottom:12px;}
+  .rp-case{font-family:var(--f-mono);font-size:12px;letter-spacing:0.18em;}
+  .rp-case b{color:var(--red);font-weight:500;}
+  .rp-sub{font-family:var(--f-mono);font-size:12px;letter-spacing:0.18em;margin-top:4px;}
+  .rp-sub b{font-weight:500;}
+  .rp-row{display:flex;align-items:baseline;gap:8px;font-family:var(--f-mono);font-size:12px;letter-spacing:0.06em;padding:6px 0;}
+  .rp-row .dots{flex:1;border-bottom:1px dotted var(--rule-2);transform:translateY(-3px);}
+  .rp-row .v{font-weight:500;letter-spacing:0.1em;}
+  .verdict-zone{position:relative;min-height:128px;display:flex;align-items:center;justify-content:center;margin:16px 0 4px;}
+  .verdict{
+    font-family:var(--f-cond);font-weight:700;font-size:30px;letter-spacing:0.12em;line-height:1.05;text-align:center;
+    color:var(--red-ink);border:4px solid currentColor;padding:10px 18px 8px;outline:1.5px solid currentColor;outline-offset:4px;
+    transform:rotate(-7deg);max-width:94%;
+    -webkit-mask-image:var(--ink-mask);mask-image:var(--ink-mask);-webkit-mask-size:240px 120px;mask-size:240px 120px;
+    opacity:0;
+  }
+  .verdict.hit{animation:thunk .28s cubic-bezier(.3,1.4,.5,1) .45s both;}
+  @keyframes thunk{from{opacity:0;transform:rotate(-4deg) scale(1.35);}to{opacity:1;transform:rotate(-7deg) scale(1);}}
+  .rp-why{font-size:13px;color:var(--ink-2);line-height:1.5;text-align:center;max-width:34ch;margin:8px auto 0;}
+  .rp-foot{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:12px;border-top:1px solid var(--rule-2);font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;}
+  .rp-foot b{font-weight:500;}
+  .rp-actions{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;align-items:center;}
+  .txt-btn{background:none;border:none;padding:0;cursor:pointer;font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:4px;}
+  .txt-btn:hover{color:var(--red);}
+  .txt-btn.quiet{color:var(--ink-3);text-decoration-color:var(--rule-2);margin-left:auto;text-transform:none;letter-spacing:0.04em;}
+  #rawOutput{display:none;margin-top:10px;}
+  #rawOutput pre{font-family:var(--f-mono);font-size:10.5px;background:rgba(28,25,21,0.04);padding:10px;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0;}
 
-  .foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule-strong);font-size:12.5px;color:var(--ink-3);line-height:1.7;max-width:70ch;}
+  .foot{margin-top:48px;padding-top:16px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-3);line-height:1.7;max-width:76ch;}
   .foot a{color:var(--ink-2);text-decoration-color:var(--red);text-underline-offset:3px;}
 
-  /* ---------- responsive ---------- */
-  @media (max-width: 980px){
-    .layout{
-      grid-template-columns:minmax(0,1fr);
-      grid-template-areas:"hero" "rail" "folder" "board" "result" "foot";
-    }
-    .aside{display:none;}
-    .br-wide{display:none;}
-    .rail{grid-row:auto;border-right:none;border-top:1px solid var(--rule-strong);margin-bottom:20px;}
-    .rail-text{position:static;writing-mode:horizontal-tb;transform:none;flex-wrap:wrap;gap:6px 18px;padding:10px 0 0;white-space:normal;}
-    .annot{position:static;transform:rotate(-3deg);font-size:19px;margin-left:auto;}
+  /* ======================= RESPONSIVE ======================= */
+  @media (max-width: 1180px){
+    .desk:not(.open){height:auto;display:flex;flex-direction:column;align-items:center;}
+    .desk:not(.open) .obj{display:none;}
+    .desk:not(.open) .folder{position:relative;left:auto;top:auto;width:100%;max-width:720px;height:auto;}
+    .folder-cover{position:relative;inset:auto;margin-top:32px;padding:48px 40px 120px;}
+    .folder-back{inset:26px 0 0 0;}
+    .desk:not(.open) .intake{position:relative;left:auto;top:auto;width:calc(100% - 40px);max-width:560px;margin-top:-96px;}
+    .cover-note{display:none;}
+    .cover-stamp{bottom:auto;top:56px;left:auto;right:40px;}
   }
-  @media (max-width: 600px){
-    .desk{padding:20px 16px 64px;}
-    .masthead{margin-bottom:36px;align-items:flex-start;}
-    .mh-tag{font-size:12px;}
-    .mh-status{font-size:9px;letter-spacing:0.1em;}
-    .field-label{white-space:nowrap;}
-    .field-hint{flex-basis:100%;font-size:12px;}
-    .case-stamp{font-size:16px;}
-    .folder-shell{padding:7px;}
-    .intake{padding:22px 18px 24px;}
-    .field::before{left:-10px;}
-    input#nameInput{font-size:30px;}
-    #result > .sheet{padding:22px 18px 20px;}
-    .cover{padding:24px 18px 22px !important;}
-    .cover-grid{grid-template-columns:1fr;}
-    .stamp{justify-self:start;}
-    .log{padding:18px 18px 14px;}
-    .sheet-title{font-size:21px;}
-    .raw-toggle{margin-left:0;}
+  @media (max-width: 900px){
+    .desk.open{grid-template-columns:minmax(0,1fr);gap:22px;}
+    .desk.open .obj-pencil{display:none;}
+    .desk.open .intake{max-width:520px;}
+    .grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"subj subj" "dom col" "dom col" "soc mkt" "mem mkt" "rel rel";}
+  }
+  @media (max-width: 620px){
+    .page{padding:16px 16px 56px;}
+    .topline .hide-s{display:none;}
+    .folder-cover{padding:40px 24px 110px;}
+    .cover-h{font-size:42px;}
+    .cover-stamp{display:none;}
+    .desk:not(.open) .intake{width:calc(100% - 16px);padding:30px 22px 26px;margin-top:-80px;}
+    .fld input{font-size:30px;}
+    .intake-head .form-id{display:none;}
+    .intake .clip{left:26%;}
+    .board{padding:52px 14px 30px;border-width:6px;}
+    .grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"subj" "dom" "col" "soc" "mkt" "mem" "rel";gap:26px;}
+    .icards .rc{width:100%;margin-right:0;}
+    /* every pin on the right edge so the chained thread runs down the margin */
+    .slot .piece > .pin{left:auto !important;right:-3px !important;top:16px !important;bottom:auto !important;margin:-7px -7px 0 0 !important;}
+    .icards .rc:nth-child(2){transform:rotate(1.5deg);}
+    .cols{column-count:1;}
+    .report{margin:24px 0 0;width:100%;}
+    .verdict{font-size:24px;}
   }
   @media (prefers-reduced-motion: reduce){
-    *,*::before,*::after{animation:none !important;transition:none !important;}
-  }
-
-  /* =====================================================================
-     DETECTIVE LAYER — ink illustrations + investigation storytelling
-     ===================================================================== */
-  /* ink drawing primitives (shared by every illustration) */
-  .ill .s{stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
-  .ill .fn{fill:none;}
-  .ill .fc{fill:#D6C08E;}            /* trench coat */
-  .ill .fs{fill:#F7EFDF;}            /* skin / cream */
-  .ill .fh{fill:var(--ink);}         /* hair, shoes, ink fills */
-  .ill .ft{fill:#3B3127;}            /* trousers */
-  .ill .fr{fill:var(--red);}
-  .ill .fp{fill:var(--sheet);}
-  .ill .fm{fill:var(--manila);}
-  .ill .ao{fill:none;stroke:var(--ink);stroke-width:9.5;stroke-linecap:round;stroke-linejoin:round;}
-  .ill .ai{fill:none;stroke:#D6C08E;stroke-width:6.4;stroke-linecap:round;stroke-linejoin:round;}
-  .ill .tx{font-family:var(--f-mono);fill:var(--ink);font-weight:500;letter-spacing:0.08em;}
-  .ill .hand{font-family:var(--f-hand);fill:var(--red);}
-  .ill .faint{opacity:0.55;}
-  .defs{position:absolute;width:0;height:0;overflow:hidden;}
-
-  .annot-note{font-family:var(--f-hand);color:var(--red);font-size:21px;line-height:1.1;}
-
-  /* hero scene — sits in the space to the right of the lede */
-  .hero{display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:28px;align-items:start;}
-  .hero h1{grid-column:1 / -1;}
-  .hero .lede{grid-column:1;}
-  .hero-scene{grid-column:2;grid-row:2;position:relative;margin-top:-58px;}
-  .hero-scene svg{display:block;width:100%;height:auto;}
-  .hero-scene .annot-note{position:absolute;right:4px;top:-6px;transform:rotate(-4deg);max-width:170px;text-align:right;}
-  .hero-scene .note-arrow{position:absolute;right:150px;top:50px;width:52px;height:auto;}
-  .note-arrow path{fill:none;stroke:var(--red);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:0.85;}
-
-  /* the detective's magnifier leaning over the intake folder */
-  .peek{position:absolute;right:-46px;top:124px;width:150px;pointer-events:none;z-index:2;}
-  .peek svg{display:block;width:100%;height:auto;}
-
-  /* investigation plan (aside) */
-  .index-card li{grid-template-columns:26px 1fr 26px;align-items:start;}
-  .index-card li .ico{width:22px;height:22px;justify-self:end;margin-top:-1px;}
-  .index-card li .ico .s{stroke-width:1.4;}
-  .index-card li b{font-family:var(--f-mono);font-weight:500;font-size:11.5px;letter-spacing:0.1em;}
-  .plan-stamp{
-    display:inline-block;margin:12px 0 14px;font-family:var(--f-cond);font-weight:600;font-size:12px;letter-spacing:0.16em;
-    color:var(--red);border:1.5px solid var(--red);padding:5px 10px 4px;transform:rotate(-4deg);opacity:0.9;
-  }
-
-  /* loading — the detective works the case */
-  .work{display:grid;grid-template-columns:104px minmax(0,1fr);gap:22px;align-items:center;padding:18px 0 16px;border-bottom:1px solid var(--rule);}
-  .work svg{width:104px;height:auto;display:block;}
-  #detLoader .pose{opacity:0;transition:opacity 0.15s;}
-  #detLoader .pose.on{opacity:1;}
-  .work-step{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;margin-bottom:6px;}
-  .work-msg{font-family:var(--f-display);font-style:italic;font-size:26px;line-height:1.2;letter-spacing:-0.01em;min-height:1.2em;}
-  .work-dots{display:flex;gap:5px;margin-top:12px;}
-  .work-dots i{width:18px;height:2px;background:var(--rule-strong);}
-  .work-dots i.on{background:var(--ink);}
-  .work-dots i.now{background:var(--red);}
-
-  /* evidence board */
-  .board-wrap{padding:26px 28px 30px !important;}
-  .ev-board{
-    position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-    grid-template-areas:"e1 note e2" "e3 center e4" "e5 det e6";
-    gap:30px 34px;margin-top:22px;
-  }
-  .ev-strings{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0;}
-  .ev-strings path{fill:none;stroke:var(--red);stroke-width:1.2;opacity:0.75;}
-  .ev-card{
-    position:relative;z-index:1;display:block;text-decoration:none;color:var(--ink);
-    background:var(--sheet);border:1px solid rgba(34,27,19,0.14);padding:16px 14px 14px;
-    box-shadow:0 1px 0 rgba(34,27,19,0.04), 0 8px 14px -12px rgba(60,40,10,0.5);
-    transform:rotate(var(--r,0deg));transition:transform 0.15s;
-  }
-  .ev-card:hover{transform:rotate(0deg) translateY(-1px);}
-  .ev-card::before{
-    content:'';position:absolute;top:-6px;left:50%;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;
-    background:var(--red);box-shadow:inset -2px -2px 0 rgba(0,0,0,0.25), 0 1px 1px rgba(0,0,0,0.25);
-  }
-  .ev-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--ink-3);}
-  .ev-t{font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:0.1em;margin:4px 0 8px;}
-  .ev-s{font-size:13px;color:var(--ink-2);line-height:1.45;min-height:2.9em;}
-  .ev-card .stamp-mini{margin-top:10px;}
-  .ev-center{
-    grid-area:center;align-self:center;position:relative;z-index:1;text-align:center;
-    background:var(--manila);border:1px solid var(--manila-deep);padding:18px 12px 16px;
-    box-shadow:0 10px 18px -14px rgba(60,40,10,0.6);
-  }
-  .ev-center .ev-k{color:var(--ink-2);}
-  .ev-center .ev-name{font-family:var(--f-display);font-size:28px;font-weight:500;line-height:1.1;margin-top:6px;overflow-wrap:anywhere;}
-  .ev-note{grid-area:note;align-self:end;justify-self:center;text-align:center;transform:rotate(-3deg);font-size:19px;}
-  .ev-det{grid-area:det;justify-self:center;align-self:end;width:150px;margin-bottom:-12px;position:relative;z-index:1;}
-  .ev-det svg{width:100%;height:auto;display:block;}
-  #ev1{grid-area:e1;} #ev2{grid-area:e2;} #ev3{grid-area:e3;} #ev4{grid-area:e4;} #ev5{grid-area:e5;} #ev6{grid-area:e6;}
-
-  /* small rubber stamps — used sparingly */
-  .stamp-mini{
-    display:inline-block;font-family:var(--f-cond);font-weight:600;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;
-    padding:3px 7px 2px;border:1.5px solid currentColor;transform:rotate(-3deg);opacity:0.92;white-space:nowrap;
-  }
-  .stamp-mini.clear{color:var(--ink);}
-  .stamp-mini.flag{color:var(--red);}
-  .stamp-mini.found{color:var(--ink);background:var(--manila-soft);border-color:var(--ink-2);}
-  .stamp-mini.taken{color:var(--ink-2);}
-  .stamp-mini.look{color:var(--ink-2);border-style:dashed;}
-
-  /* sheet vignettes — the detective at work on each page */
-  .sheet-head{position:relative;}
-  .vig{position:absolute;right:0;bottom:-2px;width:78px;height:auto;pointer-events:none;}
-  .vig.wide{width:104px;}
-  .sheet-head.has-vig{padding-right:96px;min-height:104px;align-items:flex-end;}
-  .sheet-head.has-vig.wide-vig{padding-right:120px;min-height:110px;}
-  .sheet-head.has-vig .status{position:absolute;right:96px;bottom:12px;}
-  .sheet-head.has-vig.wide-vig .status{right:120px;}
-
-  /* 01 — suspect lineup */
-  .lineup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;}
-  .suspect{
-    background:#FFFDF8;border:1px solid var(--rule-strong);padding:12px 12px 12px;position:relative;
-    display:flex;flex-direction:column;gap:6px;min-width:0;
-  }
-  .suspect-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--red);}
-  .suspect-name{font-family:var(--f-display);font-size:17px;font-weight:500;line-height:1.25;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-  .suspect-name a{text-decoration:none;}
-  .suspect-name a:hover{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;}
-  .suspect dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-family:var(--f-mono);font-size:10.5px;}
-  .suspect dt{color:var(--ink-3);letter-spacing:0.1em;}
-  .suspect dd{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .suspect dd.high{color:var(--red);font-weight:500;}
-  .suspect-snip{font-size:12px;color:var(--ink-2);line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;}
-  .fine{font-size:11.5px;color:var(--ink-3);margin:10px 0 0;}
-  .handles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
-  .handle-card{border:1px solid var(--rule-strong);background:#FFFDF8;padding:12px 14px;display:flex;flex-direction:column;gap:4px;}
-  .handle-card .h{font-family:var(--f-mono);font-size:14px;font-weight:500;overflow-wrap:anywhere;}
-  .handle-card .p{font-size:12px;color:var(--ink-3);}
-  .handle-card .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;}
-  .handle-card a{font-size:12.5px;color:var(--red);text-decoration:none;}
-  .handle-card a:hover{text-decoration:underline;}
-
-  /* 02 — filing cabinet */
-  .cabinet{margin-top:16px;border:1.5px solid var(--ink);background:#E9DFC9;padding:8px 8px 4px;max-width:560px;position:relative;}
-  .cabinet::after{content:'';position:absolute;left:14px;right:14px;bottom:-7px;height:6px;border:1.5px solid var(--ink);border-top:none;background:#D9CDB2;}
-  .drawer{
-    display:grid;grid-template-columns:64px minmax(0,1fr) auto;align-items:center;gap:12px;
-    background:var(--sheet);border:1px solid var(--rule-strong);padding:9px 12px;margin-bottom:6px;position:relative;
-    transition:transform 0.2s;
-  }
-  .drawer .tab{
-    font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:0.1em;text-align:center;
-    border:1px solid var(--ink);background:var(--manila-soft);padding:2px 0;position:relative;
-  }
-  .drawer .tab::after{content:'';position:absolute;left:50%;bottom:-7px;width:18px;height:3px;margin-left:-9px;border:1px solid var(--ink);border-top:none;border-radius:0 0 3px 3px;}
-  .drawer .dn{font-family:var(--f-mono);font-size:13.5px;font-weight:500;overflow-wrap:anywhere;}
-  .drawer .dr{display:flex;align-items:center;gap:10px;}
-  .drawer a{font-size:12.5px;color:var(--red);text-decoration:none;white-space:nowrap;}
-  .drawer a:hover{text-decoration:underline;}
-  /* an available domain is a drawer someone pulled open */
-  .drawer.open{transform:translateX(14px);box-shadow:-6px 4px 0 -2px rgba(34,27,19,0.10);}
-
-  /* 03 — clippings pinned to the board */
-  .clips{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
-  .clip{
-    background:#FFFDF8;border:1px solid rgba(34,27,19,0.14);padding:16px 14px 12px;position:relative;
-    transform:rotate(var(--r,0deg));box-shadow:0 6px 12px -10px rgba(60,40,10,0.5);
-  }
-  .clip::before{content:'';position:absolute;top:-5px;left:18px;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:inset -2px -2px 0 rgba(0,0,0,0.25);}
-  .clip .niche-title{font-family:var(--f-display);font-size:16px;}
-  .clip .niche-snippet{font-size:12.5px;}
-
-  /* 04 — notebook page */
-  .notebook{
-    margin-top:14px;padding:4px 18px 6px 46px;position:relative;
-    background:
-      linear-gradient(to right, transparent 34px, rgba(156,42,32,0.45) 34px, rgba(156,42,32,0.45) 35px, transparent 35px),
-      #FFFDF8;
-    border:1px solid var(--rule-strong);
-  }
-  .notebook::before{
-    content:'';position:absolute;left:12px;top:14px;bottom:14px;width:8px;
-    background:radial-gradient(circle, var(--desk) 3px, transparent 3.5px) 0 0 / 8px 26px repeat-y;
-  }
-
-  /* 05 — close relatives as a mugshot lineup */
-  .mugs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px;}
-  .mug{border:1px solid var(--rule-strong);background:#FFFDF8;min-width:0;}
-  .mug-shot{
-    height:132px;position:relative;border-bottom:1px solid var(--rule-strong);overflow:hidden;
-    background:repeating-linear-gradient(to bottom, transparent 0 21px, var(--rule) 21px 22px), #F5EFE2;
-  }
-  .mug-shot .ht{position:absolute;left:6px;font-family:var(--f-mono);font-size:8px;color:var(--ink-3);}
-  .mug-shot svg{position:absolute;left:50%;bottom:0;width:84px;margin-left:-42px;}
-  .mug-plate{
-    position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:var(--ink);color:var(--sheet);
-    font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:0.08em;padding:4px 8px;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis;
-  }
-  .mug-body{padding:12px 12px 12px;}
-  .mug-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--red);margin-bottom:8px;}
-  .mug .tld-chips{margin-bottom:8px;}
-  .mug details{font-size:12.5px;border-top:1px solid var(--rule);padding-top:8px;}
-  .mug summary{cursor:pointer;font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--ink-2);list-style:none;}
-  .mug summary::-webkit-details-marker{display:none;}
-  .mug summary::before{content:'+ ';color:var(--red);}
-  .mug details[open] summary::before{content:'– ';}
-  .mug .niche-item{padding:8px 0;}
-  .mug .niche-title{font-size:13px;}
-  .mug .niche-snippet{font-size:12px;}
-
-  /* final case summary */
-  .summary{padding:34px 36px 30px !important;}
-  .sum-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--rule-strong);}
-  .sum-case{font-family:var(--f-mono);font-size:13px;letter-spacing:0.16em;}
-  .sum-case b{color:var(--red);font-weight:500;}
-  .sum-subject{font-family:var(--f-mono);font-size:13px;letter-spacing:0.16em;}
-  .sum-subject b{font-weight:500;}
-  .sum-foot{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:20px;align-items:end;margin-top:26px;}
-  .verdict-big{
-    display:inline-block;font-family:var(--f-cond);font-weight:600;font-size:clamp(20px,2.4vw,26px);letter-spacing:0.14em;text-transform:uppercase;white-space:nowrap;
-    padding:12px 20px 10px;border:3px solid currentColor;outline:1.5px solid currentColor;outline-offset:4px;transform:rotate(-3deg);opacity:0.9;
-    animation:stamp-land 0.35s ease-out both;animation-delay:0.25s;
-  }
-  @keyframes stamp-land{from{opacity:0;transform:rotate(-3deg) scale(1.08);}to{opacity:0.9;transform:rotate(-3deg) scale(1);}}
-  .verdict-big.good{color:var(--ink);}
-  .verdict-big.bad{color:var(--red);}
-  .verdict-big.mid{color:var(--ink-2);}
-  .case-closed{font-family:var(--f-display);font-size:30px;font-weight:500;letter-spacing:-0.01em;margin-top:22px;}
-  .sum-foot .stamp-sub{margin-top:12px;}
-  .sum-det svg{width:100%;height:auto;display:block;}
-
-  @media (max-width: 980px){
-    .hero{grid-template-columns:minmax(0,1fr);}
-    .hero-scene{grid-column:1;grid-row:auto;margin-top:22px;max-width:340px;}
-    .peek{display:none;}
-  }
-  @media (max-width: 760px){
-    .ev-board{grid-template-columns:1fr 1fr;grid-template-areas:"center center" "e1 e2" "e3 e4" "e5 e6" "det det";gap:22px 16px;}
-    .ev-note{display:none;}
-    .ev-det{width:96px;}
-    .lineup,.mugs{grid-template-columns:1fr;}
-    .clips{grid-template-columns:1fr;}
-    .handles{grid-template-columns:1fr;}
-    .sum-foot{grid-template-columns:1fr;}
-    .sum-det{max-width:180px;}
-    .verdict-big{white-space:normal;}
-    .work{grid-template-columns:76px minmax(0,1fr);gap:14px;}
-    .work svg{width:76px;}
-    .work-msg{font-size:20px;}
-    .vig{width:60px;}
-    .vig.wide{width:80px;}
-    .sheet-head.has-vig,.sheet-head.has-vig.wide-vig{padding-right:0;flex-wrap:wrap;padding-bottom:12px;}
-    .sheet-head.has-vig .status,.sheet-head.has-vig.wide-vig .status{position:static;}
-    .sheet-head.has-vig .vig{position:static;order:3;margin-left:auto;}
-    .drawer{grid-template-columns:52px minmax(0,1fr);}
-    .drawer .dr{grid-column:2;}
-    .drawer.open{transform:translateX(8px);}
+    *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;}
   }
 </style>
 </head>
 <body>
-<!-- Ink illustration library: one detective, drawn once, posed many ways. -->
-<svg class="defs ill" aria-hidden="true" focusable="false">
-  <defs>
-    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
+<div class="page">
 
-    <!-- standing body, facing right, no arms / face -->
-    <g id="det-body">
-      <path class="s ft" d="M47 128 L45 160 L54 160 L56 131 Z"/>
-      <path class="s ft" d="M64 131 L66 160 L75 160 L73 128 Z"/>
-      <path class="s fh" d="M42 161 Q42 156 47 156 L55 157 Q58 160 57 163.5 L42 163.5 Z"/>
-      <path class="s fh" d="M64 161 Q64 156 69 156 L77 157 Q82 159 81 163.5 L64 163.5 Z"/>
-      <path class="s fc" d="M45 58 Q60 52 76 58 Q82 74 84 96 Q88 116 89 134 Q74 139 60 137 Q45 139 31 134 Q33 114 37 96 Q39 74 45 58 Z"/>
-      <path class="s fn" d="M62 70 Q63.5 102 61 137"/>
-      <path class="s fn" d="M36 100 Q60 106 85 100" style="stroke-width:2.4"/>
-      <rect class="s fp" x="57" y="100" width="7" height="6" rx="1"/>
-      <path class="s fn" d="M41 120 Q46 124 44 132" style="stroke-width:1.1"/>
-      <path class="s fc" d="M49 57 L57 73 L61.5 63 L66 73 L73 57 Q61 62 49 57 Z"/>
-      <path class="s fs" d="M57 48 L57 55 Q61 57.5 66 55 L66 48 Z"/>
-      <path class="s fr" d="M52.5 54.5 Q61 60 70.5 54.5 L70.5 59 Q61 64.5 52.5 59 Z" style="stroke-width:1.2"/>
-      <path class="s fr" d="M64 61 L67.5 77 L62.5 75 Z" style="stroke-width:1.1"/>
-      <ellipse class="s fs" cx="62" cy="38" rx="12.5" ry="14"/>
-      <path class="s fh" d="M50 42 Q45.5 24 61 21.5 Q75.5 20.5 76 33 Q70 27 62 29 Q56 30.5 54.5 38 Q53.5 43 50 42 Z"/>
-      <path class="s fs" d="M54 37.5 Q49.5 37.5 50.5 42 Q51.5 45.5 55 44.5" style="stroke-width:1.4"/>
-      <g transform="rotate(-24 53 32)">
-        <rect class="s fm" x="42" y="30.5" width="19" height="3.4" style="stroke-width:1"/>
-        <path class="s fh" d="M61 30.5 L65.5 32.2 L61 33.9 Z" style="stroke-width:0.8"/>
-        <rect class="fr" x="39.5" y="30.5" width="2.8" height="3.4"/>
-      </g>
-    </g>
-
-    <!-- faces -->
-    <g id="f-look"><circle class="fh" cx="68.6" cy="37.4" r="1.4"/><path class="s fn" d="M66 33 L71.2 32.2"/><path class="s fn" d="M74 38 Q77.6 42 73 43.6"/></g>
-    <g id="f-down"><path class="s fn" d="M66.4 39.4 L70.6 40.3"/><path class="s fn" d="M66 34.5 L71 35"/><path class="s fn" d="M74 39 Q77.2 43 72.6 44.2"/></g>
-    <g id="f-up"><circle class="fh" cx="69.2" cy="35.4" r="1.4"/><path class="s fn" d="M66 30.4 L71.6 29.8"/><path class="s fn" d="M74 38 Q77.6 42 73 43.6"/></g>
-    <g id="f-think"><circle class="fh" cx="68.6" cy="37.6" r="1.4"/><path class="s fn" d="M65.4 32 L71.2 34.2"/><path class="s fn" d="M74 38 Q77.6 42 73 43.6"/><path class="s fn" d="M68.2 46.6 L71.6 46"/></g>
-    <g id="f-happy"><path class="s fn" d="M65.8 37.6 Q68.5 34.8 71.2 37.6"/><path class="s fn" d="M74 38 Q77.6 42 73 43.6"/><path class="s fn" d="M68.4 46 Q71 48.4 73.6 46"/></g>
-
-    <!-- poses: arm + prop + face -->
-    <g id="p-folder">
-      <g transform="rotate(-8 100 84)">
-        <path class="s fm" d="M86 74 L89 70 L99 70 L101 74 L114 74 L114 96 L86 96 Z"/>
-        <rect class="s fp" x="89" y="77" width="22" height="16"/>
-        <path class="s fn" d="M92 82 L107 82 M92 86 L104 86 M92 90 L101 90" style="stroke-width:0.9"/>
-      </g>
-      <polyline class="ao" points="75,63 83,82 92,88"/><polyline class="ai" points="75,63 83,82 92,88"/>
-      <circle class="s fs" cx="93" cy="88" r="3.6"/>
-      <use href="#f-down"/>
-    </g>
-    <g id="p-magnify">
-      <polyline class="ao" points="75,63 89,80 93,61"/><polyline class="ai" points="75,63 89,80 93,61"/>
-      <path class="s fn" d="M93.5 58 L97.5 49.5" style="stroke-width:3.4"/>
-      <circle class="s fp" cx="101" cy="41" r="8.6" style="stroke-width:2.2;fill-opacity:0.5"/>
-      <path class="s fn" d="M96 39 Q97 35.4 100.6 35" style="stroke-width:1"/>
-      <circle class="s fs" cx="93" cy="59" r="3.6"/>
-      <use href="#f-look"/>
-    </g>
-    <g id="p-card">
-      <g transform="rotate(-10 107 68)">
-        <rect class="s fp" x="96" y="60" width="23" height="15"/>
-        <text class="tx" x="99" y="70" font-size="6.2">.com</text>
-      </g>
-      <polyline class="ao" points="75,63 87,82 97,75"/><polyline class="ai" points="75,63 87,82 97,75"/>
-      <circle class="s fs" cx="97.5" cy="74.5" r="3.6"/>
-      <use href="#f-look"/>
-    </g>
-    <g id="p-think">
-      <polyline class="ao" points="75,63 87,80 76,53"/><polyline class="ai" points="75,63 87,80 76,53"/>
-      <circle class="s fs" cx="75.5" cy="51.5" r="3.6"/>
-      <text class="hand" x="83" y="22" font-size="24" transform="rotate(10 88 14)">?</text>
-      <use href="#f-think"/>
-    </g>
-    <g id="p-binoc">
-      <polyline class="ao" points="75,63 89,75 80,45"/><polyline class="ai" points="75,63 89,75 80,45"/>
-      <rect class="s fh" x="65" y="31" width="19" height="10.5" rx="3"/>
-      <ellipse class="s fp" cx="85" cy="36.2" rx="2.6" ry="5"/>
-      <circle class="s fs" cx="79" cy="44" r="3.6"/>
-      <path class="s fn" d="M74 42 Q76 44.5 72.8 45.2"/>
-    </g>
-    <g id="p-notebook">
-      <g transform="rotate(12 96 84)">
-        <rect class="s fp" x="84" y="74" width="23" height="18"/>
-        <path class="fn" d="M88 74 L88 92" style="stroke:var(--red);stroke-width:0.8"/>
-        <path class="s fn" d="M90 79 L104 79 M90 83 L103 83 M90 87 L99 87" style="stroke-width:0.8"/>
-      </g>
-      <polyline class="ao" points="75,63 85,84 95,81"/><polyline class="ai" points="75,63 85,84 95,81"/>
-      <path class="fn" d="M96 78 L101.5 88" style="stroke:#C9A962;stroke-width:2.6;stroke-linecap:round"/>
-      <path class="s fn" d="M101.2 87.4 L102.6 90" style="stroke-width:1.2"/>
-      <circle class="s fs" cx="95.5" cy="80.5" r="3.6"/>
-      <use href="#f-down"/>
-    </g>
-    <g id="p-pin">
-      <g transform="rotate(6 106 16)">
-        <rect class="s fp" x="94" y="5" width="25" height="21"/>
-        <path class="s fn" d="M98 12 L114 12 M98 16 L112 16 M98 20 L108 20" style="stroke-width:0.8"/>
-      </g>
-      <polyline class="ao" points="75,63 86,44 93,23"/><polyline class="ai" points="75,63 86,44 93,23"/>
-      <circle class="s fs" cx="93" cy="21.5" r="3.6"/>
-      <circle class="s fr" cx="107" cy="8.5" r="2.6" style="stroke-width:1"/>
-      <use href="#f-up"/>
-    </g>
-    <g id="p-coffee">
-      <polyline class="ao" points="75,63 85,84 88,72"/><polyline class="ai" points="75,63 85,84 88,72"/>
-      <path class="s fp" d="M83.5 61 L94.5 61 L93.3 74 L84.7 74 Z"/>
-      <rect class="fr" x="84.2" y="65.5" width="9.6" height="3"/>
-      <path class="s fn" d="M94.3 64 Q99 65.5 93.8 70" style="stroke-width:1.3"/>
-      <path class="s fn faint" d="M87 57 Q85 53.5 88 50.5 Q90.5 47.5 88 44.5 M91.5 57 Q89.5 53.5 92.5 50.5" style="stroke-width:1"/>
-      <circle class="s fs" cx="88.5" cy="71" r="3.6"/>
-      <use href="#f-happy"/>
-    </g>
-
-    <!-- small ink icons for the plan -->
-    <g id="i-mag"><circle class="s fn" cx="10" cy="10" r="6"/><path class="s fn" d="M14.6 14.6 L20.5 20.5" style="stroke-width:2"/></g>
-    <g id="i-globe"><circle class="s fn" cx="12" cy="12" r="8.4"/><ellipse class="s fn" cx="12" cy="12" rx="3.6" ry="8.4"/><path class="s fn" d="M3.8 12 H20.2 M5.4 7.6 H18.6 M5.4 16.4 H18.6"/></g>
-    <g id="i-pin"><path class="s fr" d="M8.6 3 H15.4 L14.2 9 L17.4 12.2 H6.6 L9.8 9 Z"/><path class="s fn" d="M12 12.2 L12 21"/></g>
-    <g id="i-note"><rect class="s fp" x="5" y="4.5" width="14" height="16.5"/><path class="s fn" d="M8 2.6 V6 M12 2.6 V6 M16 2.6 V6 M8 10 H16 M8 13.5 H16 M8 17 H13"/></g>
-    <g id="i-tree"><circle class="s fp" cx="12" cy="5" r="2.6"/><circle class="s fp" cx="5.5" cy="18.5" r="2.6"/><circle class="s fp" cx="18.5" cy="18.5" r="2.6"/><path class="s fn" d="M12 7.6 V12 M5.5 15.9 V12 H18.5 V15.9"/></g>
-  </defs>
-</svg>
-
-<div class="desk">
-
-  <header class="masthead">
-    <div>
-      <div class="mh-path">CASE FILES<span>/</span>OPEN</div>
-      <span class="mh-name">NAME WORTH IT?</span>
-      <span class="mh-tag">Background checks for product names</span>
-    </div>
-    <div class="mh-case">
-      <span class="label">CASE NO.</span>
-      <b class="case-stamp" id="caseNo">0001</b>
-      <span class="mh-status">INVESTIGATION OPEN</span>
-    </div>
-  </header>
-
-  <div class="layout">
-
-    <div class="rail" aria-hidden="true">
-      <div class="rail-text">
-        <span>FILE: <b data-case-no>0001</b></span>
-        <span id="railStatusWrap">STATUS: <b id="railStatus">OPEN</b></span>
-        <span>TYPE: <b>PRODUCT NAME</b></span>
-        <span>LEADS: <b>05</b></span>
-      </div>
-    </div>
-
-    <section class="hero">
-      <h1>Open a file on the name<br class="br-wide"> <span class="mark">before<svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M1 7 C 22 3, 48 9, 70 5 S 94 4, 99 6"/></svg></span> you commit to it.</h1>
-      <p class="lede">Give us the name and what it's for. We'll run it: who else is using it nearby, whether the domains are clear, and if it'll actually stick in someone's head.</p>
-
-      <div class="hero-scene" aria-hidden="true">
-        <span class="annot-note">let's see what we're dealing with...</span>
-        <svg class="note-arrow" viewBox="0 0 60 50" aria-hidden="true"><path d="M52 4 C 50 24, 34 38, 10 42"/><path d="M17 35 L9 42 L18 47"/></svg>
-        <svg class="ill" viewBox="0 0 360 250">
-          <g filter="url(#rough)">
-            <path class="s fn" d="M6 224 Q90 220 180 223 T354 222" style="stroke-width:1.3"/>
-            <!-- loose paper under the folder -->
-            <g transform="rotate(-14 172 190)"><rect class="s fp" x="148" y="176" width="44" height="30"/></g>
-            <!-- open folder on the floor -->
-            <path class="s fm" d="M126 206 L208 198 L214 223 L120 227 Z"/>
-            <path class="s fm" d="M208 198 L300 203 L308 223 L214 223 Z" style="fill:#EADCB6"/>
-            <path class="s fn" d="M208 198 L214 223"/>
-            <g transform="rotate(-5 168 212)">
-              <rect class="s fp" x="140" y="205" width="56" height="13"/>
-              <text class="tx" id="heroFolderName" x="168" y="214.6" font-size="8.4" text-anchor="middle">NIMBUS</text>
-            </g>
-            <!-- evidence papers -->
-            <g transform="rotate(-8 252 190)">
-              <rect class="s fp" x="226" y="173" width="52" height="34"/>
-              <text class="tx" x="231" y="183" font-size="7">DOMAIN</text>
-              <path class="s fn" d="M231 190 L270 190 M231 195 L262 195 M231 200 L266 200" style="stroke-width:0.8"/>
-              <path class="fn" d="M262 182 L265 185 L271 177" style="stroke:var(--red);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round"/>
-            </g>
-            <g transform="rotate(7 312 210)">
-              <rect class="s fp" x="282" y="195" width="62" height="30"/>
-              <text class="tx" x="287" y="205" font-size="6.6">COMPETITORS</text>
-              <path class="s fn" d="M287 211 L334 211 M287 216 L326 216" style="stroke-width:0.8"/>
-            </g>
-            <text class="hand" x="318" y="176" font-size="30" transform="rotate(12 324 166)">?</text>
-
-            <!-- the detective, crouched over the file -->
-            <path class="s ft" d="M72 198 L40 212 L43 221 L78 211 Z"/>
-            <path class="s fh" d="M30 213 Q27 222 33 223.5 L47 223.5 L44.5 212 Z"/>
-            <path class="s fc" d="M64 130 Q84 111 108 121 Q121 131 117 150 L107 196 Q84 207 57 204 Q49 180 51 160 Q53 141 64 130 Z"/>
-            <path class="s fn" d="M53 171 Q80 177 111 170" style="stroke-width:2.4"/>
-            <path class="s ft" d="M90 192 L122 183 L127 194 L97 205 Z"/>
-            <path class="s ft" d="M118 186 L129 219 L119 220 L112 191 Z"/>
-            <path class="s fh" d="M116 218 L135 218 Q140 222 135 224 L116 224 Z"/>
-            <path class="s fr" d="M98 118 Q106 121 113 116 L114 120 Q106 125 98 122 Z" style="stroke-width:1.2"/>
-            <polyline class="ao" points="97,128 110,160 120,180" style="stroke-width:12"/><polyline class="ai" points="97,128 110,160 120,180" style="stroke-width:8.6"/>
-            <circle class="s fs" cx="121" cy="181" r="3.8"/>
-            <g transform="rotate(16 121 102)">
-              <path class="s fs" d="M114 112 L114 118 Q118 120 123 118 L123 112 Z"/>
-              <ellipse class="s fs" cx="120" cy="101" rx="12.5" ry="14"/>
-              <path class="s fh" d="M108 105 Q103.5 87 119 84.5 Q133.5 83.5 134 96 Q128 90 120 92 Q114 93.5 112.5 101 Q111.5 106 108 105 Z"/>
-              <path class="s fs" d="M112 100.5 Q107.5 100.5 108.5 105 Q109.5 108.5 113 107.5" style="stroke-width:1.4"/>
-              <g transform="rotate(-24 111 95)">
-                <rect class="s fm" x="100" y="93.5" width="19" height="3.4" style="stroke-width:1"/>
-                <path class="s fh" d="M119 93.5 L123.5 95.2 L119 96.9 Z" style="stroke-width:0.8"/>
-                <rect class="fr" x="97.5" y="93.5" width="2.8" height="3.4"/>
-              </g>
-              <path class="s fn" d="M124.5 102.8 L128.6 103.8"/>
-              <path class="s fn" d="M124 97.6 L129 98.4"/>
-              <path class="s fn" d="M132 102 Q135.2 106 130.6 107.2"/>
-            </g>
-            <polyline class="ao" points="108,128 132,152 149,174" style="stroke-width:12"/><polyline class="ai" points="108,128 132,152 149,174" style="stroke-width:8.6"/>
-            <path class="s fn" d="M151.5 177 L160 185.5" style="stroke-width:3.4"/>
-            <circle class="s fp" cx="170" cy="192" r="11.5" style="stroke-width:2.3;fill-opacity:0.06"/>
-            <path class="s fn" d="M163 189 Q164.5 184 169.5 183.4" style="stroke-width:1"/>
-            <circle class="s fs" cx="149.5" cy="175" r="3.8"/>
-          </g>
-        </svg>
-      </div>
-    </section>
-
-    <aside class="aside">
-      <div class="index-card">
-        <h2>INVESTIGATION PLAN</h2>
-        <ol>
-          <li><span class="n">01</span><span><b>NAME COLLISIONS</b><span class="d">Who's already using it in your niche, and on X / Instagram.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mag"/></svg></li>
-          <li><span class="n">02</span><span><b>DOMAIN TRAIL</b><span class="d">.com .io .net .ai .app .co, checked live.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg></li>
-          <li><span class="n">03</span><span><b>MARKET EVIDENCE</b><span class="d">Trademark chatter on the open web.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pin"/></svg></li>
-          <li><span class="n">04</span><span><b>MEMORABILITY</b><span class="d">Would it stick, and can people spell it.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-note"/></svg></li>
-          <li><span class="n">05</span><span><b>CLOSE RELATIVES</b><span class="d">Near-variants, in case the original is crowded.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tree"/></svg></li>
-        </ol>
-        <span class="plan-stamp">5 LEADS TO FOLLOW</span>
-      </div>
-    </aside>
-
-    <section class="folder" aria-label="Subject intake">
-      <div class="folder-tab">SUBJECT INTAKE</div>
-      <div class="peek" aria-hidden="true">
-        <svg class="ill" viewBox="0 0 170 80">
-          <g filter="url(#rough)">
-            <polyline class="ao" points="176,54 134,47 110,40" style="stroke-width:14"/><polyline class="ai" points="176,54 134,47 110,40" style="stroke-width:10.5"/>
-            <path class="s fn" d="M131 39.5 L128.5 54.5"/>
-            <path class="s fn" d="M103 38 L82 30.5" style="stroke-width:4.6"/>
-            <circle class="s fp" cx="64" cy="24.5" r="18" style="stroke-width:2.6;fill-opacity:0.28"/>
-            <path class="s fn" d="M53.5 18 Q57 11.5 64.5 10.8" style="stroke-width:1.2"/>
-            <circle class="s fs" cx="106" cy="39" r="5.4"/>
-          </g>
-        </svg>
-      </div>
-      <div class="folder-shell">
-        <div class="sheet intake">
-          <span class="reg tr" aria-hidden="true"></span>
-          <div class="intake-meta"><span>FILE <b data-case-no>0001</b></span><span>RECEIVED <b id="receivedDate">—</b></span></div>
-
-          <div class="field">
-            <div class="field-head">
-              <label class="field-label" for="nameInput"><span class="num">01</span> / Subject name</label>
-              <span class="annot" aria-hidden="true">start here →</span>
-            </div>
-            <input type="text" id="nameInput" placeholder="e.g. Nimbus" autocomplete="off" value="Nimbus">
-          </div>
-
-          <div class="field">
-            <div class="field-head">
-              <label class="field-label" for="context"><span class="num">02</span> / What it does</label>
-              <span class="field-hint">(one line — also what we search against)</span>
-            </div>
-            <textarea id="context" rows="2" placeholder="e.g. A tool for freelance designers to send client invoices and get paid faster">A browser extension that automates LinkedIn outreach for sales teams</textarea>
-          </div>
-
-          <div class="intake-foot">
-            <button class="run-btn" id="runBtn" type="button">
-              <span class="spinner"></span>
-              <span id="runBtnLabel">Open the case</span>
-              <span class="arrow" aria-hidden="true">→</span>
-            </button>
-            <span class="intake-note">5 LEADS · LIVE LOOKUPS</span>
-          </div>
-          <div class="error-box" id="errorBox"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="board" aria-live="polite">
-      <div class="sheet log">
-        <div class="log-head">
-          <span class="who">Case log — <span id="sceneName">—</span></span>
-          <span class="right"><span id="boardStatus">investigation in progress</span><span class="clock" id="boardClock">00:00.0</span><span class="scene-stamp" id="sceneStamp">case closed</span></span>
-        </div>
-        <div class="work">
-          <svg id="detLoader" class="ill" viewBox="0 0 130 170" aria-hidden="true">
-            <g filter="url(#rough)">
-              <use href="#det-body"/>
-              <g class="pose" data-p="folder"><use href="#p-folder"/></g>
-              <g class="pose" data-p="magnify"><use href="#p-magnify"/></g>
-              <g class="pose" data-p="card"><use href="#p-card"/></g>
-              <g class="pose" data-p="think"><use href="#p-think"/></g>
-              <g class="pose" data-p="binoc"><use href="#p-binoc"/></g>
-              <g class="pose" data-p="notebook"><use href="#p-notebook"/></g>
-              <g class="pose" data-p="pin"><use href="#p-pin"/></g>
-            </g>
-          </svg>
-          <div>
-            <div class="work-step" id="workStep">Step 1 / 7</div>
-            <div class="work-msg" id="workMsg">Opening the file...</div>
-            <div class="work-dots" id="workDots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          </div>
-        </div>
-        <ul class="leads" id="leadsEl"></ul>
-      </div>
-    </section>
-
-    <section id="result">
-      <!-- evidence board -->
-      <div class="sheet board-wrap" style="--i:0">
-        <div class="cover-top"><span>EVIDENCE BOARD</span><span>FILE <b data-case-no>0001</b></span></div>
-        <div class="ev-board" id="evBoard">
-          <svg class="ev-strings" id="evStrings" aria-hidden="true"></svg>
-          <div class="ev-center"><div class="ev-k">CASE</div><div class="ev-name" id="evName">—</div></div>
-          <div class="ev-note annot-note" aria-hidden="true">follow the red string</div>
-          <a class="ev-card" id="ev1" href="#sec-domains" style="--r:-1.6deg"><div class="ev-k">EVIDENCE 01</div><div class="ev-t">DOMAIN RECORDS</div><div class="ev-s" data-ev="domains-s"></div><span class="stamp-mini" data-ev="domains"></span></a>
-          <a class="ev-card" id="ev2" href="#sec-collisions" style="--r:1.2deg"><div class="ev-k">EVIDENCE 02</div><div class="ev-t">COMPETITORS</div><div class="ev-s" data-ev="competitors-s"></div><span class="stamp-mini" data-ev="competitors"></span></a>
-          <a class="ev-card" id="ev3" href="#sec-collisions" style="--r:0.8deg"><div class="ev-k">EVIDENCE 03</div><div class="ev-t">SOCIAL HANDLES</div><div class="ev-s" data-ev="handles-s"></div><span class="stamp-mini" data-ev="handles"></span></a>
-          <a class="ev-card" id="ev4" href="#sec-market" style="--r:-1deg"><div class="ev-k">EVIDENCE 04</div><div class="ev-t">SEARCH RESULTS</div><div class="ev-s" data-ev="search-s"></div><span class="stamp-mini" data-ev="search"></span></a>
-          <a class="ev-card" id="ev5" href="#variantsCard" style="--r:-0.7deg"><div class="ev-k">EVIDENCE 05</div><div class="ev-t">SIMILAR NAMES</div><div class="ev-s" data-ev="similar-s"></div><span class="stamp-mini" data-ev="similar"></span></a>
-          <a class="ev-card" id="ev6" href="#sec-memory" style="--r:1.5deg"><div class="ev-k">EVIDENCE 06</div><div class="ev-t">MEMORABILITY</div><div class="ev-s" data-ev="memory-s"></div><span class="stamp-mini" data-ev="memory"></span></a>
-          <div class="ev-det" aria-hidden="true">
-            <svg class="ill" viewBox="0 0 130 170"><g filter="url(#rough)"><use href="#det-body"/><use href="#p-pin"/></g></svg>
-          </div>
-        </div>
-      </div>
-
-      <div class="sheet" id="sec-collisions" style="--i:1">
-        <div class="sheet-head has-vig"><h2 class="sheet-title"><span class="n">01</span>Name collisions</h2><span class="status pending" data-status="collisions">—</span>
-          <svg class="vig ill" viewBox="0 0 130 170" aria-hidden="true"><g filter="url(#rough)"><use href="#det-body"/><use href="#p-magnify"/></g></svg>
-        </div>
-        <div class="sub-head">The lineup — spotted in your niche</div>
-        <div id="nicheEl"></div>
-        <div class="sub-head">Social handles — live lookup</div>
-        <div id="socialsEl"></div>
-      </div>
-
-      <div class="sheet" id="sec-domains" style="--i:2">
-        <div class="sheet-head has-vig wide-vig"><h2 class="sheet-title"><span class="n">02</span>Domain trail</h2><span class="status pending" data-status="domains">—</span>
-          <svg class="vig wide ill" viewBox="0 0 175 170" aria-hidden="true"><g filter="url(#rough)">
-            <rect class="s fm" x="4" y="72" width="50" height="92"/>
-            <path class="s fn" d="M4 102 H54 M4 132 H54"/>
-            <path class="s fn" d="M22 86 H36 M22 116 H36 M22 146 H36" style="stroke-width:2.2"/>
-            <g transform="translate(-6 0)"><rect class="s fp" x="52" y="78" width="16" height="22" transform="rotate(-12 60 89)"/></g>
-            <g transform="translate(178 0) scale(-1 1)"><use href="#det-body"/><use href="#p-card"/></g>
-          </g></svg>
-        </div>
-        <div id="domainsEl"></div>
-      </div>
-
-      <div class="sheet" id="sec-market" style="--i:3">
-        <div class="sheet-head has-vig wide-vig"><h2 class="sheet-title"><span class="n">03</span>Market evidence</h2><span class="status pending" data-status="market">—</span>
-          <svg class="vig wide ill" viewBox="0 0 170 170" aria-hidden="true"><g filter="url(#rough)">
-            <rect class="s fm" x="88" y="0" width="78" height="66" style="fill:#D9C59A"/>
-            <g transform="rotate(-4 146 38)"><rect class="s fp" x="132" y="26" width="26" height="30"/><path class="s fn" d="M136 34 H154 M136 39 H152 M136 44 H150" style="stroke-width:0.8"/></g>
-            <circle class="s fr" cx="145" cy="28" r="2.4" style="stroke-width:1"/>
-            <use href="#det-body"/><use href="#p-pin"/>
-          </g></svg>
-        </div>
-        <div class="sub-head">Trademark signal — live search <span class="note-annot" aria-hidden="true">signal only</span></div>
-        <p class="section-note"><strong>A signal, not a legal clearance.</strong> These are web results for "<span id="tmName"></span>" trademark — not a search of any trademark register. Nothing here means it's safe to file, and a hit doesn't mean it's blocked.</p>
-        <div id="trademarkEl"></div>
-      </div>
-
-      <div class="sheet" id="sec-memory" style="--i:4">
-        <div class="sheet-head has-vig"><h2 class="sheet-title"><span class="n">04</span>Memorability</h2><span class="status pending" data-status="memory">—</span>
-          <svg class="vig ill" viewBox="0 0 130 170" aria-hidden="true"><g filter="url(#rough)"><use href="#det-body"/><use href="#p-notebook"/></g></svg>
-        </div>
-        <div class="notebook"><div class="checks" id="checksEl"></div></div>
-      </div>
-
-      <div class="sheet" id="variantsCard" style="--i:5">
-        <div class="sheet-head has-vig"><h2 class="sheet-title"><span class="n">05</span>Close relatives</h2><span class="status pending" data-status="relatives">—</span>
-          <svg class="vig ill" viewBox="0 0 130 170" aria-hidden="true"><g filter="url(#rough)"><use href="#det-body"/><use href="#p-binoc"/></g></svg>
-        </div>
-        <p class="section-note">Same domain and niche checks, run on a few near-variants of the name in case the original is crowded. Line them up.</p>
-        <div id="variantsEl"></div>
-      </div>
-
-      <!-- final case summary -->
-      <div class="sheet summary" style="--i:6">
-        <span class="reg bl" aria-hidden="true"></span>
-        <div class="sum-head">
-          <span class="sum-case">CASE <b data-case-no>0001</b></span>
-          <span class="sum-subject">SUBJECT: <b id="stampName">—</b></span>
-        </div>
-        <nav class="contents" aria-label="Findings">
-          <a href="#sec-collisions"><span class="c-n">01</span><span class="c-name">Name collisions</span><span class="c-lead"></span><span class="status pending" data-status="collisions">—</span></a>
-          <a href="#sec-domains"><span class="c-n">02</span><span class="c-name">Domain trail</span><span class="c-lead"></span><span class="status pending" data-status="domains">—</span></a>
-          <a href="#sec-market"><span class="c-n">03</span><span class="c-name">Market evidence</span><span class="c-lead"></span><span class="status pending" data-status="market">—</span></a>
-          <a href="#sec-memory"><span class="c-n">04</span><span class="c-name">Memorability</span><span class="c-lead"></span><span class="status pending" data-status="memory">—</span></a>
-          <a href="#variantsCard"><span class="c-n">05</span><span class="c-name">Close relatives</span><span class="c-lead"></span><span class="status pending" data-status="relatives">—</span></a>
-        </nav>
-        <div class="sum-foot">
-          <div>
-            <div class="case-label">Verdict</div>
-            <div class="verdict-big" id="stampEl">—</div>
-            <div class="stamp-sub" id="stampSub"></div>
-            <div class="case-closed">Case closed.</div>
-          </div>
-          <div class="sum-det" aria-hidden="true">
-            <svg class="ill" viewBox="0 0 210 200"><g filter="url(#rough)">
-              <path class="s fn" d="M4 193 Q100 190 206 192" style="stroke-width:1.3"/>
-              <path class="s fm" d="M112 192 V37 Q112 32 116 32 H140 L145 38 H186 Q190 38 190 42 V192 Z"/>
-              <rect class="s fp" x="126" y="64" width="50" height="18"/>
-              <text class="tx" x="151" y="76" font-size="7.4" text-anchor="middle">CLOSED</text>
-              <path class="fn" d="M128 96 L176 96 M128 102 L170 102" style="stroke:var(--ink);stroke-width:0.8;opacity:0.5"/>
-              <g transform="translate(46 28) rotate(9 60 163)"><use href="#det-body"/><use href="#p-coffee"/></g>
-            </g></svg>
-          </div>
-        </div>
-      </div>
-
-      <div class="report-foot" style="--i:7">
-        <button class="ghost-btn" id="copyBtn" type="button">copy report</button>
-        <button class="ghost-btn" id="runAgainBtn" type="button">new case</button>
-        <button class="raw-toggle" id="rawToggle" type="button">show raw response</button>
-        <div id="rawOutput"><pre id="rawPre"></pre></div>
-      </div>
-    </section>
-
-    <footer class="foot">
-      Every line in the case log is a real lookup. Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The trademark section is a web-search signal, not a trademark search — still run a proper one before you file anything.
-    </footer>
-
+  <div class="topline">
+    <span><b>NAME WORTH IT?</b> <span class="hide-s">&nbsp;·&nbsp; background checks for product names</span></span>
+    <span>DESK 01 &nbsp;·&nbsp; <span id="deskDate">—</span></span>
   </div>
+
+  <main class="desk" id="desk">
+
+    <!-- small stack of evidence papers -->
+    <div class="obj obj-stack" aria-hidden="true">
+      <div class="sh paper shadow-1"></div>
+      <div class="sh paper shadow-1"></div>
+      <div class="sh paper shadow-1">
+        <div class="sh-k">EXHIBIT C — PRIOR CASES</div>
+        <div class="sh-t">Unresolved names</div>
+        <div class="sh-l"></div><div class="sh-l"></div><div class="sh-l s"></div>
+        <div class="sh-l"></div><div class="sh-l s"></div>
+        <div class="scrawl" style="margin-top:14px">"Zoomly" — taken.<br>"Taskr" — taken.</div>
+      </div>
+    </div>
+
+    <!-- index cards -->
+    <div class="obj obj-cards" aria-hidden="true">
+      <div class="icard shadow-1"><div class="icard-k">&nbsp;</div><div class="scrawl" style="margin-top:14px">who got there<br>first?</div></div>
+      <div class="icard shadow-1">
+        <div class="icard-k">CHECK</div>
+        <ul><li>names</li><li>domains</li><li>socials</li><li>market</li><li>memory</li></ul>
+      </div>
+    </div>
+
+    <!-- the manila folder — its cover carries the headline -->
+    <section class="folder" aria-label="Case folder">
+      <div class="folder-tab"><b id="caseNo">CASE 0001</b><span class="sep"></span><span>NAME WORTH IT?</span></div>
+      <div class="folder-back"></div>
+      <div class="folder-cover">
+        <div class="cover-k">CONFIDENTIAL · PRODUCT NAME INQUIRY</div>
+        <h1 class="cover-h">Open a file<br><em>on your name.</em></h1>
+        <p class="cover-p">Before you build a brand around it, find out who got there first.</p>
+        <div class="cover-note" aria-hidden="true">fill in the sheet →</div>
+      </div>
+    </section>
+
+    <!-- magnifying glass, flat & top-down -->
+    <div class="obj obj-lens" aria-hidden="true">
+      <svg viewBox="0 0 300 130">
+        <rect x="128" y="57" width="26" height="16" rx="2" fill="#9C978D"/>
+        <rect x="132" y="57" width="2" height="16" fill="#B9B4AA"/>
+        <rect x="150" y="51" width="146" height="28" rx="12" fill="#211D19"/>
+        <rect x="160" y="57" width="124" height="4" rx="2" fill="#3A342D"/>
+        <circle cx="66" cy="65" r="60" fill="rgba(235,242,240,0.28)" stroke="#211D19" stroke-width="11"/>
+        <circle cx="66" cy="65" r="53" fill="none" stroke="#5A544B" stroke-width="1.5"/>
+        <path d="M30 40 A46 46 0 0 1 64 20" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+    </div>
+
+    <!-- red pencil -->
+    <div class="obj obj-pencil" aria-hidden="true">
+      <svg viewBox="0 0 320 26">
+        <polygon points="46,2 8,13 46,24" fill="#E6C796"/>
+        <path d="M46 2 Q42 6 46 9 Q42 13 46 16 Q42 20 46 24" fill="#E6C796" stroke="#C9A472" stroke-width="1"/>
+        <polygon points="19,9.8 6,13 19,16.2" fill="#2B2722"/>
+        <rect x="46" y="2" width="244" height="22" fill="#A2261B"/>
+        <rect x="46" y="8.6" width="244" height="1.6" fill="#BD3A2D"/>
+        <rect x="46" y="16" width="244" height="1.6" fill="#86190F"/>
+        <rect x="290" y="2" width="15" height="22" fill="#B5AFA3"/>
+        <rect x="293" y="2" width="1.6" height="22" fill="#8E887D"/><rect x="298" y="2" width="1.6" height="22" fill="#8E887D"/>
+        <rect x="305" y="3" width="13" height="20" rx="3" fill="#D48C82"/>
+      </svg>
+    </div>
+
+    <!-- black pen -->
+    <div class="obj obj-pen" aria-hidden="true">
+      <svg viewBox="0 0 280 24">
+        <polygon points="34,4 9,12 34,20" fill="#1E1B18"/>
+        <polygon points="13,10.6 4,12 13,13.4" fill="#A7A196"/>
+        <rect x="34" y="3" width="150" height="18" rx="3" fill="#24201C"/>
+        <rect x="180" y="3" width="5" height="18" fill="#6E685F"/>
+        <rect x="185" y="2" width="88" height="20" rx="6" fill="#1A1714"/>
+        <rect x="196" y="0" width="64" height="5" rx="2.5" fill="#8B857B"/>
+        <rect x="40" y="7" width="140" height="2" rx="1" fill="#3A352F"/>
+      </svg>
+    </div>
+
+    <!-- the intake sheet IS the form -->
+    <section class="intake paper shadow-2" id="intake" aria-label="Case intake form">
+      <svg class="clip" viewBox="0 0 26 70" aria-hidden="true"><path d="M8 44 V14 a5 5 0 0 1 10 0 V52 a8 8 0 0 1 -16 0 V10 a11 11 0 0 1 22 0 V46" fill="none" stroke="#8D8981" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <div class="intake-head"><span>INTAKE<span class="form-id"> · FORM NWI-01</span></span><span>RECEIVED <b id="receivedDate">—</b></span></div>
+
+      <div class="fld">
+        <label for="nameInput">SUBJECT NAME</label>
+        <input type="text" id="nameInput" placeholder="e.g. Nimbus" autocomplete="off" spellcheck="false" value="Nimbus">
+      </div>
+
+      <div class="fld">
+        <label for="context">WHAT DOES IT DO? <span class="hint">one line — also what we search against</span></label>
+        <textarea id="context" rows="3" placeholder="e.g. A tool for freelance designers to send client invoices and get paid faster">A browser extension that automates LinkedIn outreach for sales teams</textarea>
+      </div>
+
+      <div class="intake-foot">
+        <button class="stamp-btn" id="runBtn" type="button">
+          <span id="runBtnLabel">Open the case</span>
+          <span class="arr" aria-hidden="true">→</span>
+        </button>
+        <span class="tiny">6 LEADS · LIVE</span>
+      </div>
+      <div class="error-box" id="errorBox" role="alert"></div>
+    </section>
+
+    <!-- the evidence board, revealed when the folder opens -->
+    <section class="board-shell" id="result" aria-live="polite">
+      <div class="board">
+        <div class="tape"><span class="cur" id="tapeMsg">OPENING FILE...</span><span class="clock" id="tapeClock">00:00.0</span></div>
+        <div class="grid" id="grid">
+          <svg class="strings" id="strings" aria-hidden="true"></svg>
+          <div class="subject paper shadow-2" id="subject">
+            <span class="pin" style="left:50%;top:10px"></span>
+            <div class="k">CASE <b data-case-no>0001</b> · SUBJECT</div>
+            <div class="name" id="subjectName">—</div>
+            <div class="ctx" id="subjectCtx"></div>
+          </div>
+          <div class="slot" data-k="domains"></div>
+          <div class="slot" data-k="collisions"></div>
+          <div class="slot" data-k="handles"></div>
+          <div class="slot" data-k="market"></div>
+          <div class="slot" data-k="memory"></div>
+          <div class="slot" data-k="relatives"></div>
+        </div>
+
+        <!-- the final report lands over the corner of the board -->
+        <article class="report paper shadow-2" id="report" aria-label="Case report">
+          <svg class="clip" viewBox="0 0 26 70" aria-hidden="true"><path d="M8 44 V14 a5 5 0 0 1 10 0 V52 a8 8 0 0 1 -16 0 V10 a11 11 0 0 1 22 0 V46" fill="none" stroke="#8D8981" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <div class="rp-head">
+            <div class="rp-case">CASE <b data-case-no>0001</b></div>
+            <div class="rp-sub">SUBJECT: <b id="stampName">—</b></div>
+          </div>
+          <div id="reportRows"></div>
+          <div class="verdict-zone"><div class="verdict" id="stampEl">—</div></div>
+          <p class="rp-why" id="stampSub"></p>
+          <div class="rp-foot"><b>CASE CLOSED</b><span id="closedDate">—</span></div>
+          <div class="rp-actions">
+            <button class="txt-btn" id="runAgainBtn" type="button">new case</button>
+            <button class="txt-btn" id="copyBtn" type="button">copy report</button>
+            <button class="txt-btn quiet" id="rawToggle" type="button">show raw response</button>
+          </div>
+          <div id="rawOutput"><pre id="rawPre"></pre></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Every piece of evidence is a real lookup. Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The market evidence is a web-search signal, not a trademark search — still run a proper one before you file anything.
+  </footer>
 </div>
 
 <script>
@@ -1107,75 +639,44 @@
   const RELAY_URL = '/api/name-check';
 
   const $ = (id) => document.getElementById(id);
+  const desk = $('desk');
+  const intake = $('intake');
   const nameEl = $('nameInput');
   const contextEl = $('context');
   const runBtn = $('runBtn');
   const runBtnLabel = $('runBtnLabel');
   const errorBox = $('errorBox');
   const resultEl = $('result');
-  const caseNo = $('caseNo');
+  const grid = $('grid');
+  const stringsEl = $('strings');
+  const subjectEl = $('subject');
+  const tapeMsg = $('tapeMsg');
+  const tapeClock = $('tapeClock');
+  const report = $('report');
+  const reportRows = $('reportRows');
   const stampName = $('stampName');
   const stampEl = $('stampEl');
   const stampSub = $('stampSub');
-  const domainsEl = $('domainsEl');
-  const nicheEl = $('nicheEl');
-  const checksEl = $('checksEl');
-  const socialsEl = $('socialsEl');
-  const trademarkEl = $('trademarkEl');
-  const tmName = $('tmName');
-  const variantsCard = $('variantsCard');
-  const variantsEl = $('variantsEl');
   const copyBtn = $('copyBtn');
   const runAgainBtn = $('runAgainBtn');
   const rawToggle = $('rawToggle');
   const rawOutput = $('rawOutput');
   const rawPre = $('rawPre');
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sleep = (ms) => new Promise(r => setTimeout(r, reduceMotion ? 0 : ms));
 
   // purely cosmetic case counter, local to this browser
+  let caseNum = '0001';
   try{
     let n = parseInt(localStorage.getItem('nwi_case_no') || '0', 10) + 1;
     localStorage.setItem('nwi_case_no', String(n));
-    caseNo.textContent = String(n).padStart(4, '0');
+    caseNum = String(n).padStart(4, '0');
   }catch(e){}
-  document.querySelectorAll('[data-case-no]').forEach(function(el){ el.textContent = caseNo.textContent; });
-  try{
-    $('receivedDate').textContent = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
-  }catch(e){}
-
-  // the folder in the hero illustration is labelled with whatever you type
-  const heroFolderName = $('heroFolderName');
-  function syncHeroFolder(){
-    const v = nameEl.value.trim().toUpperCase() || 'NIMBUS';
-    heroFolderName.textContent = v.length > 12 ? v.slice(0, 11) + '…' : v;
-  }
-  nameEl.addEventListener('input', syncHeroFolder);
-  syncHeroFolder();
-
-  // file status printed in the left margin
-  const railStatus = $('railStatus');
-  const railStatusWrap = $('railStatusWrap');
-  function setFileStatus(text, important){
-    railStatus.textContent = text;
-    railStatusWrap.classList.toggle('st-red', !!important);
-  }
-
-  // section verdicts: CLEAR / FLAGGED / WORTH A LOOK / FOUND / TAKEN
-  const STATUS_CLASS = { 'CLEAR': 'clear', 'FLAGGED': 'flag', 'WORTH A LOOK': 'review', 'FOUND': 'evidence', 'TAKEN': 'review' };
-  function setSectionStatus(key, label){
-    document.querySelectorAll('[data-status="' + key + '"]').forEach(function(el){
-      el.textContent = label;
-      el.className = 'status ' + (STATUS_CLASS[label] || 'pending');
-    });
-  }
-  const STAMP_CLASS = { 'CLEAR': 'clear', 'FLAGGED': 'flag', 'FOUND': 'found', 'TAKEN': 'taken', 'WORTH A LOOK': 'look' };
-  function stampMini(label){ return '<span class="stamp-mini ' + (STAMP_CLASS[label] || 'look') + '">' + label + '</span>'; }
-  function setEvidence(key, summary, label){
-    document.querySelectorAll('[data-ev="' + key + '-s"]').forEach(function(el){ el.textContent = summary; });
-    document.querySelectorAll('[data-ev="' + key + '"]').forEach(function(el){
-      el.textContent = label;
-      el.className = 'stamp-mini ' + (STAMP_CLASS[label] || 'look');
-    });
-  }
+  $('caseNo').textContent = 'CASE ' + caseNum;
+  document.querySelectorAll('[data-case-no]').forEach(function(el){ el.textContent = caseNum; });
+  let today = '';
+  try{ today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase(); }catch(e){}
+  ['receivedDate', 'deskDate', 'closedDate'].forEach(function(id){ $(id).textContent = today || '—'; });
 
   function showError(title, detail, extra){
     errorBox.innerHTML = '<strong>' + title + '</strong><br>' + detail + (extra ? '<pre>' + extra + '</pre>' : '');
@@ -1192,44 +693,43 @@
   }
 
   const TLD_ORDER = ['com', 'io', 'net', 'ai', 'app', 'co'];
+  const CLIP_SVG = '<svg class="clip" viewBox="0 0 26 70" aria-hidden="true"><path d="M8 44 V14 a5 5 0 0 1 10 0 V52 a8 8 0 0 1 -16 0 V10 a11 11 0 0 1 22 0 V46" fill="none" stroke="#8D8981" stroke-width="2.2" stroke-linecap="round"/></svg>';
 
   // DNS-fallback "clear" only means nothing is delegated — a registered
-  // domain with no DNS would look the same — so it's labelled softer.
-  function domainStatus(d){
-    const viaDns = d.source === 'dns';
-    return {
-      cls: d.available === true ? 'avail' : d.available === false ? 'taken' : 'unknown',
-      label: d.available === true ? (viaDns ? 'likely available' : 'available') : d.available === false ? 'taken' : 'unknown',
-      title: viaDns ? 'RDAP was inconclusive — checked via DNS instead' : ''
+  // domain with no DNS would look the same — so it's marked with a *.
+  function domainVerdict(d){
+    if (!d || d.available === null || d.available === undefined) return { cls: 'unk', label: '??' };
+    if (d.available === true) return { cls: 'ok', label: d.source === 'dns' ? 'CLEAR*' : 'CLEAR' };
+    return { cls: 'bad', label: 'TAKEN' };
+  }
+  function buyUrl(domain){ return 'https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(domain); }
+
+  // ---------------- evidence, one physical format per lead ----------------
+
+  // DOMAIN TRAIL — typed registry slip
+  function evDomains(domains, variants){
+    const row = function(d){
+      const v = domainVerdict(d);
+      const val = d.available === true
+        ? '<a class="v ' + v.cls + '" href="' + buyUrl(d.domain) + '" target="_blank" rel="noopener" title="claim it">' + v.label + ' ↗</a>'
+        : '<span class="v ' + v.cls + '">' + v.label + '</span>';
+      return '<div class="slip-row"><span class="d">' + escapeHtml(d.domain) + '</span><span class="dots"></span>' + val + '</div>';
     };
+    const own = TLD_ORDER.map(t => domains && domains[t]).filter(Boolean);
+    const aliases = (variants || []).map(v => v.domains && v.domains.com).filter(Boolean);
+    const anyDns = own.concat(aliases).some(d => d.source === 'dns' && d.available === true);
+    return '<div class="piece slip paper shadow-1" style="--r:-1.4deg;--fx:-40px">' +
+      '<span class="pin" style="right:18px;left:auto;top:auto;bottom:22px;margin-right:-7px;margin-bottom:-7px"></span>' +
+      '<div class="slip-top"><span class="ttl">DOMAIN TRAIL</span><span class="lbl">REGISTRY SLIP</span></div>' +
+      (own.length ? own.map(row).join('') : '<div class="slip-row unk">Could not reach the registry this run.</div>') +
+      (aliases.length ? '<div class="slip-sep">— ALIASES —</div>' + aliases.map(row).join('') : '') +
+      '<div class="slip-foot">' + (anyDns ? '* RDAP inconclusive — checked via DNS.<br>' : '') + 'CLEAR = unregistered as of ' + escapeHtml(today) + '</div>' +
+    '</div>';
   }
 
-  function claimLink(domain){
-    return '<a href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(domain) + '" target="_blank" rel="noopener">claim it →</a>';
-  }
-
-  // 02 — each TLD is a drawer in the cabinet; available ones are pulled open
-  function renderDomains(domains){
-    const rows = TLD_ORDER.filter(t => domains && domains[t]).map(function(tld){
-      const d = domains[tld];
-      const st = domainStatus(d);
-      // only a taken .com is a red-ink finding; the rest are noted in ink
-      const cls = st.cls === 'taken' && tld !== 'com' ? 'taken minor' : st.cls;
-      return '<div class="drawer' + (d.available === true ? ' open' : '') + '">' +
-        '<span class="tab">.' + tld.toUpperCase() + '</span>' +
-        '<span class="dn">' + escapeHtml(d.domain) + '</span>' +
-        '<span class="dr"><span class="domain-badge ' + cls + '"' + (st.title ? ' title="' + st.title + '"' : '') + '>' + st.label + (st.title ? ' · dns' : '') + '</span>' +
-        (d.available === true ? claimLink(d.domain) : '') + '</span>' +
-      '</div>';
-    }).join('');
-    domainsEl.innerHTML = rows
-      ? '<div class="cabinet">' + rows + '</div>'
-      : '<p class="niche-empty">Could not check domains this run.</p>';
-  }
-
-  // 01 — competing results as a suspect lineup. Similarity and risk are a
-  // rough read of the search snippet against the name and your one-liner.
-  const STOP = new Set(['that','with','your','from','this','tool','tools','helps','help','their','them','into','about','which','where','when','what','have','will','more','than','them','they','team','teams','based','using','used','makes','make']);
+  // NAME COLLISIONS — clipped search records. Match and risk are a rough
+  // read of each snippet against the name and the one-liner.
+  const STOP = new Set(['that','with','your','from','this','tool','tools','helps','help','their','them','into','about','which','where','when','what','have','will','more','than','they','team','teams','based','using','used','makes','make']);
   function suspectRead(m, name, context){
     const n = name.toLowerCase().trim();
     const title = (m.title || '').toLowerCase();
@@ -1240,141 +740,307 @@
     const overlap = words.filter(w => text.includes(w)).length;
     let host = '';
     try{ host = new URL(m.link).hostname.replace(/^www\./, ''); }catch(e){}
-    const risk = exact && overlap >= 2 ? 'high' : (exact || overlap >= 2) ? 'medium' : 'low';
-    return { host: host || '—', match: exact ? 'name in title' : 'mentioned', risk: risk };
+    const risk = exact && overlap >= 2 ? 'HIGH' : (exact || overlap >= 2) ? 'MEDIUM' : 'LOW';
+    return { host: host || '—', risk: risk };
   }
-
-  function renderNiche(matches, serpError, name, context){
+  function evCollisions(matches, serpError, name, context){
+    let body;
     if (matches && matches.length){
-      nicheEl.innerHTML = '<div class="lineup">' + matches.map(function(m, i){
+      const rec = function(m, i){
         const r = suspectRead(m, name, context);
-        return '<div class="suspect">' +
-          '<div class="suspect-k">SUSPECT ' + String(i + 1).padStart(2, '0') + '</div>' +
-          '<div class="suspect-name"><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
-          '<dl><dt>SOURCE</dt><dd title="' + escapeHtml(r.host) + '">' + escapeHtml(r.host) + '</dd>' +
-          '<dt>MATCH</dt><dd>' + r.match + '</dd>' +
-          '<dt>RISK</dt><dd class="' + r.risk + '">' + r.risk + '</dd></dl>' +
-          '<div class="suspect-snip">' + escapeHtml(m.snippet) + '</div>' +
-        '</div>';
-      }).join('') + '</div>' +
-      '<p class="fine">Match and risk are a rough read of each search snippet against your name and one-liner — a lead, not a judgement.</p>';
-    } else if (serpError) {
-      nicheEl.innerHTML = '<p class="niche-empty">' + escapeHtml(serpError) + '</p>';
+        return '<div class="rec"><div class="rec-k"><span>RECORD ' + String(i + 1).padStart(2, '0') + '</span><span>' + escapeHtml(r.host) + '</span>' +
+          '<span class="risk ' + (r.risk === 'HIGH' ? 'bad' : '') + '">RISK ' + r.risk + '</span></div>' +
+          '<a class="rec-t" href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a>' +
+          '<p class="rec-s">' + escapeHtml(m.snippet) + '</p></div>';
+      };
+      const shown = matches.slice(0, 3).map(rec).join('');
+      const rest = matches.slice(3);
+      body = shown + (rest.length ? '<details class="more"><summary>' + rest.length + ' more ' + (rest.length === 1 ? 'record' : 'records') + '</summary>' + rest.map(function(m, i){ return rec(m, i + 3); }).join('') + '</details>' : '') +
+        '<div class="note" style="margin:8px 0 0 26px">risk = rough read of the snippet, not a ruling</div>';
+    } else if (serpError){
+      body = '<div class="rec"><p class="rec-s">' + escapeHtml(serpError) + '</p></div>';
     } else {
-      nicheEl.innerHTML = '<p class="niche-empty">No trace found — looks clear in this niche.</p>';
+      body = '<div class="rec"><span class="ttl ok">NO RECORDS</span><p class="rec-s">Nobody obvious using it in your niche.</p></div>';
     }
+    return '<div class="piece records" style="--r:0.9deg;--fx:40px">' + CLIP_SVG +
+      '<span class="pin" style="left:34px;top:auto;bottom:16px;margin-bottom:-7px"></span>' +
+      '<div class="ttl">NAME COLLISIONS</div><div class="lbl" style="margin:3px 0 6px">SEARCH RECORDS · "' + escapeHtml(name) + '" + your niche</div>' +
+      body + '</div>';
   }
 
-  function renderSocials(socials){
-    const order = ['x', 'instagram'];
-    const cards = order.filter(p => socials && socials[p]).map(function(p){
+  // SOCIAL HANDLES — small torn note
+  function evHandles(socials){
+    const rows = ['x', 'instagram'].filter(p => socials && socials[p]).map(function(p){
       const s = socials[p];
-      const cls = s.taken === true ? 'taken' : s.taken === false ? 'avail' : 'unknown';
-      const label = s.taken === true ? 'taken' : s.taken === false ? 'available' : (s.note ? 'too long' : 'unknown');
-      const link = s.note ? '' : '<a href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' + (s.taken === false ? 'grab it →' : 'look →') + '</a>';
-      return '<div class="handle-card"><span class="ev-k">EVIDENCE · HANDLE</span>' +
-        '<span class="h">@' + escapeHtml(s.handle) + '</span><span class="p">on ' + escapeHtml(s.label) + '</span>' +
-        '<span class="row"><span class="domain-badge ' + cls + '"' + (s.note ? ' title="' + escapeHtml(s.note) + '"' : '') + '>' + label + '</span>' + link + '</span></div>';
+      const v = s.taken === true ? ['bad', 'TAKEN'] : s.taken === false ? ['ok', 'OPEN'] : ['unk', s.note ? 'TOO LONG' : '??'];
+      return '<div class="h-row"><span class="h">@' + escapeHtml(s.handle) + '</span><span class="v ' + v[0] + '"' + (s.note ? ' title="' + escapeHtml(s.note) + '"' : '') + '>' + v[1] + '</span>' +
+        '<span class="p">on ' + escapeHtml(s.label) + '</span>' + (s.note ? '' : '<a href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">look</a>') + '</div>';
     }).join('');
-    socialsEl.innerHTML = cards ? '<div class="handles">' + cards + '</div>' : '<p class="niche-empty">Could not check social handles this run.</p>';
+    return '<div class="piece torn paper" style="--r:-2.2deg;--fx:-30px">' +
+      '<span class="pin" style="right:20px;left:auto;top:16px;margin-right:-7px"></span>' +
+      '<div class="ttl" style="margin-bottom:6px">HANDLES</div>' +
+      (rows || '<div class="h-row"><span class="p">Could not check handles this run.</span></div>') + '</div>';
   }
 
-  // 03 — trademark results pinned up like clippings
-  function renderTrademark(name, matches, tmError){
-    tmName.textContent = name;
-    const tilt = ['-0.8deg', '0.7deg', '0.4deg', '-0.6deg', '0.9deg', '-0.4deg'];
+  // MARKET EVIDENCE — newspaper fragment of the trademark search
+  function evMarket(name, matches, tmError){
+    let body;
     if (matches && matches.length){
-      trademarkEl.innerHTML = '<div class="clips">' + matches.map(function(m, i){
-        return '<div class="clip" style="--r:' + tilt[i % tilt.length] + '">' +
-          '<div class="niche-title"><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
-          '<div class="niche-snippet">' + escapeHtml(m.snippet) + '</div>' +
+      const lead = matches[0];
+      const rest = matches.slice(1);
+      body = '<h3 class="hl"><a href="' + escapeHtml(lead.link) + '" target="_blank" rel="noopener">' + escapeHtml(lead.title) + '</a></h3>' +
+        '<div class="cols"><p>' + escapeHtml(lead.snippet) + '</p>' +
+        rest.map(function(m){ return '<p><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener"><b>' + escapeHtml(m.title) + '.</b></a> ' + escapeHtml(m.snippet) + '</p>'; }).join('') +
         '</div>';
-      }).join('') + '</div>';
-    } else if (tmError) {
-      trademarkEl.innerHTML = '<p class="niche-empty">' + escapeHtml(tmError) + '</p>';
+    } else if (tmError){
+      body = '<p class="cols" style="column-count:1">' + escapeHtml(tmError) + '</p>';
     } else {
-      trademarkEl.innerHTML = '<p class="niche-empty">No trademark mentions turned up in web search — still not a clearance.</p>';
+      body = '<h3 class="hl">Nothing on file.</h3><p class="cols" style="column-count:1">No trademark mentions turned up in web search — still not a clearance.</p>';
     }
+    return '<div class="piece clipping" style="--r:1.6deg;--fx:40px">' +
+      '<span class="pin" style="left:20px;top:16px"></span>' +
+      '<div class="mast"><span class="paper-name">The Open Web</span><span class="ed">MARKET EVIDENCE</span></div>' +
+      '<div class="dek">"' + escapeHtml(name).toUpperCase() + '" TRADEMARK — A SIGNAL, NOT A LEGAL CLEARANCE</div>' +
+      body + '</div>';
   }
 
-  // 05 — near-variants as a mugshot lineup
-  const SILHOUETTE = '<svg viewBox="0 0 66 70" aria-hidden="true"><path d="M33 8 C42 8 46 15 46 23 C46 32 40 38 33 38 C26 38 20 32 20 23 C20 15 24 8 33 8 Z M8 70 C9 54 18 44 33 44 C48 44 57 54 58 70 Z" fill="rgba(34,27,19,0.13)" stroke="rgba(34,27,19,0.35)" stroke-width="1.2"/></svg>';
-  function renderVariants(variants){
+  // MEMORABILITY — handwritten investigator note
+  function mark(ok, warn){ return ok ? '<span class="mk ok">✓</span>' : warn ? '<span class="mk bad">!</span>' : '<span class="mk">?</span>'; }
+  function evMemory(s){
+    const m = s.memorable, e = s.easy_say_spell, g = s.too_generic, c = s.brand_collision;
+    const row = function(label, val, mk){ return '<div class="pad-row"><span class="lbl2">' + label + '</span><span class="pc">' + pct(val) + '</span>' + mk + '</div>'; };
+    return '<div class="piece pad shadow-1" style="--r:-1deg;--fx:-30px">' +
+      '<span class="pin" style="right:22px;left:auto;top:12px;margin-right:-7px"></span>' +
+      '<div class="pad-top">MEMORABILITY — NOTES</div>' +
+      row('memorable', m, mark((m ?? 0) >= 0.65, (m ?? 0) < 0.5)) +
+      row('say &amp; spell', e, mark((e ?? 0) >= 0.6, (e ?? 0) < 0.45)) +
+      row('distinctive', g === null || g === undefined ? null : 1 - g, mark((g ?? 0) < 0.5, (g ?? 0) >= 0.6)) +
+      row('crowded', c, mark((c ?? 0) < 0.35, (c ?? 0) >= 0.55)) +
+    '</div>';
+  }
+
+  // CLOSE RELATIVES — scattered index cards
+  function evRelatives(variants){
     if (!variants || !variants.length){
-      variantsCard.style.display = 'none';
-      variantsEl.innerHTML = '';
-      return;
+      return '<div class="piece icards" style="--fx:30px"><span class="pin" style="left:24px;top:14px"></span>' +
+        '<div class="rc paper shadow-1"><div class="rc-k">NO RELATIVES</div><div class="rc-s">No close variants to check for this name.</div></div></div>';
     }
-    variantsCard.style.display = '';
-    variantsEl.innerHTML = '<div class="mugs">' + variants.map(function(v, i){
-      const chips = TLD_ORDER.filter(t => v.domains && v.domains[t]).map(function(tld){
-        const d = v.domains[tld];
-        const st = domainStatus(d);
-        const { label, title } = st;
-        const cls = st.cls === 'taken' && tld !== 'com' ? 'taken minor' : st.cls;
-        const text = '.' + tld + ' ' + label + (title ? ' · dns' : '');
-        return d.available === true
-          ? '<a class="domain-badge ' + cls + '" title="' + escapeHtml(d.domain) + '" href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(d.domain) + '" target="_blank" rel="noopener">' + text + '</a>'
-          : '<span class="domain-badge ' + cls + '" title="' + escapeHtml(d.domain) + '">' + text + '</span>';
+    const cards = variants.map(function(v, i){
+      const tlds = TLD_ORDER.filter(t => v.domains && v.domains[t]).map(function(t){
+        const d = v.domains[t];
+        const dv = domainVerdict(d);
+        const sym = dv.cls === 'ok' ? '✓' : dv.cls === 'bad' ? '✕' : '?';
+        const inner = '.' + t + ' <span class="' + dv.cls + '">' + sym + '</span>';
+        return d.available === true ? '<a href="' + buyUrl(d.domain) + '" target="_blank" rel="noopener" title="' + escapeHtml(d.domain) + '">' + inner + '</a>' : '<span title="' + escapeHtml(d.domain) + '">' + inner + '</span>';
       }).join('');
-      let niche;
       const n = (v.niche_matches || []).length;
-      if (n){
-        niche = '<details><summary>' + n + (n === 1 ? ' sighting' : ' sightings') + ' in your niche</summary>' +
-          v.niche_matches.map(function(m){
-            return '<div class="niche-item">' +
-              '<div class="niche-title"><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
-              '<div class="niche-snippet">' + escapeHtml(m.snippet) + '</div>' +
-            '</div>';
-          }).join('') + '</details>';
-      } else if (v.serp_error) {
-        niche = '<p class="niche-empty">' + escapeHtml(v.serp_error) + '</p>';
-      } else {
-        niche = '<p class="niche-empty">No trace found in your niche.</p>';
-      }
-      return '<div class="mug">' +
-        '<div class="mug-shot"><span class="ht" style="top:12px">6\'</span><span class="ht" style="top:56px">5\'</span><span class="ht" style="top:100px">4\'</span>' + SILHOUETTE +
-          '<span class="mug-plate">' + escapeHtml(v.name.toUpperCase()) + '</span></div>' +
-        '<div class="mug-body"><div class="mug-k">RELATIVE ' + String.fromCharCode(65 + i) + '</div>' +
-          '<div class="tld-chips">' + (chips || '<span class="niche-empty">Could not check domains this run.</span>') + '</div>' +
-          niche +
-        '</div>' +
-      '</div>';
-    }).join('') + '</div>';
-  }
-
-  // red string from the case card to each pinned piece of evidence
-  const evBoard = $('evBoard');
-  const evStrings = $('evStrings');
-  function drawStrings(){
-    if (!resultEl.classList.contains('show')) return;
-    const box = evBoard.getBoundingClientRect();
-    const center = evBoard.querySelector('.ev-center').getBoundingClientRect();
-    const cx = center.left + center.width / 2 - box.left;
-    const cy = center.top + center.height / 2 - box.top;
-    evStrings.setAttribute('viewBox', '0 0 ' + box.width + ' ' + box.height);
-    evStrings.innerHTML = Array.from(evBoard.querySelectorAll('.ev-card')).map(function(card){
-      const r = card.getBoundingClientRect();
-      const px = r.left + r.width / 2 - box.left;
-      const py = r.top - box.top;
-      const mx = (cx + px) / 2, my = (cy + py) / 2 + 16;   // a little slack in the string
-      return '<path d="M' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ' Q' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + px.toFixed(1) + ' ' + py.toFixed(1) + '"/>';
+      const sightings = n
+        ? '<details><summary class="rc-s">' + n + (n === 1 ? ' sighting' : ' sightings') + ' in your niche +</summary>' +
+            v.niche_matches.map(function(m){ return '<a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a>'; }).join('') + '</details>'
+        : '<div class="rc-s">' + (v.serp_error ? escapeHtml(v.serp_error) : 'no sightings in your niche') + '</div>';
+      return '<div class="rc paper shadow-1"><div class="rc-k">ALIAS ' + String.fromCharCode(65 + i) + '</div>' +
+        '<div class="rc-n">' + escapeHtml(v.name) + '</div><div class="rc-tlds">' + tlds + '</div>' + sightings + '</div>';
     }).join('');
+    return '<div class="piece icards" style="--fx:30px"><span class="pin" style="left:18%;top:12px"></span>' + cards + '</div>';
   }
-  let stringTimer = null;
-  window.addEventListener('resize', function(){ clearTimeout(stringTimer); stringTimer = setTimeout(drawStrings, 80); });
 
-  // the verdict logic is unchanged — only the stamp's wording is
-  const VERDICT_LABEL = { 'IMPERSONATION': 'CROWDED NAME', 'NO WITNESSES': 'FORGETTABLE', 'CLEARED': 'PROMISING', 'UNDER WATCH': 'PROCEED WITH CAUTION' };
+  // ---------------- red string ----------------
+  // From the edge of the subject card to each pin, with a little slack.
+  function edgePoint(rect, tx, ty){
+    const cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
+    const dx = tx - cx, dy = ty - cy;
+    if (!dx && !dy) return [cx, cy];
+    const sx = (rect.w / 2) / Math.abs(dx || 1e-6), sy = (rect.h / 2) / Math.abs(dy || 1e-6);
+    const s = Math.min(sx, sy, 1);
+    return [cx + dx * s, cy + dy * s];
+  }
+  // In a single column, one string per lead would cross every paper, so
+  // the thread is chained instead: each pin ties back to the one above it.
+  const CHAIN_ORDER = ['domains', 'collisions', 'handles', 'market', 'memory', 'relatives'];
+  function pinCenter(key, g){
+    const slot = grid.querySelector('.slot[data-k="' + key + '"]');
+    const pin = slot && slot.querySelector('.piece .pin');
+    if (!pin) return null;
+    const r = pin.getBoundingClientRect();
+    return [r.left + r.width / 2 - g.left, r.top + r.height / 2 - g.top];
+  }
+  function stringPath(key){
+    const g = grid.getBoundingClientRect();
+    const target = pinCenter(key, g);
+    if (!target) return null;
+    const [px, py] = target;
+    const sr = subjectEl.getBoundingClientRect();
+    let ax, ay;
+    const single = getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length === 1;
+    let prev = null;
+    if (single){
+      // nearest pin above this one that has already landed
+      for (let i = CHAIN_ORDER.indexOf(key) - 1; i >= 0 && !prev; i--) prev = pinCenter(CHAIN_ORDER[i], g);
+    }
+    if (prev){ ax = prev[0]; ay = prev[1]; }
+    else { [ax, ay] = edgePoint({ x: sr.left - g.left, y: sr.top - g.top, w: sr.width, h: sr.height }, px, py); }
+    const dist = Math.hypot(px - ax, py - ay);
+    // deterministic per-lead wobble so redraws don't jitter
+    const seed = key.length * 7 % 5 - 2;
+    let mx = (ax + px) / 2 + seed * 3, my = (ay + py) / 2 + Math.min(34, 10 + dist * 0.08);
+    // chained down the margin: let the thread bow outward instead of sagging
+    if (prev){ mx = Math.max(ax, px) + 10 + Math.abs(seed) * 2; my = (ay + py) / 2; }
+    return 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' Q' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + px.toFixed(1) + ' ' + py.toFixed(1);
+  }
+  const strung = [];
+  function addString(key, animate){
+    const d = stringPath(key);
+    if (!d) return;
+    const g = grid.getBoundingClientRect();
+    stringsEl.setAttribute('viewBox', '0 0 ' + g.width + ' ' + g.height);
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', d);
+    p.dataset.k = key;
+    stringsEl.appendChild(p);
+    if (animate && !reduceMotion){
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      p.classList.add('draw');
+    }
+    if (strung.indexOf(key) < 0) strung.push(key);
+  }
+  function redrawStrings(){
+    if (!desk.classList.contains('open')) return;
+    const g = grid.getBoundingClientRect();
+    stringsEl.setAttribute('viewBox', '0 0 ' + g.width + ' ' + g.height);
+    stringsEl.querySelectorAll('path').forEach(function(p){
+      const d = stringPath(p.dataset.k);
+      if (d) p.setAttribute('d', d);
+      p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; p.classList.remove('draw');
+    });
+  }
+  let rt = null;
+  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(redrawStrings, 80); });
 
-  function renderResult(name, scores, domains, nicheMatches, serpError, variants, socials, trademarkMatches, trademarkError, rawData){
-    const context = contextEl.value.trim();
-    renderDomains(domains);
-    renderNiche(nicheMatches, serpError, name, context);
-    renderSocials(socials);
-    renderTrademark(name, trademarkMatches, trademarkError);
-    renderVariants(variants);
+  // ---------------- the desk opens ----------------
+  // FLIP the intake sheet from its spot on the folder to the side of the board.
+  function flip(el, mutate){
+    const a = el.getBoundingClientRect();
+    const fromRot = getComputedStyle(el).getPropertyValue('--rot').trim() || '0deg';
+    mutate();
+    const b = el.getBoundingClientRect();
+    const toRot = getComputedStyle(el).getPropertyValue('--rot').trim() || '0deg';
+    if (reduceMotion || !el.animate) return;
+    const sx = a.width / (b.width || 1);
+    el.animate([
+      { transform: 'translate(' + (a.left - b.left) + 'px,' + (a.top - b.top) + 'px) scale(' + sx + ') rotate(' + fromRot + ')' },
+      { transform: 'rotate(' + toRot + ')' }
+    ], { duration: 650, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  }
 
+  async function openDesk(){
+    if (desk.classList.contains('open')) return;
+    desk.classList.add('opening');
+    await sleep(480);
+    flip(intake, function(){ desk.classList.add('open'); });
+  }
+  function closeDesk(){
+    if (!desk.classList.contains('open')) return;
+    flip(intake, function(){ desk.classList.remove('open'); });
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ desk.classList.remove('opening'); }); });
+  }
+
+  // ---------------- the investigation ----------------
+  const LEADS = [
+    ['domains',    'FOLLOWING THE DOMAIN TRAIL...'],
+    ['collisions', 'CHECKING FOR ALIASES...'],
+    ['handles',    'CHECKING FOR ALIASES...'],
+    ['market',     'SEARCHING THE MARKET...'],
+    ['relatives',  'LOOKING FOR CLOSE RELATIVES...'],
+    ['memory',     'TESTING THE NAME...']
+  ];
+  const WAIT_MSGS = ['OPENING FILE...', 'FOLLOWING THE DOMAIN TRAIL...', 'CHECKING FOR ALIASES...', 'SEARCHING THE MARKET...', 'LOOKING FOR CLOSE RELATIVES...', 'TESTING THE NAME...'];
+  const PENDING_LABEL = { domains: 'DOMAIN TRAIL', collisions: 'NAME COLLISIONS', handles: 'SOCIAL HANDLES', market: 'MARKET EVIDENCE', memory: 'MEMORABILITY', relatives: 'CLOSE RELATIVES' };
+  let timers = [];
+  let t0 = 0;
+  function clearTimers(){ timers.forEach(function(t){ clearInterval(t); clearTimeout(t); }); timers = []; }
+  function tick(){
+    const ms = performance.now() - t0, sec = Math.floor(ms / 1000);
+    tapeClock.textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0') + '.' + Math.floor((ms % 1000) / 100);
+  }
+
+  function resetBoard(name, context){
+    clearTimers();
+    stringsEl.innerHTML = '';
+    strung.length = 0;
+    report.classList.remove('show');
+    stampEl.classList.remove('hit');
+    $('subjectName').textContent = name;
+    $('subjectCtx').textContent = context;
+    grid.querySelectorAll('.slot').forEach(function(s){
+      s.classList.remove('cold');
+      s.innerHTML = '<div class="pending">' + PENDING_LABEL[s.dataset.k] + ' — PENDING</div>';
+    });
+    tapeMsg.textContent = 'OPENING FILE...';
+    t0 = performance.now();
+    tick();
+    timers.push(setInterval(tick, 100));
+    // while the lookups run, the tape walks through the leads being worked
+    let i = 0;
+    timers.push(setInterval(function(){ if (i < WAIT_MSGS.length - 1){ i++; tapeMsg.textContent = WAIT_MSGS[i]; } }, 900));
+  }
+
+  function place(key, html){
+    const slot = grid.querySelector('.slot[data-k="' + key + '"]');
+    slot.innerHTML = html;
+    const piece = slot.querySelector('.piece');
+    if (!reduceMotion){
+      piece.classList.add('land');
+      const pin = piece.querySelector('.pin');
+      if (pin){ pin.classList.add('pop'); pin.style.animationDelay = '.32s'; }
+    }
+  }
+
+  async function buildCase(data, name, context){
+    clearTimers();
+    timers.push(setInterval(tick, 100));
+    const step = data.cached ? 160 : 520;
+    if (data.cached){ tapeMsg.textContent = 'PULLED FROM THE CABINET...'; await sleep(300); }
+    const html = {
+      domains: function(){ return evDomains(data.domains, data.variants); },
+      collisions: function(){ return evCollisions(data.niche_matches, data.serp_error, name, context); },
+      handles: function(){ return evHandles(data.socials); },
+      market: function(){ return evMarket(name, data.trademark_matches, data.trademark_error); },
+      relatives: function(){ return evRelatives(data.variants); },
+      memory: function(){ return evMemory(data.scores); }
+    };
+    for (const [key, msg] of LEADS){
+      tapeMsg.textContent = msg;
+      place(key, html[key]());
+      // let the paper land, then run the string to its pin
+      await sleep(Math.round(step * 0.55));
+      // earlier pins may have shifted as this paper landed
+      redrawStrings();
+      addString(key, true);
+      await sleep(Math.round(step * 0.45));
+    }
+    // layout settles as pieces land — re-run every string to its final pin
+    redrawStrings();
+    tapeMsg.textContent = 'FILING THE REPORT...';
+    clearTimers();
+    tick();
+  }
+
+  function failCase(reason){
+    clearTimers();
+    tapeMsg.textContent = reason;
+    grid.querySelectorAll('.slot').forEach(function(s){
+      if (s.querySelector('.pending')){ s.classList.add('cold'); s.querySelector('.pending').textContent = PENDING_LABEL[s.dataset.k] + ' — TRAIL WENT COLD'; }
+    });
+  }
+
+  // ---------------- the verdict ----------------
+  // The verdict logic is unchanged; only the stamp's wording is new.
+  function writeReport(name, data){
+    const scores = data.scores;
+    const domains = data.domains || {};
+    const socials = data.socials || {};
     const m = scores.memorable ?? 0;
     const e = scores.easy_say_spell ?? 0;
     const g = scores.too_generic ?? 0;
@@ -1394,277 +1060,50 @@
       verdict = 'UNDER WATCH'; verdictClass = 'mid';
       sub = 'not ruled out, not ruled in — at least one thing here needs a second look';
     }
-    const verdictLabel = VERDICT_LABEL[verdict] || verdict;
+    const comFree = domains.com && domains.com.available === true;
+    const label = verdict === 'IMPERSONATION' ? 'CROWDED TERRITORY'
+      : verdict === 'NO WITNESSES' ? 'KEEP LOOKING'
+      : verdict === 'CLEARED' ? (comFree ? 'STRONG NAME' : 'CLEAR TO PROCEED')
+      : 'PROCEED WITH CAUTION';
 
-    stampEl.style.animation = 'none';
-    void stampEl.offsetWidth;
-    stampEl.style.animation = '';
-
-    stampName.textContent = name.toUpperCase();
-    stampEl.textContent = verdictLabel;
-    stampEl.className = 'verdict-big ' + verdictClass;
-    stampSub.textContent = sub;
-    $('evName').textContent = name;
-
+    const nicheCount = (data.niche_matches || []).length;
+    const collisions = c >= 0.55 ? ['HIGH', 'bad'] : (nicheCount || c >= 0.35) ? ['MEDIUM', ''] : ['LOW', 'ok'];
+    const doms = TLD_ORDER.map(t => domains[t]).filter(Boolean);
+    const freeCount = doms.filter(d => d.available === true).length;
+    const domainOpts = comFree ? ['OPEN', 'ok'] : freeCount ? ['LIMITED', ''] : doms.some(d => d.available === null) ? ['UNCLEAR', 'unk'] : ['NONE', 'bad'];
+    const hs = ['x', 'instagram'].map(p => socials[p]).filter(Boolean);
+    const hTaken = hs.filter(s => s.taken === true).length, hOpen = hs.filter(s => s.taken === false).length;
+    const social = !hs.length || hTaken + hOpen === 0 ? ['UNKNOWN', 'unk'] : hTaken && hOpen ? ['MIXED', ''] : hTaken ? ['TAKEN', 'bad'] : ['OPEN', 'ok'];
+    const tm = (data.trademark_matches || []).length;
     const rows = [
-      ['memorable', m, 'pos', 'sticks after hearing it once'],
-      ['easy to say & spell', e, 'pos', 'no "wait, how do you spell that?"'],
-      ['too generic', g, 'neg', 'lower is better — distinctive beats descriptive'],
-      ['sounds like an existing brand', c, 'neg', 'lower is better — nobody wants to be "the other one"']
+      ['NAME COLLISIONS', collisions],
+      ['DOMAIN OPTIONS', domainOpts],
+      ['SOCIAL AVAILABILITY', social],
+      ['MARKET SIGNAL', tm ? [tm + (tm === 1 ? ' MENTION' : ' MENTIONS'), ''] : [data.trademark_error ? 'SKIPPED' : 'QUIET', data.trademark_error ? 'unk' : 'ok']],
+      ['MEMORABILITY', [pct(scores.memorable), '']]
     ];
-
-    // section verdicts — red (FLAGGED) only for findings that should stop you
-    const nicheCount = (nicheMatches || []).length;
-    const handlesTaken = ['x', 'instagram'].filter(p => socials && socials[p] && socials[p].taken === true);
-    const handlesUnknown = ['x', 'instagram'].some(p => !socials || !socials[p] || socials[p].taken === null);
-    const collisions = c >= 0.55 ? 'FLAGGED' : nicheCount ? 'FOUND' : (handlesTaken.length || serpError) ? 'WORTH A LOOK' : 'CLEAR';
-    setSectionStatus('collisions', collisions);
-
-    const doms = TLD_ORDER.map(t => domains && domains[t]).filter(Boolean);
-    const com = domains && domains.com;
-    const domainVerdict = com && com.available === true ? 'CLEAR'
-      : doms.length && doms.every(d => d.available === false) ? 'FLAGGED'
-      : 'WORTH A LOOK';
-    setSectionStatus('domains', domainVerdict);
-
-    const tmCount = (trademarkMatches || []).length;
-    const market = tmCount ? 'FOUND' : trademarkError ? 'WORTH A LOOK' : 'CLEAR';
-    setSectionStatus('market', market);
-
-    const memory = (m >= 0.65 && e >= 0.6 && g < 0.5) ? 'CLEAR' : (g >= 0.6 && m < 0.5) ? 'FLAGGED' : 'WORTH A LOOK';
-    setSectionStatus('memory', memory);
-
-    const vs = variants || [];
-    const clearCom = vs.filter(x => x.domains && x.domains.com && x.domains.com.available === true).length;
-    setSectionStatus('relatives', !vs.length ? 'WORTH A LOOK' : clearCom ? 'FOUND' : 'TAKEN');
-
-    // evidence board summaries
-    const availCount = doms.filter(d => d.available === true).length;
-    setEvidence('domains', availCount + ' of ' + doms.length + ' available · .com ' + (com ? domainStatus(com).label : 'unknown'), domainVerdict);
-    setEvidence('competitors', nicheCount ? nicheCount + (nicheCount === 1 ? ' suspect' : ' suspects') + ' already in your niche' : (serpError ? 'Search came back empty-handed this run' : 'Nobody obvious in your niche'),
-      c >= 0.55 ? 'FLAGGED' : nicheCount ? 'FOUND' : 'CLEAR');
-    setEvidence('handles', ['x', 'instagram'].filter(p => socials && socials[p]).map(function(p){
-      const s = socials[p]; return s.label + ': ' + (s.taken === true ? 'taken' : s.taken === false ? 'available' : 'unknown');
-    }).join(' · ') || 'Could not check handles',
-      handlesTaken.length ? 'TAKEN' : handlesUnknown ? 'WORTH A LOOK' : 'CLEAR');
-    setEvidence('search', tmCount ? tmCount + ' trademark ' + (tmCount === 1 ? 'mention' : 'mentions') + ' on the web' : (trademarkError ? 'Trademark search skipped this run' : 'No trademark chatter found'), market === 'FOUND' ? 'FOUND' : market);
-    setEvidence('similar', vs.length ? clearCom + ' of ' + vs.length + ' variants have a free .com' : 'No variants generated', clearCom ? 'WORTH A LOOK' : 'TAKEN');
-    setEvidence('memory', pct(m) + ' memorable · ' + pct(e) + ' easy to say', memory);
-
-    setFileStatus('CLOSED', verdictClass === 'bad');
-
-    checksEl.innerHTML = rows.map(function(row){
-      const [rname, val, dir, note] = row;
-      const fillClass = dir === 'neg' ? (val >= 0.5 ? 'neg' : 'pos') : (val >= 0.5 ? 'pos' : 'neg');
-      return '<div class="check-row">' +
-        '<div class="check-top"><span class="check-name">' + rname + '</span><span class="check-pct">' + pct(val) + '</span></div>' +
-        '<div class="meter"><div class="meter-fill ' + fillClass + '" data-target="' + (val === null ? 0 : Math.round(val * 100)) + '"></div></div>' +
-        '<div class="check-note">' + note + '</div>' +
-      '</div>';
+    reportRows.innerHTML = rows.map(function(r){
+      return '<div class="rp-row"><span>' + r[0] + '</span><span class="dots"></span><span class="v ' + r[1][1] + '">' + r[1][0] + '</span></div>';
     }).join('');
 
-    rawPre.textContent = JSON.stringify(rawData, null, 2);
-    resultEl.classList.remove('show');
-    resultEl.style.display = 'block';
-    void resultEl.offsetWidth;
-    resultEl.classList.add('show');
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        checksEl.querySelectorAll('.meter-fill').forEach(function(el){ el.style.width = el.dataset.target + '%'; });
-        drawStrings();
-      });
-    });
-    // cards settle in over ~0.5s; redraw once they have, and once fonts land
-    setTimeout(drawStrings, 650);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawStrings);
-    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    stampName.textContent = name.toUpperCase();
+    stampEl.textContent = label;
+    stampSub.textContent = sub;
+    rawPre.textContent = JSON.stringify(data.raw, null, 2);
+
+    report.classList.add('show');
+    void stampEl.offsetWidth;
+    stampEl.classList.add('hit');
+    if (reduceMotion) stampEl.style.opacity = 1;
 
     resultEl.dataset.shareText =
-      'Name Worth It case file on "' + name + '": ' + verdictLabel + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
+      'Name Worth It case file on "' + name + '": ' + label + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
       pct(g) + ' too generic, ' + pct(c) + ' brand collision risk).';
   }
 
-  // ---------- the detective works the case ----------
-  // The API answers in one go, so while it's in flight the detective moves
-  // through the steps; once the real data lands every lead in the log is
-  // stamped with what was actually found, then the case file opens.
-  const board = $('board');
-  const boardStatus = $('boardStatus');
-  const boardClock = $('boardClock');
-  const sceneName = $('sceneName');
-  const sceneStamp = $('sceneStamp');
-  const leadsEl = $('leadsEl');
-  const detLoader = $('detLoader');
-  const workStep = $('workStep');
-  const workMsg = $('workMsg');
-  const workDots = $('workDots').children;
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const sleep = (ms) => new Promise(r => setTimeout(r, reduceMotion ? 0 : ms));
-  let boardTimers = [];
-  let boardT0 = 0;
-
-  const STEPS = [
-    ['Opening the file...', 'folder'],
-    ['Checking aliases...', 'magnify'],
-    ['Following the domain trail...', 'card'],
-    ['Questioning the search results...', 'think'],
-    ['Looking for close relatives...', 'binoc'],
-    ['Checking whether anyone remembers the suspect...', 'notebook'],
-    ['Building the case...', 'pin']
-  ];
-  function setStep(i, msgOverride, poseOverride){
-    const step = STEPS[i];
-    workStep.textContent = 'Step ' + (i + 1) + ' / ' + STEPS.length;
-    workMsg.textContent = msgOverride || step[0];
-    const pose = poseOverride || step[1];
-    detLoader.querySelectorAll('.pose').forEach(function(g){ g.classList.toggle('on', g.dataset.p === pose); });
-    Array.from(workDots).forEach(function(d, j){ d.className = j < i ? 'on' : j === i ? 'now' : ''; });
-  }
-
-  function showClock(){
-    const ms = performance.now() - boardT0;
-    const sec = Math.floor(ms / 1000);
-    boardClock.textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0') + '.' + Math.floor((ms % 1000) / 100);
-  }
-
-  function slugify(n){ return (n || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
-  function badge(cls, text){ return '<span class="domain-badge ' + cls + '">' + escapeHtml(text) + '</span>'; }
-
-  function buildLeads(name){
-    const slug = slugify(name) || name;
-    const domainVerbs = ['Dusting for prints on', 'Running the plates on', 'Checking the alibi of', 'Pulling records on', 'Staking out', 'Knocking on'];
-    const leads = TLD_ORDER.map(function(tld, i){
-      return { id: 'dom-' + tld, html: domainVerbs[i % domainVerbs.length] + ' <b>' + escapeHtml(slug + '.' + tld) + '</b>',
-        solve: function(d){
-          const r = d.domains && d.domains[tld];
-          if (!r) return ['meh', badge('unknown', 'no answer')];
-          const st = domainStatus(r);
-          return [r.available === true ? 'ok' : r.available === false ? 'bad' : 'meh', badge(st.cls, st.label + (st.title ? ' · dns' : ''))];
-        } };
-    });
-    [['x', 'Tailing <b>@' + escapeHtml(slug) + '</b> on X'], ['instagram', 'Shaking down <b>@' + escapeHtml(slug) + '</b> on Instagram']].forEach(function(pair){
-      leads.push({ id: 'soc-' + pair[0], html: pair[1], solve: function(d){
-        const s = d.socials && d.socials[pair[0]];
-        if (!s || s.taken === null) return ['meh', badge('unknown', s && s.note ? 'too long' : 'no answer')];
-        return s.taken ? ['bad', badge('taken', 'taken')] : ['ok', badge('avail', 'available')];
-      } });
-    });
-    leads.push({ id: 'niche', html: 'Canvassing your niche for lookalikes', solve: function(d){
-      const n = (d.niche_matches || []).length;
-      if (!n && d.serp_error) return ['meh', badge('unknown', 'cold trail')];
-      return n ? ['meh', badge('warn', n + (n === 1 ? ' suspect' : ' suspects'))] : ['ok', badge('avail', 'no trace')];
-    } });
-    leads.push({ id: 'tm', html: 'Pulling trademark chatter <span style="color:var(--ink-3)">(web signal)</span>', solve: function(d){
-      const n = (d.trademark_matches || []).length;
-      if (!n && d.trademark_error) return ['meh', badge('unknown', 'cold trail')];
-      return n ? ['meh', badge('warn', n + (n === 1 ? ' mention' : ' mentions'))] : ['ok', badge('avail', 'nothing found')];
-    } });
-    leads.push({ id: 'assoc', html: 'Questioning known associates (close variants)', solve: function(d){
-      const v = d.variants || [];
-      if (!v.length) return ['meh', badge('unknown', 'none found')];
-      const clearCom = v.filter(x => x.domains && x.domains.com && x.domains.com.available === true).length;
-      return [clearCom ? 'ok' : 'meh', badge(clearCom ? 'avail' : 'warn', clearCom + '/' + v.length + ' have .com')];
-    } });
-    leads.push({ id: 'jev', html: 'Sending it to the profiler (Jev)', solve: function(d){
-      return d.scores ? ['ok', badge('avail', 'profile ready')] : ['bad', badge('taken', 'no read')];
-    } });
-    return leads;
-  }
-
-  let currentLeads = [];
-
-  function startBoard(name){
-    stopBoardTimers();
-    currentLeads = buildLeads(name);
-    sceneName.textContent = name;
-    sceneStamp.textContent = 'case closed';
-    boardStatus.textContent = 'investigation in progress';
-    board.classList.remove('done', 'stalled');
-    leadsEl.innerHTML = currentLeads.map(function(l){
-      return '<li class="lead queued" id="lead-' + l.id + '"><span class="lead-icon"></span><span class="lead-text">' + l.html + '</span><span class="lead-status"></span></li>';
-    }).join('');
-    board.classList.remove('show'); void board.offsetWidth;
-    board.style.display = '';
-    board.classList.add('show');
-    board.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-
-    boardT0 = performance.now();
-    showClock();
-    boardTimers.push({ interval: setInterval(showClock, 100) });
-
-    // walk the first six steps while waiting; "Building the case" is saved
-    // for when the evidence actually arrives
-    let step = 0;
-    setStep(0);
-    boardTimers.push({ interval: setInterval(function(){
-      if (step < STEPS.length - 2){ step++; setStep(step); }
-    }, reduceMotion ? 1400 : 900) });
-
-    currentLeads.forEach(function(l, i){
-      boardTimers.push(setTimeout(function(){
-        const el = $('lead-' + l.id);
-        if (el && el.classList.contains('queued')){ el.classList.remove('queued'); el.classList.add('active'); }
-      }, reduceMotion ? 0 : 180 + i * 260));
-    });
-  }
-
-  function stopBoardTimers(){
-    boardTimers.forEach(function(t){ if (t && t.interval) clearInterval(t.interval); else clearTimeout(t); });
-    boardTimers = [];
-  }
-
-  async function solveBoard(data){
-    stopBoardTimers();
-    showClock();
-    setStep(STEPS.length - 1);
-    if (data.cached){
-      leadsEl.insertAdjacentHTML('afterbegin', '<li class="lead solved"><span class="lead-icon"></span><span class="lead-text">Case already on file — pulled from the cabinet</span><span class="lead-status">' + badge('unknown', 'cached') + '</span></li>');
-    }
-    for (const l of currentLeads){
-      const el = $('lead-' + l.id);
-      if (!el) continue;
-      let out;
-      try{ out = l.solve(data); }catch(e){ out = ['meh', badge('unknown', 'no answer')]; }
-      el.classList.remove('queued', 'active');
-      el.classList.add('solved');
-      if (out[0] === 'bad') el.classList.add('bad');
-      if (out[0] === 'meh') el.classList.add('meh');
-      el.querySelector('.lead-status').innerHTML = out[1];
-      await sleep(data.cached ? 50 : 110);
-    }
-    Array.from(workDots).forEach(function(d){ d.className = 'on'; });
-    workMsg.textContent = 'Case built. Opening the report.';
-    boardStatus.textContent = 'log closed';
-    board.classList.add('done');
-    await sleep(550);
-  }
-
-  function failBoard(reason){
-    stopBoardTimers();
-    showClock();
-    leadsEl.querySelectorAll('.lead:not(.solved)').forEach(function(el){
-      el.classList.remove('queued', 'active');
-      el.classList.add('solved', 'meh');
-      el.querySelector('.lead-status').innerHTML = badge('unknown', 'cold trail');
-    });
-    setStep(3, 'The trail went cold.', 'think');
-    boardStatus.textContent = 'stalled';
-    setFileStatus('ON HOLD', true);
-    sceneStamp.textContent = reason || 'case on hold';
-    board.classList.add('done', 'stalled');
-  }
-
-  function hideBoard(){
-    stopBoardTimers();
-    board.classList.remove('show', 'done', 'stalled');
-    board.style.display = 'none';
-  }
-
+  // ---------------- run ----------------
   async function run(){
     hideError();
-    hideBoard();
-    resultEl.classList.remove('show');
-    resultEl.style.display = 'none';
 
     const name = nameEl.value.trim();
     const context = contextEl.value.trim();
@@ -1675,8 +1114,8 @@
     runBtn.disabled = true;
     runBtn.classList.add('loading');
     runBtnLabel.textContent = 'Opening file...';
-    setFileStatus('IN PROGRESS');
-    startBoard(name);
+    resetBoard(name, context);
+    const opened = openDesk();
 
     try{
       const res = await fetch(RELAY_URL, {
@@ -1688,27 +1127,32 @@
       const text = await res.text();
       let data;
       try{ data = JSON.parse(text); }catch(e){ data = { raw: text }; }
+      await opened;
 
       if (res.status === 429){
-        failBoard('too many cases');
+        failCase('TOO MANY CASES — WAIT A MINUTE');
         showError('Too many checks right now', data.error || 'Give it a minute and try again.');
         return;
       }
       if (!res.ok){
-        failBoard('case on hold');
+        failCase('CASE ON HOLD');
         showError('Got an error back (' + res.status + ')', data.error || 'Something went wrong on the checker side.', JSON.stringify(data, null, 2));
         return;
       }
       if (!data.scores){
-        failBoard('case on hold');
+        failCase('CASE ON HOLD');
         showError('Got a response but couldn\'t read the scores out of it', 'Raw response below.', JSON.stringify(data, null, 2));
         return;
       }
 
-      await solveBoard(data);
-      renderResult(name, data.scores, data.domains, data.niche_matches, data.serp_error, data.variants, data.socials, data.trademark_matches, data.trademark_error, data.raw);
+      // give the board a beat to appear before evidence starts landing
+      await sleep(250);
+      await buildCase(data, name, context);
+      writeReport(name, data);
+      tapeMsg.textContent = data.cached ? 'CASE CLOSED · FROM THE CABINET' : 'CASE CLOSED';
     }catch(err){
-      failBoard('case on hold');
+      await opened;
+      failCase('THE TRAIL WENT COLD');
       showError('Could not reach the checker', 'Try again in a moment.');
     }finally{
       runBtn.disabled = false;
@@ -1718,13 +1162,14 @@
   }
 
   runBtn.addEventListener('click', run);
+  [nameEl].forEach(function(el){ el.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !runBtn.disabled) run(); }); });
+
   runAgainBtn.addEventListener('click', function(){
-    hideBoard();
-    setFileStatus('OPEN');
-    resultEl.classList.remove('show');
-    resultEl.style.display = 'none';
-    nameEl.focus();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    clearTimers();
+    report.classList.remove('show');
+    closeDesk();
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    setTimeout(function(){ nameEl.focus({ preventScroll: true }); nameEl.select(); }, 500);
   });
 
   copyBtn.addEventListener('click', async function(){
