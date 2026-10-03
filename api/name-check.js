@@ -5,6 +5,9 @@
 //   1. Domain availability for .com/.io/.net via RDAP (free, no API key).
 //   2. A real web search (Serper.dev) for the name alongside your one-line
 //      description, to catch an existing company already using it.
+// Both checks are also run against 2-3 close variants of the name (a suffix,
+// a prefix, a respelling) so there's a fallback to look at if the original
+// is crowded.
 // Then asks Jev — using YOUR stored key (JEV_API_KEY env var), not a
 // visitor-supplied one — a question grounded in those real search results.
 //
@@ -36,6 +39,45 @@ function slugify(name) {
   return (name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
+// Deterministic, so the same name always yields the same variants: one
+// suffixed, one prefixed, one respelled. Keeps the original's capitalization
+// style; skips anything that collapses back to the original slug.
+function respell(slug) {
+  const rules = [
+    [/ph/, 'f'], [/ck/, 'k'], [/c(?=[aou]|$)/, 'k'], [/qu/, 'kw'],
+    [/i/, 'y'], [/y/, 'i'], [/s$/, 'z'], [/er$/, 'r'], [/x/, 'ks'], [/ee/, 'ea']
+  ];
+  for (const [re, rep] of rules) {
+    const out = slug.replace(re, rep);
+    if (out !== slug) return out;
+  }
+  return null;
+}
+
+function generateVariants(name) {
+  const base = (name || '').replace(/[^A-Za-z0-9]/g, '');
+  const slug = base.toLowerCase();
+  if (!slug) return [];
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const upperFirst = base.charAt(0) !== base.charAt(0).toLowerCase();
+  const respelled = respell(slug);
+  const candidates = [
+    base + (/(ly|y)$/i.test(base) ? (upperFirst ? 'HQ' : 'hq') : 'ly'),
+    'Get' + cap(base),
+    respelled && (upperFirst ? cap(respelled) : respelled)
+  ];
+  const seen = new Set([slug]);
+  const out = [];
+  for (const c of candidates) {
+    if (!c) continue;
+    const s = slugify(c);
+    if (seen.has(s)) continue;
+    seen.add(s);
+    out.push(c);
+  }
+  return out.slice(0, 3);
+}
+
 function withTimeout(promise, ms) {
   return Promise.race([
     promise,
@@ -57,7 +99,30 @@ async function checkDomain(domain) {
   }
 }
 
-async function searchNiche(name, context) {
+async function checkDomains(slug) {
+  const results = await Promise.all(TLDS.map((tld) => checkDomain(slug + '.' + tld)));
+  const domains = {};
+  for (const d of results) {
+    const tld = d.domain.split('.').pop();
+    domains[tld] = d;
+  }
+  return domains;
+}
+
+async function checkVariant(variant, context) {
+  const [domains, nicheResult] = await Promise.all([
+    checkDomains(slugify(variant)),
+    searchNiche(variant, context, 3)
+  ]);
+  return {
+    name: variant,
+    domains,
+    niche_matches: nicheResult.matches,
+    serp_error: nicheResult.error
+  };
+}
+
+async function searchNiche(name, context, limit = 6) {
   const key = process.env.SERPER_API_KEY;
   if (!key) {
     return { matches: [], error: 'SERPER_API_KEY not set on the server — niche collision check is skipped. Add it in Vercel\'s Environment Variables and redeploy.' };
@@ -67,7 +132,7 @@ async function searchNiche(name, context) {
       fetch('https://google.serper.dev/search', {
         method: 'POST',
         headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: '"' + name + '" ' + context, num: 6 })
+        body: JSON.stringify({ q: '"' + name + '" ' + context, num: limit })
       }),
       8000
     );
@@ -76,7 +141,7 @@ async function searchNiche(name, context) {
     }
     const data = await res.json();
     const organic = data.organic || [];
-    const matches = organic.slice(0, 6).map((r) => ({
+    const matches = organic.slice(0, limit).map((r) => ({
       title: r.title || '',
       link: r.link || '',
       snippet: r.snippet || ''
@@ -135,17 +200,13 @@ module.exports = async function handler(req, res) {
     }
 
     const slug = slugify(name);
+    const variantNames = generateVariants(name);
 
-    const [domainResults, nicheResult] = await Promise.all([
-      Promise.all(TLDS.map((tld) => checkDomain(slug + '.' + tld))),
-      searchNiche(name, context)
+    const [domains, nicheResult, variants] = await Promise.all([
+      checkDomains(slug),
+      searchNiche(name, context),
+      Promise.all(variantNames.map((v) => checkVariant(v, context)))
     ]);
-
-    const domains = {};
-    for (const d of domainResults) {
-      const tld = d.domain.split('.').pop();
-      domains[tld] = d;
-    }
 
     const groundingText = nicheResult.matches.length
       ? 'Real web search results for "' + name + '" alongside "' + context + '": ' +
@@ -215,6 +276,7 @@ module.exports = async function handler(req, res) {
       domains,
       niche_matches: nicheResult.matches,
       serp_error: nicheResult.error,
+      variants,
       scores,
       raw
     });
