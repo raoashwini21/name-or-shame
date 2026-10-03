@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Name Worth It?</title>
+<meta name="description" content="Open a case file on the name you're about to lock in. Domains, lookalikes, and a verdict — before you file for it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E8DCB8;
+    --paper-raised:#F3EAC9;
+    --card:#F6EFD6;
+    --ink:#2A2114;
+    --ink-soft:#6E6244;
+    --line:#2A2114;
+    --redink:#A3271F;
+    --redink-soft:#F3DAD4;
+    --greenink:#2F5B3C;
+    --greenink-soft:#DCE8DA;
+    --amberink:#8A5A12;
+    --amberink-soft:#F0DFB8;
+    --tape:#D8C98C;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#19150D; --paper-raised:#211C11; --card:#241F14;
+      --ink:#EDE1C2; --ink-soft:#A99A77; --line:#EDE1C2;
+      --redink:#E0776B; --redink-soft:#3A201B;
+      --greenink:#78C294; --greenink-soft:#1C3024;
+      --amberink:#E0B566; --amberink-soft:#3A2B10;
+      --tape:#3A3119;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#19150D; --paper-raised:#211C11; --card:#241F14;
+    --ink:#EDE1C2; --ink-soft:#A99A77; --line:#EDE1C2;
+    --redink:#E0776B; --redink-soft:#3A201B;
+    --greenink:#78C294; --greenink-soft:#1C3024;
+    --amberink:#E0B566; --amberink-soft:#3A2B10;
+    --tape:#3A3119;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif;
+    padding:36px 16px 72px;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 20% 15%, rgba(0,0,0,0.035), transparent 45%),
+      radial-gradient(circle at 85% 70%, rgba(0,0,0,0.035), transparent 50%);
+  }
+  .wrap{max-width:600px;margin:0 auto;}
+
+  /* folder tab header */
+  .folder-tab{
+    display:inline-block;background:var(--card);border:2px solid var(--line);
+    border-bottom:none;border-radius:8px 8px 0 0;padding:7px 18px 9px;
+    font-family:'Special Elite',monospace;font-size:12px;letter-spacing:0.04em;
+    color:var(--ink-soft);margin-left:18px;
+  }
+  header.top{
+    background:var(--card);border:2px solid var(--line);border-radius:0 10px 10px 10px;
+    padding:20px 22px;margin-bottom:26px;box-shadow:4px 5px 0 rgba(42,33,20,0.18);
+    display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+  }
+  .brand{font-family:'Special Elite',monospace;font-weight:400;font-size:17px;display:flex;flex-direction:column;gap:5px;}
+  .brand-row{display:inline-flex;align-items:center;gap:9px;}
+  .magnifier{width:15px;height:15px;border:2.5px solid var(--ink);border-radius:50%;position:relative;flex:none;}
+  .magnifier::after{content:'';position:absolute;width:7px;height:2.5px;background:var(--ink);bottom:-5px;right:-5px;transform:rotate(45deg);border-radius:2px;}
+  .brand small{font-weight:400;font-family:'Courier Prime',monospace;color:var(--ink-soft);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;margin-top:1px;}
+  .case-no{
+    font-family:'Courier Prime',monospace;font-size:11.5px;color:var(--ink-soft);text-align:right;line-height:1.8;
+    white-space:nowrap;padding-top:2px;
+  }
+  .case-no b{color:var(--redink);font-weight:700;}
+
+  h1{
+    font-family:'Special Elite',monospace;font-weight:400;font-size:clamp(24px,5.8vw,32px);
+    line-height:1.3;margin:0 0 12px;letter-spacing:-0.01em;text-wrap:balance;
+  }
+  p.lede{color:var(--ink-soft);font-size:15px;line-height:1.65;margin:0 0 28px;max-width:56ch;font-weight:500;}
+
+  .card{
+    background:var(--card);border:2px solid var(--line);border-radius:3px;
+    padding:22px;margin-bottom:18px;box-shadow:4px 5px 0 rgba(42,33,20,0.18);
+    position:relative;
+  }
+  /* corner tape effect on the intake card */
+  .card.evidence::before{
+    content:'';position:absolute;top:-9px;left:28px;width:54px;height:20px;
+    background:var(--tape);opacity:0.75;transform:rotate(-3deg);
+    box-shadow:0 1px 2px rgba(0,0,0,0.15);
+  }
+  .field-label{
+    font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:0.07em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;margin-bottom:10px;
+  }
+  textarea, input[type="text"]{
+    width:100%;font-family:'Inter', sans-serif;font-size:14.5px;font-weight:500;color:var(--ink);
+    background:var(--paper-raised);border:2px solid var(--line);border-radius:3px;padding:12px 14px;
+    resize:vertical;line-height:1.5;
+  }
+  textarea:focus, input:focus{outline:none;border-color:var(--redink);box-shadow:3px 3px 0 var(--redink);}
+  input#nameInput{font-family:'Special Elite',monospace;font-size:20px;padding:11px 14px;}
+  .keynote{font-size:12.5px;color:var(--ink-soft);margin-top:12px;line-height:1.6;font-weight:500;}
+
+  .run-btn{
+    position:relative;width:100%;font-family:'Courier Prime',monospace;font-size:14.5px;font-weight:700;
+    letter-spacing:0.03em;text-transform:uppercase;background:var(--redink);color:var(--card);
+    border:2px solid var(--line);border-radius:3px;padding:16px;cursor:pointer;margin-top:16px;
+    box-shadow:4px 4px 0 var(--line);display:flex;align-items:center;justify-content:center;gap:10px;
+  }
+  .run-btn:disabled{opacity:0.6;cursor:default;}
+  .run-btn:not(:disabled):hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--line);}
+  .run-btn:not(:disabled):active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--line);}
+  .spinner{width:13px;height:13px;border-radius:50%;border:2.5px solid rgba(255,255,255,0.4);border-top-color:#fff;animation:spin 0.7s linear infinite;display:none;}
+  .run-btn.loading .spinner{display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .ghost-btn{
+    font-family:'Courier Prime',monospace;font-size:12px;font-weight:700;background:var(--paper-raised);
+    border:2px solid var(--line);color:var(--ink);padding:11px;border-radius:3px;cursor:pointer;
+    white-space:nowrap;box-shadow:3px 3px 0 var(--line);
+  }
+  .ghost-btn:hover{background:var(--card);}
+  .ghost-btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--line);}
+
+  .error-box{
+    display:none;background:var(--redink-soft);border:2px solid var(--redink);color:var(--redink);
+    border-radius:3px;padding:14px 16px;font-size:13px;font-weight:600;line-height:1.6;margin-top:16px;
+    box-shadow:3px 3px 0 var(--redink);
+  }
+  .error-box pre{background:rgba(0,0,0,0.08);padding:9px;border-radius:3px;overflow-x:auto;font-size:11.5px;font-weight:400;margin:8px 0 0;white-space:pre-wrap;word-break:break-word;}
+
+  #result{display:none;}
+  #result.show{display:block;animation:rise 0.45s cubic-bezier(0.22,1,0.36,1);}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+  /* verdict page — the stamped case summary */
+  .stamp-block{
+    position:relative;text-align:center;padding:34px 20px 28px;border:2px solid var(--line);
+    border-radius:3px;margin-bottom:18px;background:var(--card);overflow:hidden;
+    box-shadow:4px 5px 0 rgba(42,33,20,0.18);
+  }
+  .case-label{font-family:'Courier Prime',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:12px;}
+  .stamp-name{font-family:'Special Elite',monospace;font-size:clamp(19px,5.5vw,25px);color:var(--ink);margin-bottom:16px;}
+  .stamp{
+    display:inline-block;font-family:'Courier Prime',monospace;font-weight:700;font-size:clamp(19px,5.5vw,27px);
+    letter-spacing:0.05em;padding:12px 24px;border-radius:2px;border:4px double currentColor;
+    text-transform:uppercase;transform:rotate(-4deg);
+    animation:stamp-in 0.4s cubic-bezier(0.2,1.3,0.4,1);
+  }
+  @keyframes stamp-in{0%{transform:scale(1.8) rotate(-18deg);opacity:0;}60%{transform:scale(0.95) rotate(-6deg);opacity:1;}100%{transform:scale(1) rotate(-4deg);opacity:1;}}
+  .stamp.good{color:var(--greenink);background:var(--greenink-soft);}
+  .stamp.bad{color:var(--redink);background:var(--redink-soft);}
+  .stamp.mid{color:var(--amberink);background:var(--amberink-soft);}
+  .stamp-sub{margin-top:18px;font-size:13.5px;color:var(--ink-soft);font-weight:500;font-family:'Inter',sans-serif;max-width:40ch;margin-left:auto;margin-right:auto;}
+
+  .real-section{margin-bottom:20px;}
+  .real-label{font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:7px;}
+  .real-label .liveDot{width:6px;height:6px;border-radius:50%;background:var(--greenink);flex:none;}
+  .domain-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-family:'Courier Prime',monospace;font-size:13px;}
+  .domain-row:last-child{border-bottom:none;}
+  .domain-name{font-weight:700;}
+  .domain-badge{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:2px;border:1.5px solid currentColor;text-transform:uppercase;letter-spacing:0.03em;}
+  .domain-badge.avail{color:var(--greenink);background:var(--greenink-soft);}
+  .domain-badge.taken{color:var(--redink);background:var(--redink-soft);}
+  .domain-badge.unknown{color:var(--ink-soft);background:var(--paper-raised);}
+  .domain-row a{font-size:11.5px;color:var(--redink);font-weight:700;text-decoration:none;}
+  .niche-item{padding:10px 0;border-bottom:1px dashed var(--line);}
+  .niche-item:last-child{border-bottom:none;}
+  .niche-title{font-size:13.5px;font-weight:700;margin-bottom:3px;font-family:'Inter',sans-serif;}
+  .niche-title a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--redink);}
+  .niche-snippet{font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+  .niche-empty{font-size:12.5px;color:var(--ink-soft);font-style:italic;}
+
+  .checks{display:flex;flex-direction:column;gap:17px;}
+  .check-top{display:flex;justify-content:space-between;align-items:baseline;font-family:'Courier Prime',monospace;font-size:12.5px;margin-bottom:7px;font-weight:700;}
+  .check-name{color:var(--ink);}
+  .check-pct{color:var(--ink-soft);font-variant-numeric:tabular-nums;font-weight:700;}
+  .meter{height:10px;background:var(--paper-raised);border:1.5px solid var(--line);border-radius:2px;overflow:hidden;}
+  .meter-fill{height:100%;width:0%;transition:width 0.9s cubic-bezier(0.16,1,0.3,1);}
+  .meter-fill.pos{background:var(--greenink);}
+  .meter-fill.neg{background:var(--redink);}
+  .check-note{font-size:11.5px;color:var(--ink-soft);margin-top:6px;font-weight:500;}
+
+  .actions{display:flex;gap:10px;margin-top:22px;}
+  .actions button{flex:1;}
+
+  footer{margin-top:44px;padding-top:20px;border-top:2px dashed var(--line);font-size:12px;color:var(--ink-soft);line-height:1.6;font-weight:500;text-align:center;}
+  footer a{color:var(--redink);font-weight:700;}
+
+  .raw-toggle{font-family:'Courier Prime',monospace;font-size:11px;color:var(--ink-soft);font-weight:600;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;margin-top:18px;}
+  #rawOutput{display:none;margin-top:8px;}
+  #rawOutput pre{background:var(--paper-raised);border:1.5px solid var(--line);padding:10px;border-radius:3px;font-size:11px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;max-height:260px;overflow-y:auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="folder-tab">CASE FILES — OPEN</div>
+  <header class="top">
+    <div class="brand">
+      <span class="brand-row"><span class="magnifier"></span>NAME WORTH IT?</span>
+      <small>background checks for product names</small>
+    </div>
+    <div class="case-no">CASE NO.<br><b id="caseNo">0001</b></div>
+  </header>
+
+  <h1>Open a file on the name before you commit to it.</h1>
+  <p class="lede">Give us the name and what it's for. We'll run it: who else is using it nearby, whether the domains are clear, and if it'll actually stick in someone's head.</p>
+
+  <div class="card evidence">
+    <div class="field-label">Subject's name</div>
+    <input type="text" id="nameInput" placeholder="e.g. Nimbus" autocomplete="off" value="Nimbus">
+  </div>
+
+  <div class="card">
+    <div class="field-label">What it does <span style="text-transform:none;letter-spacing:0;font-weight:400;">(one line — also what we search against)</span></div>
+    <textarea id="context" placeholder="e.g. A tool for freelance designers to send client invoices and get paid faster">A browser extension that automates LinkedIn outreach for sales teams</textarea>
+    <button class="run-btn" id="runBtn" type="button">
+      <span class="spinner"></span>
+      <span id="runBtnLabel">Open the case</span>
+    </button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div id="result">
+    <div class="stamp-block">
+      <div class="case-label">case closed —</div>
+      <div class="stamp-name" id="stampName">"—"</div>
+      <div class="stamp" id="stampEl">—</div>
+      <div class="stamp-sub" id="stampSub"></div>
+    </div>
+
+    <div class="card">
+      <div class="real-section">
+        <div class="real-label"><span class="liveDot"></span>domains — live lookup</div>
+        <div id="domainsEl"></div>
+      </div>
+      <div class="real-section">
+        <div class="real-label"><span class="liveDot"></span>spotted in your niche — live search</div>
+        <div id="nicheEl"></div>
+      </div>
+      <div class="checks" id="checksEl"></div>
+      <div class="actions">
+        <button class="ghost-btn" id="copyBtn" type="button">copy report</button>
+        <button class="ghost-btn" id="runAgainBtn" type="button">new case</button>
+      </div>
+      <button class="raw-toggle" id="rawToggle" type="button">show raw response</button>
+      <div id="rawOutput"><pre id="rawPre"></pre></div>
+    </div>
+  </div>
+
+  <footer>
+    Domains checked live via RDAP, niche checked via live web search, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. Not a trademark search — still run a proper one before you file anything.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  // Same-origin call — this file and the serverless function it hits
+  // (api/name-check.js) are deployed together. No key to bring here —
+  // the function runs on a server-held Jev key.
+  const RELAY_URL = '/api/name-check';
+
+  const $ = (id) => document.getElementById(id);
+  const nameEl = $('nameInput');
+  const contextEl = $('context');
+  const runBtn = $('runBtn');
+  const runBtnLabel = $('runBtnLabel');
+  const errorBox = $('errorBox');
+  const resultEl = $('result');
+  const caseNo = $('caseNo');
+  const stampName = $('stampName');
+  const stampEl = $('stampEl');
+  const stampSub = $('stampSub');
+  const domainsEl = $('domainsEl');
+  const nicheEl = $('nicheEl');
+  const checksEl = $('checksEl');
+  const copyBtn = $('copyBtn');
+  const runAgainBtn = $('runAgainBtn');
+  const rawToggle = $('rawToggle');
+  const rawOutput = $('rawOutput');
+  const rawPre = $('rawPre');
+
+  // purely cosmetic case counter, local to this browser
+  try{
+    let n = parseInt(localStorage.getItem('nwi_case_no') || '0', 10) + 1;
+    localStorage.setItem('nwi_case_no', String(n));
+    caseNo.textContent = String(n).padStart(4, '0');
+  }catch(e){}
+
+  function showError(title, detail, extra){
+    errorBox.innerHTML = '<strong>' + title + '</strong><br>' + detail + (extra ? '<pre>' + extra + '</pre>' : '');
+    errorBox.style.display = 'block';
+  }
+  function hideError(){ errorBox.style.display = 'none'; errorBox.innerHTML = ''; }
+
+  function pct(v){ return v === null || v === undefined ? '—' : Math.round(v * 100) + '%'; }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(ch){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch];
+    });
+  }
+
+  function renderDomains(domains){
+    const tldOrder = ['com', 'io', 'net'];
+    domainsEl.innerHTML = tldOrder.filter(t => domains && domains[t]).map(function(tld){
+      const d = domains[tld];
+      const cls = d.available === true ? 'avail' : d.available === false ? 'taken' : 'unknown';
+      const label = d.available === true ? 'clear' : d.available === false ? 'taken' : 'unknown';
+      const link = d.available === true
+        ? '<a href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(d.domain) + '" target="_blank" rel="noopener">claim it →</a>'
+        : '';
+      return '<div class="domain-row"><span class="domain-name">' + d.domain + '</span>' +
+        '<span style="display:flex;align-items:center;gap:10px;"><span class="domain-badge ' + cls + '">' + label + '</span>' + link + '</span></div>';
+    }).join('') || '<p class="niche-empty">Could not check domains this run.</p>';
+  }
+
+  function renderNiche(matches, serpError){
+    if (matches && matches.length){
+      nicheEl.innerHTML = matches.map(function(m){
+        return '<div class="niche-item">' +
+          '<div class="niche-title"><a href="' + m.link + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
+          '<div class="niche-snippet">' + escapeHtml(m.snippet) + '</div>' +
+        '</div>';
+      }).join('');
+    } else if (serpError) {
+      nicheEl.innerHTML = '<p class="niche-empty">' + escapeHtml(serpError) + '</p>';
+    } else {
+      nicheEl.innerHTML = '<p class="niche-empty">No trace found — looks clear in this niche.</p>';
+    }
+  }
+
+  function renderResult(name, scores, domains, nicheMatches, serpError, rawData){
+    renderDomains(domains);
+    renderNiche(nicheMatches, serpError);
+
+    const m = scores.memorable ?? 0;
+    const e = scores.easy_say_spell ?? 0;
+    const g = scores.too_generic ?? 0;
+    const c = scores.brand_collision ?? 0;
+
+    let verdict, verdictClass, sub;
+    if (c >= 0.55){
+      verdict = 'IMPERSONATION'; verdictClass = 'bad';
+      sub = "lands too close to an existing name — expect confusion, maybe a letter from their lawyer";
+    } else if (g >= 0.6 && m < 0.5){
+      verdict = 'NO WITNESSES'; verdictClass = 'bad';
+      sub = "nothing distinctive enough for anyone to remember it afterward";
+    } else if (m >= 0.65 && e >= 0.6 && g < 0.5 && c < 0.35){
+      verdict = 'CLEARED'; verdictClass = 'good';
+      sub = 'distinctive, sayable, and clear of the obvious collisions — case closed';
+    } else {
+      verdict = 'UNDER WATCH'; verdictClass = 'mid';
+      sub = 'not ruled out, not ruled in — at least one thing here needs a second look';
+    }
+
+    stampEl.style.animation = 'none';
+    void stampEl.offsetWidth;
+    stampEl.style.animation = '';
+
+    stampName.textContent = '"' + name + '"';
+    stampEl.textContent = verdict;
+    stampEl.className = 'stamp ' + verdictClass;
+    stampSub.textContent = sub;
+
+    const rows = [
+      ['memorable', m, 'pos', 'sticks after hearing it once'],
+      ['easy to say & spell', e, 'pos', 'no "wait, how do you spell that?"'],
+      ['too generic', g, 'neg', 'lower is better — distinctive beats descriptive'],
+      ['sounds like an existing brand', c, 'neg', 'lower is better — nobody wants to be "the other one"']
+    ];
+
+    checksEl.innerHTML = rows.map(function(row){
+      const [rname, val, dir, note] = row;
+      const fillClass = dir === 'neg' ? (val >= 0.5 ? 'neg' : 'pos') : (val >= 0.5 ? 'pos' : 'neg');
+      return '<div class="check-row">' +
+        '<div class="check-top"><span class="check-name">' + rname + '</span><span class="check-pct">' + pct(val) + '</span></div>' +
+        '<div class="meter"><div class="meter-fill ' + fillClass + '" data-target="' + (val === null ? 0 : Math.round(val * 100)) + '"></div></div>' +
+        '<div class="check-note">' + note + '</div>' +
+      '</div>';
+    }).join('');
+
+    rawPre.textContent = JSON.stringify(rawData, null, 2);
+    resultEl.classList.remove('show');
+    resultEl.style.display = 'block';
+    void resultEl.offsetWidth;
+    resultEl.classList.add('show');
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        checksEl.querySelectorAll('.meter-fill').forEach(function(el){ el.style.width = el.dataset.target + '%'; });
+      });
+    });
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    resultEl.dataset.shareText =
+      'Name Worth It case file on "' + name + '": ' + verdict + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
+      pct(g) + ' too generic, ' + pct(c) + ' brand collision risk).';
+  }
+
+  async function run(){
+    hideError();
+    resultEl.classList.remove('show');
+    resultEl.style.display = 'none';
+
+    const name = nameEl.value.trim();
+    const context = contextEl.value.trim();
+
+    if (!name){ showError('Missing name', 'Type the name you want checked.'); return; }
+    if (!context){ showError('Missing context', "Add a one-line description of what it does — it's also what gets searched for the niche check."); return; }
+
+    runBtn.disabled = true;
+    runBtn.classList.add('loading');
+    runBtnLabel.textContent = 'running the check...';
+
+    try{
+      const res = await fetch(RELAY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, context: context })
+      });
+
+      const text = await res.text();
+      let data;
+      try{ data = JSON.parse(text); }catch(e){ data = { raw: text }; }
+
+      if (res.status === 429){
+        showError('Too many checks right now', data.error || 'Give it a minute and try again.');
+        return;
+      }
+      if (!res.ok){
+        showError('Got an error back (' + res.status + ')', data.error || 'Something went wrong on the checker side.', JSON.stringify(data, null, 2));
+        return;
+      }
+      if (!data.scores){
+        showError('Got a response but couldn\'t read the scores out of it', 'Raw response below.', JSON.stringify(data, null, 2));
+        return;
+      }
+
+      renderResult(name, data.scores, data.domains, data.niche_matches, data.serp_error, data.raw);
+    }catch(err){
+      showError('Could not reach the checker', 'Try again in a moment.');
+    }finally{
+      runBtn.disabled = false;
+      runBtn.classList.remove('loading');
+      runBtnLabel.textContent = 'Open the case';
+    }
+  }
+
+  runBtn.addEventListener('click', run);
+  runAgainBtn.addEventListener('click', function(){
+    resultEl.classList.remove('show');
+    resultEl.style.display = 'none';
+    nameEl.focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  copyBtn.addEventListener('click', async function(){
+    const txt = resultEl.dataset.shareText || '';
+    try{
+      await navigator.clipboard.writeText(txt);
+      copyBtn.textContent = 'copied';
+      setTimeout(function(){ copyBtn.textContent = 'copy report'; }, 1500);
+    }catch(e){ showError('Could not copy', 'Select and copy the verdict manually.'); }
+  });
+
+  rawToggle.addEventListener('click', function(){
+    const showing = rawOutput.style.display === 'block';
+    rawOutput.style.display = showing ? 'none' : 'block';
+    rawToggle.textContent = showing ? 'show raw response' : 'hide raw response';
+  });
+})();
+</script>
+</body>
+</html>
