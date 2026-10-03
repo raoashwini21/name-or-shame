@@ -412,9 +412,386 @@
   @media (prefers-reduced-motion: reduce){
     *,*::before,*::after{animation:none !important;transition:none !important;}
   }
+
+  /* =====================================================================
+     DETECTIVE LAYER — ink illustrations + investigation storytelling
+     ===================================================================== */
+  /* ink drawing primitives (shared by every illustration) */
+  .ill .s{stroke:var(--ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+  .ill .fn{fill:none;}
+  .ill .fc{fill:#D6C08E;}            /* trench coat */
+  .ill .fs{fill:#F7EFDF;}            /* skin / cream */
+  .ill .fh{fill:var(--ink);}         /* hair, shoes, ink fills */
+  .ill .ft{fill:#3B3127;}            /* trousers */
+  .ill .fr{fill:var(--red);}
+  .ill .fp{fill:var(--sheet);}
+  .ill .fm{fill:var(--manila);}
+  .ill .ao{fill:none;stroke:var(--ink);stroke-width:9.5;stroke-linecap:round;stroke-linejoin:round;}
+  .ill .ai{fill:none;stroke:#D6C08E;stroke-width:6.4;stroke-linecap:round;stroke-linejoin:round;}
+  .ill .tx{font-family:var(--f-mono);fill:var(--ink);font-weight:500;letter-spacing:0.08em;}
+  .ill .hand{font-family:var(--f-hand);fill:var(--red);}
+  .ill .faint{opacity:0.55;}
+  .defs{position:absolute;width:0;height:0;overflow:hidden;}
+
+  .annot-note{font-family:var(--f-hand);color:var(--red);font-size:21px;line-height:1.1;}
+
+  /* hero scene — sits in the space to the right of the lede */
+  .hero{display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:28px;align-items:start;}
+  .hero h1{grid-column:1 / -1;}
+  .hero .lede{grid-column:1;}
+  .hero-scene{grid-column:2;grid-row:2;position:relative;margin-top:-58px;}
+  .hero-scene svg{display:block;width:100%;height:auto;}
+  .hero-scene .annot-note{position:absolute;right:4px;top:-6px;transform:rotate(-4deg);max-width:170px;text-align:right;}
+  .hero-scene .note-arrow{position:absolute;right:150px;top:50px;width:52px;height:auto;}
+  .note-arrow path{fill:none;stroke:var(--red);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:0.85;}
+
+  /* the detective's magnifier leaning over the intake folder */
+  .peek{position:absolute;right:-46px;top:124px;width:150px;pointer-events:none;z-index:2;}
+  .peek svg{display:block;width:100%;height:auto;}
+
+  /* investigation plan (aside) */
+  .index-card li{grid-template-columns:26px 1fr 26px;align-items:start;}
+  .index-card li .ico{width:22px;height:22px;justify-self:end;margin-top:-1px;}
+  .index-card li .ico .s{stroke-width:1.4;}
+  .index-card li b{font-family:var(--f-mono);font-weight:500;font-size:11.5px;letter-spacing:0.1em;}
+  .plan-stamp{
+    display:inline-block;margin:12px 0 14px;font-family:var(--f-cond);font-weight:600;font-size:12px;letter-spacing:0.16em;
+    color:var(--red);border:1.5px solid var(--red);padding:5px 10px 4px;transform:rotate(-4deg);opacity:0.9;
+  }
+
+  /* loading — the detective works the case */
+  .work{display:grid;grid-template-columns:104px minmax(0,1fr);gap:22px;align-items:center;padding:18px 0 16px;border-bottom:1px solid var(--rule);}
+  .work svg{width:104px;height:auto;display:block;}
+  #detLoader .pose{opacity:0;transition:opacity 0.15s;}
+  #detLoader .pose.on{opacity:1;}
+  .work-step{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;margin-bottom:6px;}
+  .work-msg{font-family:var(--f-display);font-style:italic;font-size:26px;line-height:1.2;letter-spacing:-0.01em;min-height:1.2em;}
+  .work-dots{display:flex;gap:5px;margin-top:12px;}
+  .work-dots i{width:18px;height:2px;background:var(--rule-strong);}
+  .work-dots i.on{background:var(--ink);}
+  .work-dots i.now{background:var(--red);}
+
+  /* evidence board */
+  .board-wrap{padding:26px 28px 30px !important;}
+  .ev-board{
+    position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-areas:"e1 note e2" "e3 center e4" "e5 det e6";
+    gap:30px 34px;margin-top:22px;
+  }
+  .ev-strings{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0;}
+  .ev-strings path{fill:none;stroke:var(--red);stroke-width:1.2;opacity:0.75;}
+  .ev-card{
+    position:relative;z-index:1;display:block;text-decoration:none;color:var(--ink);
+    background:var(--sheet);border:1px solid rgba(34,27,19,0.14);padding:16px 14px 14px;
+    box-shadow:0 1px 0 rgba(34,27,19,0.04), 0 8px 14px -12px rgba(60,40,10,0.5);
+    transform:rotate(var(--r,0deg));transition:transform 0.15s;
+  }
+  .ev-card:hover{transform:rotate(0deg) translateY(-1px);}
+  .ev-card::before{
+    content:'';position:absolute;top:-6px;left:50%;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;
+    background:var(--red);box-shadow:inset -2px -2px 0 rgba(0,0,0,0.25), 0 1px 1px rgba(0,0,0,0.25);
+  }
+  .ev-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--ink-3);}
+  .ev-t{font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:0.1em;margin:4px 0 8px;}
+  .ev-s{font-size:13px;color:var(--ink-2);line-height:1.45;min-height:2.9em;}
+  .ev-card .stamp-mini{margin-top:10px;}
+  .ev-center{
+    grid-area:center;align-self:center;position:relative;z-index:1;text-align:center;
+    background:var(--manila);border:1px solid var(--manila-deep);padding:18px 12px 16px;
+    box-shadow:0 10px 18px -14px rgba(60,40,10,0.6);
+  }
+  .ev-center .ev-k{color:var(--ink-2);}
+  .ev-center .ev-name{font-family:var(--f-display);font-size:28px;font-weight:500;line-height:1.1;margin-top:6px;overflow-wrap:anywhere;}
+  .ev-note{grid-area:note;align-self:end;justify-self:center;text-align:center;transform:rotate(-3deg);font-size:19px;}
+  .ev-det{grid-area:det;justify-self:center;align-self:end;width:150px;margin-bottom:-12px;position:relative;z-index:1;}
+  .ev-det svg{width:100%;height:auto;display:block;}
+  #ev1{grid-area:e1;} #ev2{grid-area:e2;} #ev3{grid-area:e3;} #ev4{grid-area:e4;} #ev5{grid-area:e5;} #ev6{grid-area:e6;}
+
+  /* small rubber stamps — used sparingly */
+  .stamp-mini{
+    display:inline-block;font-family:var(--f-cond);font-weight:600;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;
+    padding:3px 7px 2px;border:1.5px solid currentColor;transform:rotate(-3deg);opacity:0.92;white-space:nowrap;
+  }
+  .stamp-mini.clear{color:var(--ink);}
+  .stamp-mini.flag{color:var(--red);}
+  .stamp-mini.found{color:var(--ink);background:var(--manila-soft);border-color:var(--ink-2);}
+  .stamp-mini.taken{color:var(--ink-2);}
+  .stamp-mini.look{color:var(--ink-2);border-style:dashed;}
+
+  /* sheet vignettes — the detective at work on each page */
+  .sheet-head{position:relative;}
+  .vig{position:absolute;right:0;bottom:-2px;width:78px;height:auto;pointer-events:none;}
+  .vig.wide{width:104px;}
+  .sheet-head.has-vig{padding-right:96px;min-height:104px;align-items:flex-end;}
+  .sheet-head.has-vig.wide-vig{padding-right:120px;min-height:110px;}
+  .sheet-head.has-vig .status{position:absolute;right:96px;bottom:12px;}
+  .sheet-head.has-vig.wide-vig .status{right:120px;}
+
+  /* 01 — suspect lineup */
+  .lineup{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;}
+  .suspect{
+    background:#FFFDF8;border:1px solid var(--rule-strong);padding:12px 12px 12px;position:relative;
+    display:flex;flex-direction:column;gap:6px;min-width:0;
+  }
+  .suspect-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--red);}
+  .suspect-name{font-family:var(--f-display);font-size:17px;font-weight:500;line-height:1.25;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .suspect-name a{text-decoration:none;}
+  .suspect-name a:hover{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;}
+  .suspect dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-family:var(--f-mono);font-size:10.5px;}
+  .suspect dt{color:var(--ink-3);letter-spacing:0.1em;}
+  .suspect dd{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .suspect dd.high{color:var(--red);font-weight:500;}
+  .suspect-snip{font-size:12px;color:var(--ink-2);line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;}
+  .fine{font-size:11.5px;color:var(--ink-3);margin:10px 0 0;}
+  .handles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+  .handle-card{border:1px solid var(--rule-strong);background:#FFFDF8;padding:12px 14px;display:flex;flex-direction:column;gap:4px;}
+  .handle-card .h{font-family:var(--f-mono);font-size:14px;font-weight:500;overflow-wrap:anywhere;}
+  .handle-card .p{font-size:12px;color:var(--ink-3);}
+  .handle-card .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;}
+  .handle-card a{font-size:12.5px;color:var(--red);text-decoration:none;}
+  .handle-card a:hover{text-decoration:underline;}
+
+  /* 02 — filing cabinet */
+  .cabinet{margin-top:16px;border:1.5px solid var(--ink);background:#E9DFC9;padding:8px 8px 4px;max-width:560px;position:relative;}
+  .cabinet::after{content:'';position:absolute;left:14px;right:14px;bottom:-7px;height:6px;border:1.5px solid var(--ink);border-top:none;background:#D9CDB2;}
+  .drawer{
+    display:grid;grid-template-columns:64px minmax(0,1fr) auto;align-items:center;gap:12px;
+    background:var(--sheet);border:1px solid var(--rule-strong);padding:9px 12px;margin-bottom:6px;position:relative;
+    transition:transform 0.2s;
+  }
+  .drawer .tab{
+    font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:0.1em;text-align:center;
+    border:1px solid var(--ink);background:var(--manila-soft);padding:2px 0;position:relative;
+  }
+  .drawer .tab::after{content:'';position:absolute;left:50%;bottom:-7px;width:18px;height:3px;margin-left:-9px;border:1px solid var(--ink);border-top:none;border-radius:0 0 3px 3px;}
+  .drawer .dn{font-family:var(--f-mono);font-size:13.5px;font-weight:500;overflow-wrap:anywhere;}
+  .drawer .dr{display:flex;align-items:center;gap:10px;}
+  .drawer a{font-size:12.5px;color:var(--red);text-decoration:none;white-space:nowrap;}
+  .drawer a:hover{text-decoration:underline;}
+  /* an available domain is a drawer someone pulled open */
+  .drawer.open{transform:translateX(14px);box-shadow:-6px 4px 0 -2px rgba(34,27,19,0.10);}
+
+  /* 03 — clippings pinned to the board */
+  .clips{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+  .clip{
+    background:#FFFDF8;border:1px solid rgba(34,27,19,0.14);padding:16px 14px 12px;position:relative;
+    transform:rotate(var(--r,0deg));box-shadow:0 6px 12px -10px rgba(60,40,10,0.5);
+  }
+  .clip::before{content:'';position:absolute;top:-5px;left:18px;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:inset -2px -2px 0 rgba(0,0,0,0.25);}
+  .clip .niche-title{font-family:var(--f-display);font-size:16px;}
+  .clip .niche-snippet{font-size:12.5px;}
+
+  /* 04 — notebook page */
+  .notebook{
+    margin-top:14px;padding:4px 18px 6px 46px;position:relative;
+    background:
+      linear-gradient(to right, transparent 34px, rgba(156,42,32,0.45) 34px, rgba(156,42,32,0.45) 35px, transparent 35px),
+      #FFFDF8;
+    border:1px solid var(--rule-strong);
+  }
+  .notebook::before{
+    content:'';position:absolute;left:12px;top:14px;bottom:14px;width:8px;
+    background:radial-gradient(circle, var(--desk) 3px, transparent 3.5px) 0 0 / 8px 26px repeat-y;
+  }
+
+  /* 05 — close relatives as a mugshot lineup */
+  .mugs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px;}
+  .mug{border:1px solid var(--rule-strong);background:#FFFDF8;min-width:0;}
+  .mug-shot{
+    height:132px;position:relative;border-bottom:1px solid var(--rule-strong);overflow:hidden;
+    background:repeating-linear-gradient(to bottom, transparent 0 21px, var(--rule) 21px 22px), #F5EFE2;
+  }
+  .mug-shot .ht{position:absolute;left:6px;font-family:var(--f-mono);font-size:8px;color:var(--ink-3);}
+  .mug-shot svg{position:absolute;left:50%;bottom:0;width:84px;margin-left:-42px;}
+  .mug-plate{
+    position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:var(--ink);color:var(--sheet);
+    font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:0.08em;padding:4px 8px;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis;
+  }
+  .mug-body{padding:12px 12px 12px;}
+  .mug-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--red);margin-bottom:8px;}
+  .mug .tld-chips{margin-bottom:8px;}
+  .mug details{font-size:12.5px;border-top:1px solid var(--rule);padding-top:8px;}
+  .mug summary{cursor:pointer;font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--ink-2);list-style:none;}
+  .mug summary::-webkit-details-marker{display:none;}
+  .mug summary::before{content:'+ ';color:var(--red);}
+  .mug details[open] summary::before{content:'– ';}
+  .mug .niche-item{padding:8px 0;}
+  .mug .niche-title{font-size:13px;}
+  .mug .niche-snippet{font-size:12px;}
+
+  /* final case summary */
+  .summary{padding:34px 36px 30px !important;}
+  .sum-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--rule-strong);}
+  .sum-case{font-family:var(--f-mono);font-size:13px;letter-spacing:0.16em;}
+  .sum-case b{color:var(--red);font-weight:500;}
+  .sum-subject{font-family:var(--f-mono);font-size:13px;letter-spacing:0.16em;}
+  .sum-subject b{font-weight:500;}
+  .sum-foot{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:20px;align-items:end;margin-top:26px;}
+  .verdict-big{
+    display:inline-block;font-family:var(--f-cond);font-weight:600;font-size:clamp(20px,2.4vw,26px);letter-spacing:0.14em;text-transform:uppercase;white-space:nowrap;
+    padding:12px 20px 10px;border:3px solid currentColor;outline:1.5px solid currentColor;outline-offset:4px;transform:rotate(-3deg);opacity:0.9;
+    animation:stamp-land 0.35s ease-out both;animation-delay:0.25s;
+  }
+  @keyframes stamp-land{from{opacity:0;transform:rotate(-3deg) scale(1.08);}to{opacity:0.9;transform:rotate(-3deg) scale(1);}}
+  .verdict-big.good{color:var(--ink);}
+  .verdict-big.bad{color:var(--red);}
+  .verdict-big.mid{color:var(--ink-2);}
+  .case-closed{font-family:var(--f-display);font-size:30px;font-weight:500;letter-spacing:-0.01em;margin-top:22px;}
+  .sum-foot .stamp-sub{margin-top:12px;}
+  .sum-det svg{width:100%;height:auto;display:block;}
+
+  @media (max-width: 980px){
+    .hero{grid-template-columns:minmax(0,1fr);}
+    .hero-scene{grid-column:1;grid-row:auto;margin-top:22px;max-width:340px;}
+    .peek{display:none;}
+  }
+  @media (max-width: 760px){
+    .ev-board{grid-template-columns:1fr 1fr;grid-template-areas:"center center" "e1 e2" "e3 e4" "e5 e6" "det det";gap:22px 16px;}
+    .ev-note{display:none;}
+    .ev-det{width:96px;}
+    .lineup,.mugs{grid-template-columns:1fr;}
+    .clips{grid-template-columns:1fr;}
+    .handles{grid-template-columns:1fr;}
+    .sum-foot{grid-template-columns:1fr;}
+    .sum-det{max-width:180px;}
+    .verdict-big{white-space:normal;}
+    .work{grid-template-columns:76px minmax(0,1fr);gap:14px;}
+    .work svg{width:76px;}
+    .work-msg{font-size:20px;}
+    .vig{width:60px;}
+    .vig.wide{width:80px;}
+    .sheet-head.has-vig,.sheet-head.has-vig.wide-vig{padding-right:0;flex-wrap:wrap;padding-bottom:12px;}
+    .sheet-head.has-vig .status,.sheet-head.has-vig.wide-vig .status{position:static;}
+    .sheet-head.has-vig .vig{position:static;order:3;margin-left:auto;}
+    .drawer{grid-template-columns:52px minmax(0,1fr);}
+    .drawer .dr{grid-column:2;}
+    .drawer.open{transform:translateX(8px);}
+  }
 </style>
 </head>
 <body>
+<!-- Ink illustration library: one detective, drawn once, posed many ways. -->
+<svg class="defs ill" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+
+    <!-- standing body, facing right, no arms / face -->
+    <g id="det-body">
+      <path class="s ft" d="M47 128 L45 160 L54 160 L56 131 Z"/>
+      <path class="s ft" d="M64 131 L66 160 L75 160 L73 128 Z"/>
+      <path class="s fh" d="M42 161 Q42 156 47 156 L55 157 Q58 160 57 163.5 L42 163.5 Z"/>
+      <path class="s fh" d="M64 161 Q64 156 69 156 L77 157 Q82 159 81 163.5 L64 163.5 Z"/>
+      <path class="s fc" d="M45 58 Q60 52 76 58 Q82 74 84 96 Q88 116 89 134 Q74 139 60 137 Q45 139 31 134 Q33 114 37 96 Q39 74 45 58 Z"/>
+      <path class="s fn" d="M62 70 Q63.5 102 61 137"/>
+      <path class="s fn" d="M36 100 Q60 106 85 100" style="stroke-width:2.4"/>
+      <rect class="s fp" x="57" y="100" width="7" height="6" rx="1"/>
+      <path class="s fn" d="M41 120 Q46 124 44 132" style="stroke-width:1.1"/>
+      <path class="s fc" d="M49 57 L57 73 L61.5 63 L66 73 L73 57 Q61 62 49 57 Z"/>
+      <path class="s fs" d="M57 48 L57 55 Q61 57.5 66 55 L66 48 Z"/>
+      <path class="s fr" d="M52.5 54.5 Q61 60 70.5 54.5 L70.5 59 Q61 64.5 52.5 59 Z" style="stroke-width:1.2"/>
+      <path class="s fr" d="M64 61 L67.5 77 L62.5 75 Z" style="stroke-width:1.1"/>
+      <ellipse class="s fs" cx="62" cy="38" rx="12.5" ry="14"/>
+      <path class="s fh" d="M50 42 Q45.5 24 61 21.5 Q75.5 20.5 76 33 Q70 27 62 29 Q56 30.5 54.5 38 Q53.5 43 50 42 Z"/>
+      <path class="s fs" d="M54 37.5 Q49.5 37.5 50.5 42 Q51.5 45.5 55 44.5" style="stroke-width:1.4"/>
+      <g transform="rotate(-24 53 32)">
+        <rect class="s fm" x="42" y="30.5" width="19" height="3.4" style="stroke-width:1"/>
+        <path class="s fh" d="M61 30.5 L65.5 32.2 L61 33.9 Z" style="stroke-width:0.8"/>
+        <rect class="fr" x="39.5" y="30.5" width="2.8" height="3.4"/>
+      </g>
+    </g>
+
+    <!-- faces -->
+    <g id="f-look"><circle class="fh" cx="68.6" cy="37.4" r="1.4"/><path class="s fn" d="M66 33 L71.2 32.2"/><path class="s fn" d="M74 38 Q77.6 42 73 43.6"/></g>
+    <g id="f-down"><path class="s fn" d="M66.4 39.4 L70.6 40.3"/><path class="s fn" d="M66 34.5 L71 35"/><path class="s fn" d="M74 39 Q77.2 43 72.6 44.2"/></g>
+    <g id="f-up"><circle class="fh" cx="69.2" cy="35.4" r="1.4"/><path class="s fn" d="M66 30.4 L71.6 29.8"/><path class="s fn" d="M74 38 Q77.6 42 73 43.6"/></g>
+    <g id="f-think"><circle class="fh" cx="68.6" cy="37.6" r="1.4"/><path class="s fn" d="M65.4 32 L71.2 34.2"/><path class="s fn" d="M74 38 Q77.6 42 73 43.6"/><path class="s fn" d="M68.2 46.6 L71.6 46"/></g>
+    <g id="f-happy"><path class="s fn" d="M65.8 37.6 Q68.5 34.8 71.2 37.6"/><path class="s fn" d="M74 38 Q77.6 42 73 43.6"/><path class="s fn" d="M68.4 46 Q71 48.4 73.6 46"/></g>
+
+    <!-- poses: arm + prop + face -->
+    <g id="p-folder">
+      <g transform="rotate(-8 100 84)">
+        <path class="s fm" d="M86 74 L89 70 L99 70 L101 74 L114 74 L114 96 L86 96 Z"/>
+        <rect class="s fp" x="89" y="77" width="22" height="16"/>
+        <path class="s fn" d="M92 82 L107 82 M92 86 L104 86 M92 90 L101 90" style="stroke-width:0.9"/>
+      </g>
+      <polyline class="ao" points="75,63 83,82 92,88"/><polyline class="ai" points="75,63 83,82 92,88"/>
+      <circle class="s fs" cx="93" cy="88" r="3.6"/>
+      <use href="#f-down"/>
+    </g>
+    <g id="p-magnify">
+      <polyline class="ao" points="75,63 89,80 93,61"/><polyline class="ai" points="75,63 89,80 93,61"/>
+      <path class="s fn" d="M93.5 58 L97.5 49.5" style="stroke-width:3.4"/>
+      <circle class="s fp" cx="101" cy="41" r="8.6" style="stroke-width:2.2;fill-opacity:0.5"/>
+      <path class="s fn" d="M96 39 Q97 35.4 100.6 35" style="stroke-width:1"/>
+      <circle class="s fs" cx="93" cy="59" r="3.6"/>
+      <use href="#f-look"/>
+    </g>
+    <g id="p-card">
+      <g transform="rotate(-10 107 68)">
+        <rect class="s fp" x="96" y="60" width="23" height="15"/>
+        <text class="tx" x="99" y="70" font-size="6.2">.com</text>
+      </g>
+      <polyline class="ao" points="75,63 87,82 97,75"/><polyline class="ai" points="75,63 87,82 97,75"/>
+      <circle class="s fs" cx="97.5" cy="74.5" r="3.6"/>
+      <use href="#f-look"/>
+    </g>
+    <g id="p-think">
+      <polyline class="ao" points="75,63 87,80 76,53"/><polyline class="ai" points="75,63 87,80 76,53"/>
+      <circle class="s fs" cx="75.5" cy="51.5" r="3.6"/>
+      <text class="hand" x="83" y="22" font-size="24" transform="rotate(10 88 14)">?</text>
+      <use href="#f-think"/>
+    </g>
+    <g id="p-binoc">
+      <polyline class="ao" points="75,63 89,75 80,45"/><polyline class="ai" points="75,63 89,75 80,45"/>
+      <rect class="s fh" x="65" y="31" width="19" height="10.5" rx="3"/>
+      <ellipse class="s fp" cx="85" cy="36.2" rx="2.6" ry="5"/>
+      <circle class="s fs" cx="79" cy="44" r="3.6"/>
+      <path class="s fn" d="M74 42 Q76 44.5 72.8 45.2"/>
+    </g>
+    <g id="p-notebook">
+      <g transform="rotate(12 96 84)">
+        <rect class="s fp" x="84" y="74" width="23" height="18"/>
+        <path class="fn" d="M88 74 L88 92" style="stroke:var(--red);stroke-width:0.8"/>
+        <path class="s fn" d="M90 79 L104 79 M90 83 L103 83 M90 87 L99 87" style="stroke-width:0.8"/>
+      </g>
+      <polyline class="ao" points="75,63 85,84 95,81"/><polyline class="ai" points="75,63 85,84 95,81"/>
+      <path class="fn" d="M96 78 L101.5 88" style="stroke:#C9A962;stroke-width:2.6;stroke-linecap:round"/>
+      <path class="s fn" d="M101.2 87.4 L102.6 90" style="stroke-width:1.2"/>
+      <circle class="s fs" cx="95.5" cy="80.5" r="3.6"/>
+      <use href="#f-down"/>
+    </g>
+    <g id="p-pin">
+      <g transform="rotate(6 106 16)">
+        <rect class="s fp" x="94" y="5" width="25" height="21"/>
+        <path class="s fn" d="M98 12 L114 12 M98 16 L112 16 M98 20 L108 20" style="stroke-width:0.8"/>
+      </g>
+      <polyline class="ao" points="75,63 86,44 93,23"/><polyline class="ai" points="75,63 86,44 93,23"/>
+      <circle class="s fs" cx="93" cy="21.5" r="3.6"/>
+      <circle class="s fr" cx="107" cy="8.5" r="2.6" style="stroke-width:1"/>
+      <use href="#f-up"/>
+    </g>
+    <g id="p-coffee">
+      <polyline class="ao" points="75,63 85,84 88,72"/><polyline class="ai" points="75,63 85,84 88,72"/>
+      <path class="s fp" d="M83.5 61 L94.5 61 L93.3 74 L84.7 74 Z"/>
+      <rect class="fr" x="84.2" y="65.5" width="9.6" height="3"/>
+      <path class="s fn" d="M94.3 64 Q99 65.5 93.8 70" style="stroke-width:1.3"/>
+      <path class="s fn faint" d="M87 57 Q85 53.5 88 50.5 Q90.5 47.5 88 44.5 M91.5 57 Q89.5 53.5 92.5 50.5" style="stroke-width:1"/>
+      <circle class="s fs" cx="88.5" cy="71" r="3.6"/>
+      <use href="#f-happy"/>
+    </g>
+
+    <!-- small ink icons for the plan -->
+    <g id="i-mag"><circle class="s fn" cx="10" cy="10" r="6"/><path class="s fn" d="M14.6 14.6 L20.5 20.5" style="stroke-width:2"/></g>
+    <g id="i-globe"><circle class="s fn" cx="12" cy="12" r="8.4"/><ellipse class="s fn" cx="12" cy="12" rx="3.6" ry="8.4"/><path class="s fn" d="M3.8 12 H20.2 M5.4 7.6 H18.6 M5.4 16.4 H18.6"/></g>
+    <g id="i-pin"><path class="s fr" d="M8.6 3 H15.4 L14.2 9 L17.4 12.2 H6.6 L9.8 9 Z"/><path class="s fn" d="M12 12.2 L12 21"/></g>
+    <g id="i-note"><rect class="s fp" x="5" y="4.5" width="14" height="16.5"/><path class="s fn" d="M8 2.6 V6 M12 2.6 V6 M16 2.6 V6 M8 10 H16 M8 13.5 H16 M8 17 H13"/></g>
+    <g id="i-tree"><circle class="s fp" cx="12" cy="5" r="2.6"/><circle class="s fp" cx="5.5" cy="18.5" r="2.6"/><circle class="s fp" cx="18.5" cy="18.5" r="2.6"/><path class="s fn" d="M12 7.6 V12 M5.5 15.9 V12 H18.5 V15.9"/></g>
+  </defs>
+</svg>
+
 <div class="desk">
 
   <header class="masthead">
@@ -437,30 +814,107 @@
         <span>FILE: <b data-case-no>0001</b></span>
         <span id="railStatusWrap">STATUS: <b id="railStatus">OPEN</b></span>
         <span>TYPE: <b>PRODUCT NAME</b></span>
-        <span>CHECKS: <b>04</b></span>
+        <span>LEADS: <b>05</b></span>
       </div>
     </div>
 
     <section class="hero">
       <h1>Open a file on the name<br class="br-wide"> <span class="mark">before<svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M1 7 C 22 3, 48 9, 70 5 S 94 4, 99 6"/></svg></span> you commit to it.</h1>
       <p class="lede">Give us the name and what it's for. We'll run it: who else is using it nearby, whether the domains are clear, and if it'll actually stick in someone's head.</p>
+
+      <div class="hero-scene" aria-hidden="true">
+        <span class="annot-note">let's see what we're dealing with...</span>
+        <svg class="note-arrow" viewBox="0 0 60 50" aria-hidden="true"><path d="M52 4 C 50 24, 34 38, 10 42"/><path d="M17 35 L9 42 L18 47"/></svg>
+        <svg class="ill" viewBox="0 0 360 250">
+          <g filter="url(#rough)">
+            <path class="s fn" d="M6 224 Q90 220 180 223 T354 222" style="stroke-width:1.3"/>
+            <!-- loose paper under the folder -->
+            <g transform="rotate(-14 172 190)"><rect class="s fp" x="148" y="176" width="44" height="30"/></g>
+            <!-- open folder on the floor -->
+            <path class="s fm" d="M126 206 L208 198 L214 223 L120 227 Z"/>
+            <path class="s fm" d="M208 198 L300 203 L308 223 L214 223 Z" style="fill:#EADCB6"/>
+            <path class="s fn" d="M208 198 L214 223"/>
+            <g transform="rotate(-5 168 212)">
+              <rect class="s fp" x="140" y="205" width="56" height="13"/>
+              <text class="tx" id="heroFolderName" x="168" y="214.6" font-size="8.4" text-anchor="middle">NIMBUS</text>
+            </g>
+            <!-- evidence papers -->
+            <g transform="rotate(-8 252 190)">
+              <rect class="s fp" x="226" y="173" width="52" height="34"/>
+              <text class="tx" x="231" y="183" font-size="7">DOMAIN</text>
+              <path class="s fn" d="M231 190 L270 190 M231 195 L262 195 M231 200 L266 200" style="stroke-width:0.8"/>
+              <path class="fn" d="M262 182 L265 185 L271 177" style="stroke:var(--red);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round"/>
+            </g>
+            <g transform="rotate(7 312 210)">
+              <rect class="s fp" x="282" y="195" width="62" height="30"/>
+              <text class="tx" x="287" y="205" font-size="6.6">COMPETITORS</text>
+              <path class="s fn" d="M287 211 L334 211 M287 216 L326 216" style="stroke-width:0.8"/>
+            </g>
+            <text class="hand" x="318" y="176" font-size="30" transform="rotate(12 324 166)">?</text>
+
+            <!-- the detective, crouched over the file -->
+            <path class="s ft" d="M72 198 L40 212 L43 221 L78 211 Z"/>
+            <path class="s fh" d="M30 213 Q27 222 33 223.5 L47 223.5 L44.5 212 Z"/>
+            <path class="s fc" d="M64 130 Q84 111 108 121 Q121 131 117 150 L107 196 Q84 207 57 204 Q49 180 51 160 Q53 141 64 130 Z"/>
+            <path class="s fn" d="M53 171 Q80 177 111 170" style="stroke-width:2.4"/>
+            <path class="s ft" d="M90 192 L122 183 L127 194 L97 205 Z"/>
+            <path class="s ft" d="M118 186 L129 219 L119 220 L112 191 Z"/>
+            <path class="s fh" d="M116 218 L135 218 Q140 222 135 224 L116 224 Z"/>
+            <path class="s fr" d="M98 118 Q106 121 113 116 L114 120 Q106 125 98 122 Z" style="stroke-width:1.2"/>
+            <polyline class="ao" points="97,128 110,160 120,180" style="stroke-width:12"/><polyline class="ai" points="97,128 110,160 120,180" style="stroke-width:8.6"/>
+            <circle class="s fs" cx="121" cy="181" r="3.8"/>
+            <g transform="rotate(16 121 102)">
+              <path class="s fs" d="M114 112 L114 118 Q118 120 123 118 L123 112 Z"/>
+              <ellipse class="s fs" cx="120" cy="101" rx="12.5" ry="14"/>
+              <path class="s fh" d="M108 105 Q103.5 87 119 84.5 Q133.5 83.5 134 96 Q128 90 120 92 Q114 93.5 112.5 101 Q111.5 106 108 105 Z"/>
+              <path class="s fs" d="M112 100.5 Q107.5 100.5 108.5 105 Q109.5 108.5 113 107.5" style="stroke-width:1.4"/>
+              <g transform="rotate(-24 111 95)">
+                <rect class="s fm" x="100" y="93.5" width="19" height="3.4" style="stroke-width:1"/>
+                <path class="s fh" d="M119 93.5 L123.5 95.2 L119 96.9 Z" style="stroke-width:0.8"/>
+                <rect class="fr" x="97.5" y="93.5" width="2.8" height="3.4"/>
+              </g>
+              <path class="s fn" d="M124.5 102.8 L128.6 103.8"/>
+              <path class="s fn" d="M124 97.6 L129 98.4"/>
+              <path class="s fn" d="M132 102 Q135.2 106 130.6 107.2"/>
+            </g>
+            <polyline class="ao" points="108,128 132,152 149,174" style="stroke-width:12"/><polyline class="ai" points="108,128 132,152 149,174" style="stroke-width:8.6"/>
+            <path class="s fn" d="M151.5 177 L160 185.5" style="stroke-width:3.4"/>
+            <circle class="s fp" cx="170" cy="192" r="11.5" style="stroke-width:2.3;fill-opacity:0.06"/>
+            <path class="s fn" d="M163 189 Q164.5 184 169.5 183.4" style="stroke-width:1"/>
+            <circle class="s fs" cx="149.5" cy="175" r="3.8"/>
+          </g>
+        </svg>
+      </div>
     </section>
 
     <aside class="aside">
       <div class="index-card">
-        <h2>PROCEDURE</h2>
+        <h2>INVESTIGATION PLAN</h2>
         <ol>
-          <li><span class="n">01</span><span><b>Name collisions</b><span class="d">Who's already using it in your niche, and on X / Instagram.</span></span></li>
-          <li><span class="n">02</span><span><b>Domain status</b><span class="d">.com .io .net .ai .app .co, checked live.</span></span></li>
-          <li><span class="n">03</span><span><b>Search / market context</b><span class="d">Trademark chatter on the open web.</span></span></li>
-          <li><span class="n">04</span><span><b>Memorability</b><span class="d">Would it stick, and can people spell it.</span></span></li>
-          <li><span class="n">A</span><span><b>Close relatives</b><span class="d">Near-variants, in case the original is crowded.</span></span></li>
+          <li><span class="n">01</span><span><b>NAME COLLISIONS</b><span class="d">Who's already using it in your niche, and on X / Instagram.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mag"/></svg></li>
+          <li><span class="n">02</span><span><b>DOMAIN TRAIL</b><span class="d">.com .io .net .ai .app .co, checked live.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg></li>
+          <li><span class="n">03</span><span><b>MARKET EVIDENCE</b><span class="d">Trademark chatter on the open web.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pin"/></svg></li>
+          <li><span class="n">04</span><span><b>MEMORABILITY</b><span class="d">Would it stick, and can people spell it.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-note"/></svg></li>
+          <li><span class="n">05</span><span><b>CLOSE RELATIVES</b><span class="d">Near-variants, in case the original is crowded.</span></span><svg class="ico ill" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tree"/></svg></li>
         </ol>
+        <span class="plan-stamp">5 LEADS TO FOLLOW</span>
       </div>
     </aside>
 
     <section class="folder" aria-label="Subject intake">
       <div class="folder-tab">SUBJECT INTAKE</div>
+      <div class="peek" aria-hidden="true">
+        <svg class="ill" viewBox="0 0 170 80">
+          <g filter="url(#rough)">
+            <polyline class="ao" points="176,54 134,47 110,40" style="stroke-width:14"/><polyline class="ai" points="176,54 134,47 110,40" style="stroke-width:10.5"/>
+            <path class="s fn" d="M131 39.5 L128.5 54.5"/>
+            <path class="s fn" d="M103 38 L82 30.5" style="stroke-width:4.6"/>
+            <circle class="s fp" cx="64" cy="24.5" r="18" style="stroke-width:2.6;fill-opacity:0.28"/>
+            <path class="s fn" d="M53.5 18 Q57 11.5 64.5 10.8" style="stroke-width:1.2"/>
+            <circle class="s fs" cx="106" cy="39" r="5.4"/>
+          </g>
+        </svg>
+      </div>
       <div class="folder-shell">
         <div class="sheet intake">
           <span class="reg tr" aria-hidden="true"></span>
@@ -488,7 +942,7 @@
               <span id="runBtnLabel">Open the case</span>
               <span class="arrow" aria-hidden="true">→</span>
             </button>
-            <span class="intake-note">04 CHECKS · LIVE LOOKUPS</span>
+            <span class="intake-note">5 LEADS · LIVE LOOKUPS</span>
           </div>
           <div class="error-box" id="errorBox"></div>
         </div>
@@ -501,62 +955,136 @@
           <span class="who">Case log — <span id="sceneName">—</span></span>
           <span class="right"><span id="boardStatus">investigation in progress</span><span class="clock" id="boardClock">00:00.0</span><span class="scene-stamp" id="sceneStamp">case closed</span></span>
         </div>
+        <div class="work">
+          <svg id="detLoader" class="ill" viewBox="0 0 130 170" aria-hidden="true">
+            <g filter="url(#rough)">
+              <use href="#det-body"/>
+              <g class="pose" data-p="folder"><use href="#p-folder"/></g>
+              <g class="pose" data-p="magnify"><use href="#p-magnify"/></g>
+              <g class="pose" data-p="card"><use href="#p-card"/></g>
+              <g class="pose" data-p="think"><use href="#p-think"/></g>
+              <g class="pose" data-p="binoc"><use href="#p-binoc"/></g>
+              <g class="pose" data-p="notebook"><use href="#p-notebook"/></g>
+              <g class="pose" data-p="pin"><use href="#p-pin"/></g>
+            </g>
+          </svg>
+          <div>
+            <div class="work-step" id="workStep">Step 1 / 7</div>
+            <div class="work-msg" id="workMsg">Opening the file...</div>
+            <div class="work-dots" id="workDots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
         <ul class="leads" id="leadsEl"></ul>
       </div>
     </section>
 
     <section id="result">
-      <div class="sheet cover" style="--i:0">
-        <div class="cover-top"><span>INVESTIGATION REPORT</span><span>FILE <b data-case-no>0001</b></span></div>
-        <div class="cover-grid">
-          <div>
-            <div class="case-label">Case closed · findings</div>
-            <div class="stamp-name" id="stampName">"—"</div>
-            <div class="stamp-sub" id="stampSub"></div>
+      <!-- evidence board -->
+      <div class="sheet board-wrap" style="--i:0">
+        <div class="cover-top"><span>EVIDENCE BOARD</span><span>FILE <b data-case-no>0001</b></span></div>
+        <div class="ev-board" id="evBoard">
+          <svg class="ev-strings" id="evStrings" aria-hidden="true"></svg>
+          <div class="ev-center"><div class="ev-k">CASE</div><div class="ev-name" id="evName">—</div></div>
+          <div class="ev-note annot-note" aria-hidden="true">follow the red string</div>
+          <a class="ev-card" id="ev1" href="#sec-domains" style="--r:-1.6deg"><div class="ev-k">EVIDENCE 01</div><div class="ev-t">DOMAIN RECORDS</div><div class="ev-s" data-ev="domains-s"></div><span class="stamp-mini" data-ev="domains"></span></a>
+          <a class="ev-card" id="ev2" href="#sec-collisions" style="--r:1.2deg"><div class="ev-k">EVIDENCE 02</div><div class="ev-t">COMPETITORS</div><div class="ev-s" data-ev="competitors-s"></div><span class="stamp-mini" data-ev="competitors"></span></a>
+          <a class="ev-card" id="ev3" href="#sec-collisions" style="--r:0.8deg"><div class="ev-k">EVIDENCE 03</div><div class="ev-t">SOCIAL HANDLES</div><div class="ev-s" data-ev="handles-s"></div><span class="stamp-mini" data-ev="handles"></span></a>
+          <a class="ev-card" id="ev4" href="#sec-market" style="--r:-1deg"><div class="ev-k">EVIDENCE 04</div><div class="ev-t">SEARCH RESULTS</div><div class="ev-s" data-ev="search-s"></div><span class="stamp-mini" data-ev="search"></span></a>
+          <a class="ev-card" id="ev5" href="#variantsCard" style="--r:-0.7deg"><div class="ev-k">EVIDENCE 05</div><div class="ev-t">SIMILAR NAMES</div><div class="ev-s" data-ev="similar-s"></div><span class="stamp-mini" data-ev="similar"></span></a>
+          <a class="ev-card" id="ev6" href="#sec-memory" style="--r:1.5deg"><div class="ev-k">EVIDENCE 06</div><div class="ev-t">MEMORABILITY</div><div class="ev-s" data-ev="memory-s"></div><span class="stamp-mini" data-ev="memory"></span></a>
+          <div class="ev-det" aria-hidden="true">
+            <svg class="ill" viewBox="0 0 130 170"><g filter="url(#rough)"><use href="#det-body"/><use href="#p-pin"/></g></svg>
           </div>
-          <div class="stamp" id="stampEl">—</div>
         </div>
-        <nav class="contents" aria-label="Report contents">
-          <a href="#sec-collisions"><span class="c-n">01</span><span class="c-name">Name collisions</span><span class="c-lead"></span><span class="status pending" data-status="collisions">—</span></a>
-          <a href="#sec-domains"><span class="c-n">02</span><span class="c-name">Domain status</span><span class="c-lead"></span><span class="status pending" data-status="domains">—</span></a>
-          <a href="#sec-market"><span class="c-n">03</span><span class="c-name">Search / market context</span><span class="c-lead"></span><span class="status pending" data-status="market">—</span></a>
-          <a href="#sec-memory"><span class="c-n">04</span><span class="c-name">Memorability</span><span class="c-lead"></span><span class="status pending" data-status="memory">—</span></a>
-        </nav>
       </div>
 
       <div class="sheet" id="sec-collisions" style="--i:1">
-        <div class="sheet-head"><h2 class="sheet-title"><span class="n">01</span>Name collisions</h2><span class="status pending" data-status="collisions">—</span></div>
-        <div class="sub-head">Spotted in your niche — live search</div>
+        <div class="sheet-head has-vig"><h2 class="sheet-title"><span class="n">01</span>Name collisions</h2><span class="status pending" data-status="collisions">—</span>
+          <svg class="vig ill" viewBox="0 0 130 170" aria-hidden="true"><g filter="url(#rough)"><use href="#det-body"/><use href="#p-magnify"/></g></svg>
+        </div>
+        <div class="sub-head">The lineup — spotted in your niche</div>
         <div id="nicheEl"></div>
         <div class="sub-head">Social handles — live lookup</div>
         <div id="socialsEl"></div>
       </div>
 
       <div class="sheet" id="sec-domains" style="--i:2">
-        <div class="sheet-head"><h2 class="sheet-title"><span class="n">02</span>Domain status</h2><span class="status pending" data-status="domains">—</span></div>
+        <div class="sheet-head has-vig wide-vig"><h2 class="sheet-title"><span class="n">02</span>Domain trail</h2><span class="status pending" data-status="domains">—</span>
+          <svg class="vig wide ill" viewBox="0 0 175 170" aria-hidden="true"><g filter="url(#rough)">
+            <rect class="s fm" x="4" y="72" width="50" height="92"/>
+            <path class="s fn" d="M4 102 H54 M4 132 H54"/>
+            <path class="s fn" d="M22 86 H36 M22 116 H36 M22 146 H36" style="stroke-width:2.2"/>
+            <g transform="translate(-6 0)"><rect class="s fp" x="52" y="78" width="16" height="22" transform="rotate(-12 60 89)"/></g>
+            <g transform="translate(178 0) scale(-1 1)"><use href="#det-body"/><use href="#p-card"/></g>
+          </g></svg>
+        </div>
         <div id="domainsEl"></div>
       </div>
 
       <div class="sheet" id="sec-market" style="--i:3">
-        <div class="sheet-head"><h2 class="sheet-title"><span class="n">03</span>Search / market context</h2><span class="status pending" data-status="market">—</span></div>
+        <div class="sheet-head has-vig wide-vig"><h2 class="sheet-title"><span class="n">03</span>Market evidence</h2><span class="status pending" data-status="market">—</span>
+          <svg class="vig wide ill" viewBox="0 0 170 170" aria-hidden="true"><g filter="url(#rough)">
+            <rect class="s fm" x="88" y="0" width="78" height="66" style="fill:#D9C59A"/>
+            <g transform="rotate(-4 146 38)"><rect class="s fp" x="132" y="26" width="26" height="30"/><path class="s fn" d="M136 34 H154 M136 39 H152 M136 44 H150" style="stroke-width:0.8"/></g>
+            <circle class="s fr" cx="145" cy="28" r="2.4" style="stroke-width:1"/>
+            <use href="#det-body"/><use href="#p-pin"/>
+          </g></svg>
+        </div>
         <div class="sub-head">Trademark signal — live search <span class="note-annot" aria-hidden="true">signal only</span></div>
         <p class="section-note"><strong>A signal, not a legal clearance.</strong> These are web results for "<span id="tmName"></span>" trademark — not a search of any trademark register. Nothing here means it's safe to file, and a hit doesn't mean it's blocked.</p>
         <div id="trademarkEl"></div>
       </div>
 
       <div class="sheet" id="sec-memory" style="--i:4">
-        <div class="sheet-head"><h2 class="sheet-title"><span class="n">04</span>Memorability</h2><span class="status pending" data-status="memory">—</span></div>
-        <div class="checks" id="checksEl"></div>
+        <div class="sheet-head has-vig"><h2 class="sheet-title"><span class="n">04</span>Memorability</h2><span class="status pending" data-status="memory">—</span>
+          <svg class="vig ill" viewBox="0 0 130 170" aria-hidden="true"><g filter="url(#rough)"><use href="#det-body"/><use href="#p-notebook"/></g></svg>
+        </div>
+        <div class="notebook"><div class="checks" id="checksEl"></div></div>
       </div>
 
       <div class="sheet" id="variantsCard" style="--i:5">
-        <span class="reg bl" aria-hidden="true"></span>
-        <div class="sheet-head"><h2 class="sheet-title"><span class="n">A</span>Close relatives</h2><span class="field-label">Appendix</span></div>
-        <p class="section-note">Same domain and niche checks, run on a few near-variants of the name in case the original is crowded.</p>
+        <div class="sheet-head has-vig"><h2 class="sheet-title"><span class="n">05</span>Close relatives</h2><span class="status pending" data-status="relatives">—</span>
+          <svg class="vig ill" viewBox="0 0 130 170" aria-hidden="true"><g filter="url(#rough)"><use href="#det-body"/><use href="#p-binoc"/></g></svg>
+        </div>
+        <p class="section-note">Same domain and niche checks, run on a few near-variants of the name in case the original is crowded. Line them up.</p>
         <div id="variantsEl"></div>
       </div>
 
-      <div class="report-foot" style="--i:6">
+      <!-- final case summary -->
+      <div class="sheet summary" style="--i:6">
+        <span class="reg bl" aria-hidden="true"></span>
+        <div class="sum-head">
+          <span class="sum-case">CASE <b data-case-no>0001</b></span>
+          <span class="sum-subject">SUBJECT: <b id="stampName">—</b></span>
+        </div>
+        <nav class="contents" aria-label="Findings">
+          <a href="#sec-collisions"><span class="c-n">01</span><span class="c-name">Name collisions</span><span class="c-lead"></span><span class="status pending" data-status="collisions">—</span></a>
+          <a href="#sec-domains"><span class="c-n">02</span><span class="c-name">Domain trail</span><span class="c-lead"></span><span class="status pending" data-status="domains">—</span></a>
+          <a href="#sec-market"><span class="c-n">03</span><span class="c-name">Market evidence</span><span class="c-lead"></span><span class="status pending" data-status="market">—</span></a>
+          <a href="#sec-memory"><span class="c-n">04</span><span class="c-name">Memorability</span><span class="c-lead"></span><span class="status pending" data-status="memory">—</span></a>
+          <a href="#variantsCard"><span class="c-n">05</span><span class="c-name">Close relatives</span><span class="c-lead"></span><span class="status pending" data-status="relatives">—</span></a>
+        </nav>
+        <div class="sum-foot">
+          <div>
+            <div class="case-label">Verdict</div>
+            <div class="verdict-big" id="stampEl">—</div>
+            <div class="stamp-sub" id="stampSub"></div>
+            <div class="case-closed">Case closed.</div>
+          </div>
+          <div class="sum-det" aria-hidden="true">
+            <svg class="ill" viewBox="0 0 210 200"><g filter="url(#rough)">
+              <path class="s fn" d="M4 193 Q100 190 206 192" style="stroke-width:1.3"/>
+              <path class="s fm" d="M112 192 V37 Q112 32 116 32 H140 L145 38 H186 Q190 38 190 42 V192 Z"/>
+              <rect class="s fp" x="126" y="64" width="50" height="18"/>
+              <text class="tx" x="151" y="76" font-size="7.4" text-anchor="middle">CLOSED</text>
+              <path class="fn" d="M128 96 L176 96 M128 102 L170 102" style="stroke:var(--ink);stroke-width:0.8;opacity:0.5"/>
+              <g transform="translate(46 28) rotate(9 60 163)"><use href="#det-body"/><use href="#p-coffee"/></g>
+            </g></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-foot" style="--i:7">
         <button class="ghost-btn" id="copyBtn" type="button">copy report</button>
         <button class="ghost-btn" id="runAgainBtn" type="button">new case</button>
         <button class="raw-toggle" id="rawToggle" type="button">show raw response</button>
@@ -614,6 +1142,15 @@
     $('receivedDate').textContent = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
   }catch(e){}
 
+  // the folder in the hero illustration is labelled with whatever you type
+  const heroFolderName = $('heroFolderName');
+  function syncHeroFolder(){
+    const v = nameEl.value.trim().toUpperCase() || 'NIMBUS';
+    heroFolderName.textContent = v.length > 12 ? v.slice(0, 11) + '…' : v;
+  }
+  nameEl.addEventListener('input', syncHeroFolder);
+  syncHeroFolder();
+
   // file status printed in the left margin
   const railStatus = $('railStatus');
   const railStatusWrap = $('railStatusWrap');
@@ -622,12 +1159,21 @@
     railStatusWrap.classList.toggle('st-red', !!important);
   }
 
-  // section verdicts on the report: CLEAR / FLAGGED / NEEDS REVIEW / EVIDENCE FOUND
-  const STATUS_CLASS = { 'CLEAR': 'clear', 'FLAGGED': 'flag', 'NEEDS REVIEW': 'review', 'EVIDENCE FOUND': 'evidence' };
+  // section verdicts: CLEAR / FLAGGED / WORTH A LOOK / FOUND / TAKEN
+  const STATUS_CLASS = { 'CLEAR': 'clear', 'FLAGGED': 'flag', 'WORTH A LOOK': 'review', 'FOUND': 'evidence', 'TAKEN': 'review' };
   function setSectionStatus(key, label){
     document.querySelectorAll('[data-status="' + key + '"]').forEach(function(el){
       el.textContent = label;
       el.className = 'status ' + (STATUS_CLASS[label] || 'pending');
+    });
+  }
+  const STAMP_CLASS = { 'CLEAR': 'clear', 'FLAGGED': 'flag', 'FOUND': 'found', 'TAKEN': 'taken', 'WORTH A LOOK': 'look' };
+  function stampMini(label){ return '<span class="stamp-mini ' + (STAMP_CLASS[label] || 'look') + '">' + label + '</span>'; }
+  function setEvidence(key, summary, label){
+    document.querySelectorAll('[data-ev="' + key + '-s"]').forEach(function(el){ el.textContent = summary; });
+    document.querySelectorAll('[data-ev="' + key + '"]').forEach(function(el){
+      el.textContent = label;
+      el.className = 'stamp-mini ' + (STAMP_CLASS[label] || 'look');
     });
   }
 
@@ -658,29 +1204,60 @@
     };
   }
 
-  function renderDomains(domains){
-    domainsEl.innerHTML = TLD_ORDER.filter(t => domains && domains[t]).map(function(tld){
-      const d = domains[tld];
-      const st = domainStatus(d);
-      const { label, title } = st;
-      // only a taken .com is a red-ink finding; the rest are noted in ink
-      const cls = st.cls === 'taken' && tld !== 'com' ? 'taken minor' : st.cls;
-      const link = d.available === true
-        ? '<a href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(d.domain) + '" target="_blank" rel="noopener">claim it →</a>'
-        : '';
-      return '<div class="domain-row"><span class="domain-name">' + escapeHtml(d.domain) + '</span>' +
-        '<span style="display:flex;align-items:center;gap:10px;"><span class="domain-badge ' + cls + '"' + (title ? ' title="' + title + '"' : '') + '>' + label + (title ? ' · dns' : '') + '</span>' + link + '</span></div>';
-    }).join('') || '<p class="niche-empty">Could not check domains this run.</p>';
+  function claimLink(domain){
+    return '<a href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(domain) + '" target="_blank" rel="noopener">claim it →</a>';
   }
 
-  function renderNiche(matches, serpError){
+  // 02 — each TLD is a drawer in the cabinet; available ones are pulled open
+  function renderDomains(domains){
+    const rows = TLD_ORDER.filter(t => domains && domains[t]).map(function(tld){
+      const d = domains[tld];
+      const st = domainStatus(d);
+      // only a taken .com is a red-ink finding; the rest are noted in ink
+      const cls = st.cls === 'taken' && tld !== 'com' ? 'taken minor' : st.cls;
+      return '<div class="drawer' + (d.available === true ? ' open' : '') + '">' +
+        '<span class="tab">.' + tld.toUpperCase() + '</span>' +
+        '<span class="dn">' + escapeHtml(d.domain) + '</span>' +
+        '<span class="dr"><span class="domain-badge ' + cls + '"' + (st.title ? ' title="' + st.title + '"' : '') + '>' + st.label + (st.title ? ' · dns' : '') + '</span>' +
+        (d.available === true ? claimLink(d.domain) : '') + '</span>' +
+      '</div>';
+    }).join('');
+    domainsEl.innerHTML = rows
+      ? '<div class="cabinet">' + rows + '</div>'
+      : '<p class="niche-empty">Could not check domains this run.</p>';
+  }
+
+  // 01 — competing results as a suspect lineup. Similarity and risk are a
+  // rough read of the search snippet against the name and your one-liner.
+  const STOP = new Set(['that','with','your','from','this','tool','tools','helps','help','their','them','into','about','which','where','when','what','have','will','more','than','them','they','team','teams','based','using','used','makes','make']);
+  function suspectRead(m, name, context){
+    const n = name.toLowerCase().trim();
+    const title = (m.title || '').toLowerCase();
+    const text = title + ' ' + (m.snippet || '').toLowerCase();
+    const reName = new RegExp('(^|[^a-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-z0-9])');
+    const exact = reName.test(title);
+    const words = Array.from(new Set((context.toLowerCase().match(/[a-z]{4,}/g) || []).filter(w => !STOP.has(w))));
+    const overlap = words.filter(w => text.includes(w)).length;
+    let host = '';
+    try{ host = new URL(m.link).hostname.replace(/^www\./, ''); }catch(e){}
+    const risk = exact && overlap >= 2 ? 'high' : (exact || overlap >= 2) ? 'medium' : 'low';
+    return { host: host || '—', match: exact ? 'name in title' : 'mentioned', risk: risk };
+  }
+
+  function renderNiche(matches, serpError, name, context){
     if (matches && matches.length){
-      nicheEl.innerHTML = matches.map(function(m){
-        return '<div class="niche-item">' +
-          '<div class="niche-title"><a href="' + m.link + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
-          '<div class="niche-snippet">' + escapeHtml(m.snippet) + '</div>' +
+      nicheEl.innerHTML = '<div class="lineup">' + matches.map(function(m, i){
+        const r = suspectRead(m, name, context);
+        return '<div class="suspect">' +
+          '<div class="suspect-k">SUSPECT ' + String(i + 1).padStart(2, '0') + '</div>' +
+          '<div class="suspect-name"><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
+          '<dl><dt>SOURCE</dt><dd title="' + escapeHtml(r.host) + '">' + escapeHtml(r.host) + '</dd>' +
+          '<dt>MATCH</dt><dd>' + r.match + '</dd>' +
+          '<dt>RISK</dt><dd class="' + r.risk + '">' + r.risk + '</dd></dl>' +
+          '<div class="suspect-snip">' + escapeHtml(m.snippet) + '</div>' +
         '</div>';
-      }).join('');
+      }).join('') + '</div>' +
+      '<p class="fine">Match and risk are a rough read of each search snippet against your name and one-liner — a lead, not a judgement.</p>';
     } else if (serpError) {
       nicheEl.innerHTML = '<p class="niche-empty">' + escapeHtml(serpError) + '</p>';
     } else {
@@ -690,25 +1267,29 @@
 
   function renderSocials(socials){
     const order = ['x', 'instagram'];
-    socialsEl.innerHTML = order.filter(p => socials && socials[p]).map(function(p){
+    const cards = order.filter(p => socials && socials[p]).map(function(p){
       const s = socials[p];
       const cls = s.taken === true ? 'taken' : s.taken === false ? 'avail' : 'unknown';
       const label = s.taken === true ? 'taken' : s.taken === false ? 'available' : (s.note ? 'too long' : 'unknown');
       const link = s.note ? '' : '<a href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' + (s.taken === false ? 'grab it →' : 'look →') + '</a>';
-      return '<div class="domain-row"><span class="domain-name">@' + escapeHtml(s.handle) + ' <span style="font-weight:400;color:var(--ink-3);">on ' + escapeHtml(s.label) + '</span></span>' +
-        '<span style="display:flex;align-items:center;gap:10px;"><span class="domain-badge ' + cls + '"' + (s.note ? ' title="' + escapeHtml(s.note) + '"' : '') + '>' + label + '</span>' + link + '</span></div>';
-    }).join('') || '<p class="niche-empty">Could not check social handles this run.</p>';
+      return '<div class="handle-card"><span class="ev-k">EVIDENCE · HANDLE</span>' +
+        '<span class="h">@' + escapeHtml(s.handle) + '</span><span class="p">on ' + escapeHtml(s.label) + '</span>' +
+        '<span class="row"><span class="domain-badge ' + cls + '"' + (s.note ? ' title="' + escapeHtml(s.note) + '"' : '') + '>' + label + '</span>' + link + '</span></div>';
+    }).join('');
+    socialsEl.innerHTML = cards ? '<div class="handles">' + cards + '</div>' : '<p class="niche-empty">Could not check social handles this run.</p>';
   }
 
+  // 03 — trademark results pinned up like clippings
   function renderTrademark(name, matches, tmError){
     tmName.textContent = name;
+    const tilt = ['-0.8deg', '0.7deg', '0.4deg', '-0.6deg', '0.9deg', '-0.4deg'];
     if (matches && matches.length){
-      trademarkEl.innerHTML = matches.map(function(m){
-        return '<div class="niche-item">' +
+      trademarkEl.innerHTML = '<div class="clips">' + matches.map(function(m, i){
+        return '<div class="clip" style="--r:' + tilt[i % tilt.length] + '">' +
           '<div class="niche-title"><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
           '<div class="niche-snippet">' + escapeHtml(m.snippet) + '</div>' +
         '</div>';
-      }).join('');
+      }).join('') + '</div>';
     } else if (tmError) {
       trademarkEl.innerHTML = '<p class="niche-empty">' + escapeHtml(tmError) + '</p>';
     } else {
@@ -716,6 +1297,8 @@
     }
   }
 
+  // 05 — near-variants as a mugshot lineup
+  const SILHOUETTE = '<svg viewBox="0 0 66 70" aria-hidden="true"><path d="M33 8 C42 8 46 15 46 23 C46 32 40 38 33 38 C26 38 20 32 20 23 C20 15 24 8 33 8 Z M8 70 C9 54 18 44 33 44 C48 44 57 54 58 70 Z" fill="rgba(34,27,19,0.13)" stroke="rgba(34,27,19,0.35)" stroke-width="1.2"/></svg>';
   function renderVariants(variants){
     if (!variants || !variants.length){
       variantsCard.style.display = 'none';
@@ -723,39 +1306,71 @@
       return;
     }
     variantsCard.style.display = '';
-    variantsEl.innerHTML = variants.map(function(v){
+    variantsEl.innerHTML = '<div class="mugs">' + variants.map(function(v, i){
       const chips = TLD_ORDER.filter(t => v.domains && v.domains[t]).map(function(tld){
         const d = v.domains[tld];
-        const { cls, label, title } = domainStatus(d);
+        const st = domainStatus(d);
+        const { label, title } = st;
+        const cls = st.cls === 'taken' && tld !== 'com' ? 'taken minor' : st.cls;
         const text = '.' + tld + ' ' + label + (title ? ' · dns' : '');
         return d.available === true
           ? '<a class="domain-badge ' + cls + '" title="' + escapeHtml(d.domain) + '" href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(d.domain) + '" target="_blank" rel="noopener">' + text + '</a>'
           : '<span class="domain-badge ' + cls + '" title="' + escapeHtml(d.domain) + '">' + text + '</span>';
       }).join('');
       let niche;
-      if (v.niche_matches && v.niche_matches.length){
-        niche = v.niche_matches.map(function(m){
-          return '<div class="niche-item">' +
-            '<div class="niche-title"><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
-            '<div class="niche-snippet">' + escapeHtml(m.snippet) + '</div>' +
-          '</div>';
-        }).join('');
+      const n = (v.niche_matches || []).length;
+      if (n){
+        niche = '<details><summary>' + n + (n === 1 ? ' sighting' : ' sightings') + ' in your niche</summary>' +
+          v.niche_matches.map(function(m){
+            return '<div class="niche-item">' +
+              '<div class="niche-title"><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
+              '<div class="niche-snippet">' + escapeHtml(m.snippet) + '</div>' +
+            '</div>';
+          }).join('') + '</details>';
       } else if (v.serp_error) {
         niche = '<p class="niche-empty">' + escapeHtml(v.serp_error) + '</p>';
       } else {
         niche = '<p class="niche-empty">No trace found in your niche.</p>';
       }
-      return '<div class="variant">' +
-        '<div class="variant-name">"' + escapeHtml(v.name) + '"</div>' +
-        '<div class="tld-chips">' + (chips || '<span class="niche-empty">Could not check domains this run.</span>') + '</div>' +
-        niche +
+      return '<div class="mug">' +
+        '<div class="mug-shot"><span class="ht" style="top:12px">6\'</span><span class="ht" style="top:56px">5\'</span><span class="ht" style="top:100px">4\'</span>' + SILHOUETTE +
+          '<span class="mug-plate">' + escapeHtml(v.name.toUpperCase()) + '</span></div>' +
+        '<div class="mug-body"><div class="mug-k">RELATIVE ' + String.fromCharCode(65 + i) + '</div>' +
+          '<div class="tld-chips">' + (chips || '<span class="niche-empty">Could not check domains this run.</span>') + '</div>' +
+          niche +
+        '</div>' +
       '</div>';
-    }).join('');
+    }).join('') + '</div>';
   }
 
+  // red string from the case card to each pinned piece of evidence
+  const evBoard = $('evBoard');
+  const evStrings = $('evStrings');
+  function drawStrings(){
+    if (!resultEl.classList.contains('show')) return;
+    const box = evBoard.getBoundingClientRect();
+    const center = evBoard.querySelector('.ev-center').getBoundingClientRect();
+    const cx = center.left + center.width / 2 - box.left;
+    const cy = center.top + center.height / 2 - box.top;
+    evStrings.setAttribute('viewBox', '0 0 ' + box.width + ' ' + box.height);
+    evStrings.innerHTML = Array.from(evBoard.querySelectorAll('.ev-card')).map(function(card){
+      const r = card.getBoundingClientRect();
+      const px = r.left + r.width / 2 - box.left;
+      const py = r.top - box.top;
+      const mx = (cx + px) / 2, my = (cy + py) / 2 + 16;   // a little slack in the string
+      return '<path d="M' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ' Q' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + px.toFixed(1) + ' ' + py.toFixed(1) + '"/>';
+    }).join('');
+  }
+  let stringTimer = null;
+  window.addEventListener('resize', function(){ clearTimeout(stringTimer); stringTimer = setTimeout(drawStrings, 80); });
+
+  // the verdict logic is unchanged — only the stamp's wording is
+  const VERDICT_LABEL = { 'IMPERSONATION': 'CROWDED NAME', 'NO WITNESSES': 'FORGETTABLE', 'CLEARED': 'PROMISING', 'UNDER WATCH': 'PROCEED WITH CAUTION' };
+
   function renderResult(name, scores, domains, nicheMatches, serpError, variants, socials, trademarkMatches, trademarkError, rawData){
+    const context = contextEl.value.trim();
     renderDomains(domains);
-    renderNiche(nicheMatches, serpError);
+    renderNiche(nicheMatches, serpError, name, context);
     renderSocials(socials);
     renderTrademark(name, trademarkMatches, trademarkError);
     renderVariants(variants);
@@ -779,15 +1394,17 @@
       verdict = 'UNDER WATCH'; verdictClass = 'mid';
       sub = 'not ruled out, not ruled in — at least one thing here needs a second look';
     }
+    const verdictLabel = VERDICT_LABEL[verdict] || verdict;
 
     stampEl.style.animation = 'none';
     void stampEl.offsetWidth;
     stampEl.style.animation = '';
 
-    stampName.textContent = '"' + name + '"';
-    stampEl.textContent = verdict;
-    stampEl.className = 'stamp ' + verdictClass;
+    stampName.textContent = name.toUpperCase();
+    stampEl.textContent = verdictLabel;
+    stampEl.className = 'verdict-big ' + verdictClass;
     stampSub.textContent = sub;
+    $('evName').textContent = name;
 
     const rows = [
       ['memorable', m, 'pos', 'sticks after hearing it once'],
@@ -798,22 +1415,41 @@
 
     // section verdicts — red (FLAGGED) only for findings that should stop you
     const nicheCount = (nicheMatches || []).length;
-    const handlesTaken = ['x', 'instagram'].some(p => socials && socials[p] && socials[p].taken === true);
-    setSectionStatus('collisions',
-      c >= 0.55 ? 'FLAGGED' : nicheCount ? 'EVIDENCE FOUND' : (handlesTaken || serpError) ? 'NEEDS REVIEW' : 'CLEAR');
+    const handlesTaken = ['x', 'instagram'].filter(p => socials && socials[p] && socials[p].taken === true);
+    const handlesUnknown = ['x', 'instagram'].some(p => !socials || !socials[p] || socials[p].taken === null);
+    const collisions = c >= 0.55 ? 'FLAGGED' : nicheCount ? 'FOUND' : (handlesTaken.length || serpError) ? 'WORTH A LOOK' : 'CLEAR';
+    setSectionStatus('collisions', collisions);
 
     const doms = TLD_ORDER.map(t => domains && domains[t]).filter(Boolean);
     const com = domains && domains.com;
-    setSectionStatus('domains',
-      com && com.available === true ? 'CLEAR'
+    const domainVerdict = com && com.available === true ? 'CLEAR'
       : doms.length && doms.every(d => d.available === false) ? 'FLAGGED'
-      : 'NEEDS REVIEW');
+      : 'WORTH A LOOK';
+    setSectionStatus('domains', domainVerdict);
 
-    setSectionStatus('market',
-      (trademarkMatches || []).length ? 'EVIDENCE FOUND' : trademarkError ? 'NEEDS REVIEW' : 'CLEAR');
+    const tmCount = (trademarkMatches || []).length;
+    const market = tmCount ? 'FOUND' : trademarkError ? 'WORTH A LOOK' : 'CLEAR';
+    setSectionStatus('market', market);
 
-    setSectionStatus('memory',
-      (m >= 0.65 && e >= 0.6 && g < 0.5) ? 'CLEAR' : (g >= 0.6 && m < 0.5) ? 'FLAGGED' : 'NEEDS REVIEW');
+    const memory = (m >= 0.65 && e >= 0.6 && g < 0.5) ? 'CLEAR' : (g >= 0.6 && m < 0.5) ? 'FLAGGED' : 'WORTH A LOOK';
+    setSectionStatus('memory', memory);
+
+    const vs = variants || [];
+    const clearCom = vs.filter(x => x.domains && x.domains.com && x.domains.com.available === true).length;
+    setSectionStatus('relatives', !vs.length ? 'WORTH A LOOK' : clearCom ? 'FOUND' : 'TAKEN');
+
+    // evidence board summaries
+    const availCount = doms.filter(d => d.available === true).length;
+    setEvidence('domains', availCount + ' of ' + doms.length + ' available · .com ' + (com ? domainStatus(com).label : 'unknown'), domainVerdict);
+    setEvidence('competitors', nicheCount ? nicheCount + (nicheCount === 1 ? ' suspect' : ' suspects') + ' already in your niche' : (serpError ? 'Search came back empty-handed this run' : 'Nobody obvious in your niche'),
+      c >= 0.55 ? 'FLAGGED' : nicheCount ? 'FOUND' : 'CLEAR');
+    setEvidence('handles', ['x', 'instagram'].filter(p => socials && socials[p]).map(function(p){
+      const s = socials[p]; return s.label + ': ' + (s.taken === true ? 'taken' : s.taken === false ? 'available' : 'unknown');
+    }).join(' · ') || 'Could not check handles',
+      handlesTaken.length ? 'TAKEN' : handlesUnknown ? 'WORTH A LOOK' : 'CLEAR');
+    setEvidence('search', tmCount ? tmCount + ' trademark ' + (tmCount === 1 ? 'mention' : 'mentions') + ' on the web' : (trademarkError ? 'Trademark search skipped this run' : 'No trademark chatter found'), market === 'FOUND' ? 'FOUND' : market);
+    setEvidence('similar', vs.length ? clearCom + ' of ' + vs.length + ' variants have a free .com' : 'No variants generated', clearCom ? 'WORTH A LOOK' : 'TAKEN');
+    setEvidence('memory', pct(m) + ' memorable · ' + pct(e) + ' easy to say', memory);
 
     setFileStatus('CLOSED', verdictClass === 'bad');
 
@@ -835,29 +1471,55 @@
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         checksEl.querySelectorAll('.meter-fill').forEach(function(el){ el.style.width = el.dataset.target + '%'; });
+        drawStrings();
       });
     });
+    // cards settle in over ~0.5s; redraw once they have, and once fonts land
+    setTimeout(drawStrings, 650);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawStrings);
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     resultEl.dataset.shareText =
-      'Name Worth It case file on "' + name + '": ' + verdict + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
+      'Name Worth It case file on "' + name + '": ' + verdictLabel + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
       pct(g) + ' too generic, ' + pct(c) + ' brand collision risk).';
   }
 
-  // ---------- investigation board ----------
-  // The API answers in one go, so while it's in flight each lead is
-  // "worked" in turn; once the real data lands every lead is stamped with
-  // what was actually found, then the case file opens.
+  // ---------- the detective works the case ----------
+  // The API answers in one go, so while it's in flight the detective moves
+  // through the steps; once the real data lands every lead in the log is
+  // stamped with what was actually found, then the case file opens.
   const board = $('board');
   const boardStatus = $('boardStatus');
   const boardClock = $('boardClock');
   const sceneName = $('sceneName');
   const sceneStamp = $('sceneStamp');
   const leadsEl = $('leadsEl');
+  const detLoader = $('detLoader');
+  const workStep = $('workStep');
+  const workMsg = $('workMsg');
+  const workDots = $('workDots').children;
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const sleep = (ms) => new Promise(r => setTimeout(r, reduceMotion ? 0 : ms));
   let boardTimers = [];
   let boardT0 = 0;
+
+  const STEPS = [
+    ['Opening the file...', 'folder'],
+    ['Checking aliases...', 'magnify'],
+    ['Following the domain trail...', 'card'],
+    ['Questioning the search results...', 'think'],
+    ['Looking for close relatives...', 'binoc'],
+    ['Checking whether anyone remembers the suspect...', 'notebook'],
+    ['Building the case...', 'pin']
+  ];
+  function setStep(i, msgOverride, poseOverride){
+    const step = STEPS[i];
+    workStep.textContent = 'Step ' + (i + 1) + ' / ' + STEPS.length;
+    workMsg.textContent = msgOverride || step[0];
+    const pose = poseOverride || step[1];
+    detLoader.querySelectorAll('.pose').forEach(function(g){ g.classList.toggle('on', g.dataset.p === pose); });
+    Array.from(workDots).forEach(function(d, j){ d.className = j < i ? 'on' : j === i ? 'now' : ''; });
+  }
 
   function showClock(){
     const ms = performance.now() - boardT0;
@@ -890,7 +1552,7 @@
     leads.push({ id: 'niche', html: 'Canvassing your niche for lookalikes', solve: function(d){
       const n = (d.niche_matches || []).length;
       if (!n && d.serp_error) return ['meh', badge('unknown', 'cold trail')];
-      return n ? ['meh', badge('warn', n + (n === 1 ? ' sighting' : ' sightings'))] : ['ok', badge('avail', 'no trace')];
+      return n ? ['meh', badge('warn', n + (n === 1 ? ' suspect' : ' suspects'))] : ['ok', badge('avail', 'no trace')];
     } });
     leads.push({ id: 'tm', html: 'Pulling trademark chatter <span style="color:var(--ink-3)">(web signal)</span>', solve: function(d){
       const n = (d.trademark_matches || []).length;
@@ -912,7 +1574,7 @@
   let currentLeads = [];
 
   function startBoard(name){
-    boardTimers.forEach(clearTimeout); boardTimers = [];
+    stopBoardTimers();
     currentLeads = buildLeads(name);
     sceneName.textContent = name;
     sceneStamp.textContent = 'case closed';
@@ -928,8 +1590,15 @@
 
     boardT0 = performance.now();
     showClock();
-    const tick = setInterval(showClock, 100);
-    boardTimers.push({ interval: tick });
+    boardTimers.push({ interval: setInterval(showClock, 100) });
+
+    // walk the first six steps while waiting; "Building the case" is saved
+    // for when the evidence actually arrives
+    let step = 0;
+    setStep(0);
+    boardTimers.push({ interval: setInterval(function(){
+      if (step < STEPS.length - 2){ step++; setStep(step); }
+    }, reduceMotion ? 1400 : 900) });
 
     currentLeads.forEach(function(l, i){
       boardTimers.push(setTimeout(function(){
@@ -947,6 +1616,7 @@
   async function solveBoard(data){
     stopBoardTimers();
     showClock();
+    setStep(STEPS.length - 1);
     if (data.cached){
       leadsEl.insertAdjacentHTML('afterbegin', '<li class="lead solved"><span class="lead-icon"></span><span class="lead-text">Case already on file — pulled from the cabinet</span><span class="lead-status">' + badge('unknown', 'cached') + '</span></li>');
     }
@@ -960,11 +1630,13 @@
       if (out[0] === 'bad') el.classList.add('bad');
       if (out[0] === 'meh') el.classList.add('meh');
       el.querySelector('.lead-status').innerHTML = out[1];
-      await sleep(data.cached ? 60 : 140);
+      await sleep(data.cached ? 50 : 110);
     }
+    Array.from(workDots).forEach(function(d){ d.className = 'on'; });
+    workMsg.textContent = 'Case built. Opening the report.';
     boardStatus.textContent = 'log closed';
     board.classList.add('done');
-    await sleep(650);
+    await sleep(550);
   }
 
   function failBoard(reason){
@@ -975,6 +1647,7 @@
       el.classList.add('solved', 'meh');
       el.querySelector('.lead-status').innerHTML = badge('unknown', 'cold trail');
     });
+    setStep(3, 'The trail went cold.', 'think');
     boardStatus.textContent = 'stalled';
     setFileStatus('ON HOLD', true);
     sceneStamp.textContent = reason || 'case on hold';
