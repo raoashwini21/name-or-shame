@@ -263,6 +263,11 @@
         <div class="real-label"><span class="liveDot"></span>social handles — live lookup</div>
         <div id="socialsEl"></div>
       </div>
+      <div class="real-section">
+        <div class="real-label"><span class="liveDot"></span>trademark signal — live search</div>
+        <p class="section-note"><strong>A signal, not a legal clearance.</strong> These are web results for "<span id="tmName"></span>" trademark — not a search of any trademark register. Nothing here means it's safe to file, and a hit doesn't mean it's blocked.</p>
+        <div id="trademarkEl"></div>
+      </div>
       <div class="checks" id="checksEl"></div>
       <div class="actions">
         <button class="ghost-btn" id="copyBtn" type="button">copy report</button>
@@ -282,7 +287,7 @@
   </div>
 
   <footer>
-    Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. Not a trademark search — still run a proper one before you file anything.
+    Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The trademark section is a web-search signal, not a trademark search — still run a proper one before you file anything.
   </footer>
 
 </div>
@@ -309,6 +314,8 @@
   const nicheEl = $('nicheEl');
   const checksEl = $('checksEl');
   const socialsEl = $('socialsEl');
+  const trademarkEl = $('trademarkEl');
+  const tmName = $('tmName');
   const variantsCard = $('variantsCard');
   const variantsEl = $('variantsEl');
   const copyBtn = $('copyBtn');
@@ -390,6 +397,22 @@
     }).join('') || '<p class="niche-empty">Could not check social handles this run.</p>';
   }
 
+  function renderTrademark(name, matches, tmError){
+    tmName.textContent = name;
+    if (matches && matches.length){
+      trademarkEl.innerHTML = matches.map(function(m){
+        return '<div class="niche-item">' +
+          '<div class="niche-title"><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a></div>' +
+          '<div class="niche-snippet">' + escapeHtml(m.snippet) + '</div>' +
+        '</div>';
+      }).join('');
+    } else if (tmError) {
+      trademarkEl.innerHTML = '<p class="niche-empty">' + escapeHtml(tmError) + '</p>';
+    } else {
+      trademarkEl.innerHTML = '<p class="niche-empty">No trademark mentions turned up in web search — still not a clearance.</p>';
+    }
+  }
+
   function renderVariants(variants){
     if (!variants || !variants.length){
       variantsCard.style.display = 'none';
@@ -427,10 +450,11 @@
     }).join('');
   }
 
-  function renderResult(name, scores, domains, nicheMatches, serpError, variants, socials, rawData){
+  function renderResult(name, scores, domains, nicheMatches, serpError, variants, socials, trademarkMatches, trademarkError, rawData){
     renderDomains(domains);
     renderNiche(nicheMatches, serpError);
     renderSocials(socials);
+    renderTrademark(name, trademarkMatches, trademarkError);
     renderVariants(variants);
 
     const m = scores.memorable ?? 0;
@@ -535,7 +559,7 @@
         return;
       }
 
-      renderResult(name, data.scores, data.domains, data.niche_matches, data.serp_error, data.variants, data.socials, data.raw);
+      renderResult(name, data.scores, data.domains, data.niche_matches, data.serp_error, data.variants, data.socials, data.trademark_matches, data.trademark_error, data.raw);
     }catch(err){
       showError('Could not reach the checker', 'Try again in a moment.');
     }finally{

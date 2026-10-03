@@ -17,6 +17,8 @@
 // login wall, 429, timeout) = unknown. Redirects are NOT followed, since both
 // sites bounce logged-out/blocked traffic to a login page that returns 200
 // and would read as "taken" for every handle.
+// Plus a separate "<name>" trademark web search, shown as a signal (not a
+// legal clearance — it doesn't query any trademark register).
 // Then asks Jev — using YOUR stored key (JEV_API_KEY env var), not a
 // visitor-supplied one — a question grounded in those real search results.
 //
@@ -183,23 +185,21 @@ async function checkSocials(slug) {
   return socials;
 }
 
-async function searchNiche(name, context, limit = 6) {
+// One Serper call. Returns { matches, error } where error is 'no_key',
+// 'failed', or null — callers turn that into their own user-facing message.
+async function serperSearch(query, limit) {
   const key = process.env.SERPER_API_KEY;
-  if (!key) {
-    return { matches: [], error: 'SERPER_API_KEY not set on the server — niche collision check is skipped. Add it in Vercel\'s Environment Variables and redeploy.' };
-  }
+  if (!key) return { matches: [], error: 'no_key' };
   try {
     const res = await withTimeout(
       fetch('https://google.serper.dev/search', {
         method: 'POST',
         headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: '"' + name + '" ' + context, num: limit })
+        body: JSON.stringify({ q: query, num: limit })
       }),
       8000
     );
-    if (!res.ok) {
-      return { matches: [], error: 'Search failed this run — niche collision check skipped, domain availability is still live.' };
-    }
+    if (!res.ok) return { matches: [], error: 'failed' };
     const data = await res.json();
     const organic = data.organic || [];
     const matches = organic.slice(0, limit).map((r) => ({
@@ -209,8 +209,33 @@ async function searchNiche(name, context, limit = 6) {
     }));
     return { matches, error: null };
   } catch (e) {
-    return { matches: [], error: 'Search failed this run — niche collision check skipped, domain availability is still live.' };
+    return { matches: [], error: 'failed' };
   }
+}
+
+async function searchNiche(name, context, limit = 6) {
+  const { matches, error } = await serperSearch('"' + name + '" ' + context, limit);
+  if (error === 'no_key') {
+    return { matches, error: 'SERPER_API_KEY not set on the server — niche collision check is skipped. Add it in Vercel\'s Environment Variables and redeploy.' };
+  }
+  if (error) {
+    return { matches, error: 'Search failed this run — niche collision check skipped, domain availability is still live.' };
+  }
+  return { matches, error: null };
+}
+
+// A web search for "<name>" trademark — surfaces registrations, filings and
+// disputes that happen to be indexed. A signal only: it is not a search of
+// any trademark register and says nothing definitive either way.
+async function searchTrademark(name) {
+  const { matches, error } = await serperSearch('"' + name + '" trademark', 6);
+  if (error === 'no_key') {
+    return { matches, error: 'SERPER_API_KEY not set on the server — trademark signal is skipped.' };
+  }
+  if (error) {
+    return { matches, error: 'Search failed this run — trademark signal skipped.' };
+  }
+  return { matches, error: null };
 }
 
 function extractProb(v) {
@@ -263,11 +288,12 @@ module.exports = async function handler(req, res) {
     const slug = slugify(name);
     const variantNames = generateVariants(name);
 
-    const [domains, nicheResult, variants, socials] = await Promise.all([
+    const [domains, nicheResult, variants, socials, trademarkResult] = await Promise.all([
       checkDomains(slug),
       searchNiche(name, context),
       Promise.all(variantNames.map((v) => checkVariant(v, context))),
-      checkSocials(slug)
+      checkSocials(slug),
+      searchTrademark(name)
     ]);
 
     const groundingText = nicheResult.matches.length
@@ -340,6 +366,8 @@ module.exports = async function handler(req, res) {
       serp_error: nicheResult.error,
       variants,
       socials,
+      trademark_matches: trademarkResult.matches,
+      trademark_error: trademarkResult.error,
       scores,
       raw
     });
