@@ -259,6 +259,10 @@
         <div class="real-label"><span class="liveDot"></span>spotted in your niche — live search</div>
         <div id="nicheEl"></div>
       </div>
+      <div class="real-section">
+        <div class="real-label"><span class="liveDot"></span>social handles — live lookup</div>
+        <div id="socialsEl"></div>
+      </div>
       <div class="checks" id="checksEl"></div>
       <div class="actions">
         <button class="ghost-btn" id="copyBtn" type="button">copy report</button>
@@ -278,7 +282,7 @@
   </div>
 
   <footer>
-    Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. Not a trademark search — still run a proper one before you file anything.
+    Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. Not a trademark search — still run a proper one before you file anything.
   </footer>
 
 </div>
@@ -304,6 +308,7 @@
   const domainsEl = $('domainsEl');
   const nicheEl = $('nicheEl');
   const checksEl = $('checksEl');
+  const socialsEl = $('socialsEl');
   const variantsCard = $('variantsCard');
   const variantsEl = $('variantsEl');
   const copyBtn = $('copyBtn');
@@ -373,6 +378,18 @@
     }
   }
 
+  function renderSocials(socials){
+    const order = ['x', 'instagram'];
+    socialsEl.innerHTML = order.filter(p => socials && socials[p]).map(function(p){
+      const s = socials[p];
+      const cls = s.taken === true ? 'taken' : s.taken === false ? 'avail' : 'unknown';
+      const label = s.taken === true ? 'taken' : s.taken === false ? 'open' : (s.note ? 'too long' : 'unknown');
+      const link = s.note ? '' : '<a href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' + (s.taken === false ? 'grab it →' : 'look →') + '</a>';
+      return '<div class="domain-row"><span class="domain-name">@' + escapeHtml(s.handle) + ' <span style="font-weight:400;color:var(--ink-soft);">on ' + escapeHtml(s.label) + '</span></span>' +
+        '<span style="display:flex;align-items:center;gap:10px;"><span class="domain-badge ' + cls + '"' + (s.note ? ' title="' + escapeHtml(s.note) + '"' : '') + '>' + label + '</span>' + link + '</span></div>';
+    }).join('') || '<p class="niche-empty">Could not check social handles this run.</p>';
+  }
+
   function renderVariants(variants){
     if (!variants || !variants.length){
       variantsCard.style.display = 'none';
@@ -410,9 +427,10 @@
     }).join('');
   }
 
-  function renderResult(name, scores, domains, nicheMatches, serpError, variants, rawData){
+  function renderResult(name, scores, domains, nicheMatches, serpError, variants, socials, rawData){
     renderDomains(domains);
     renderNiche(nicheMatches, serpError);
+    renderSocials(socials);
     renderVariants(variants);
 
     const m = scores.memorable ?? 0;
@@ -517,7 +535,7 @@
         return;
       }
 
-      renderResult(name, data.scores, data.domains, data.niche_matches, data.serp_error, data.variants, data.raw);
+      renderResult(name, data.scores, data.domains, data.niche_matches, data.serp_error, data.variants, data.socials, data.raw);
     }catch(err){
       showError('Could not reach the checker', 'Try again in a moment.');
     }finally{

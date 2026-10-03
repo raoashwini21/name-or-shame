@@ -12,6 +12,11 @@
 // Both checks are also run against 2-3 close variants of the name (a suffix,
 // a prefix, a respelling) so there's a fallback to look at if the original
 // is crowded.
+// Also checks whether the name is taken as a handle on X and Instagram with a
+// plain HEAD request: 200 = taken, 404 = open, anything else (redirect to a
+// login wall, 429, timeout) = unknown. Redirects are NOT followed, since both
+// sites bounce logged-out/blocked traffic to a login page that returns 200
+// and would read as "taken" for every handle.
 // Then asks Jev — using YOUR stored key (JEV_API_KEY env var), not a
 // visitor-supplied one — a question grounded in those real search results.
 //
@@ -143,6 +148,41 @@ async function checkVariant(variant, context) {
   };
 }
 
+const SOCIALS = [
+  { platform: 'x', label: 'X', maxLen: 15, url: (h) => 'https://x.com/' + h },
+  { platform: 'instagram', label: 'Instagram', maxLen: 30, url: (h) => 'https://www.instagram.com/' + h + '/' }
+];
+
+async function checkHandle(social, handle) {
+  const url = social.url(handle);
+  const base = { platform: social.platform, label: social.label, handle, url };
+  if (handle.length > social.maxLen) {
+    return { ...base, taken: null, note: 'longer than ' + social.label + "'s " + social.maxLen + '-character limit' };
+  }
+  try {
+    const res = await withTimeout(
+      fetch(url, {
+        method: 'HEAD',
+        redirect: 'manual',
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NameWorthIt/1.0)' }
+      }),
+      6000
+    );
+    if (res.status === 200) return { ...base, taken: true };
+    if (res.status === 404) return { ...base, taken: false };
+    return { ...base, taken: null };
+  } catch (e) {
+    return { ...base, taken: null };
+  }
+}
+
+async function checkSocials(slug) {
+  const results = await Promise.all(SOCIALS.map((s) => checkHandle(s, slug)));
+  const socials = {};
+  for (const r of results) socials[r.platform] = r;
+  return socials;
+}
+
 async function searchNiche(name, context, limit = 6) {
   const key = process.env.SERPER_API_KEY;
   if (!key) {
@@ -223,10 +263,11 @@ module.exports = async function handler(req, res) {
     const slug = slugify(name);
     const variantNames = generateVariants(name);
 
-    const [domains, nicheResult, variants] = await Promise.all([
+    const [domains, nicheResult, variants, socials] = await Promise.all([
       checkDomains(slug),
       searchNiche(name, context),
-      Promise.all(variantNames.map((v) => checkVariant(v, context)))
+      Promise.all(variantNames.map((v) => checkVariant(v, context))),
+      checkSocials(slug)
     ]);
 
     const groundingText = nicheResult.matches.length
@@ -298,6 +339,7 @@ module.exports = async function handler(req, res) {
       niche_matches: nicheResult.matches,
       serp_error: nicheResult.error,
       variants,
+      socials,
       scores,
       raw
     });
