@@ -7,415 +7,568 @@
 <meta name="description" content="Open a case file on the name you're about to lock in. Domains, lookalikes, and a verdict — before you file for it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=Caveat:wght@500&display=swap" rel="stylesheet">
 <style>
-  /* Noir by default; an ivory variant for light-mode systems. */
   :root{
-    --bg:#0D0E11;
-    --surface:#14161A;
-    --surface-2:#1A1D22;
-    --scene:#08090B;
-    --line:rgba(236,228,210,0.09);
-    --line-strong:rgba(236,228,210,0.18);
-    --text:#ECE4D2;
-    --text-soft:#A39C8C;
-    --text-faint:#6E6A60;
-    --accent:#C9A45C;
-    --accent-ink:#14110A;
-    --accent-soft:rgba(201,164,92,0.12);
-    --good:#86BFA0;  --good-soft:rgba(134,191,160,0.10);
-    --bad:#E4806F;   --bad-soft:rgba(228,128,111,0.10);
-    --warn:#D9AE5F;  --warn-soft:rgba(217,174,95,0.10);
-    --shadow:0 1px 0 rgba(255,255,255,0.03) inset, 0 24px 48px -28px rgba(0,0,0,0.8);
-    --grain-opacity:0.05;
-    /* aliases still referenced from inline markup */
-    --ink:var(--text); --ink-soft:var(--text-soft);
-  }
-  @media (prefers-color-scheme: light){
-    :root:not([data-theme="dark"]){
-      --bg:#F4F0E6; --surface:#FFFDF8; --surface-2:#F3EEE3; --scene:#101114;
-      --line:rgba(23,21,15,0.09); --line-strong:rgba(23,21,15,0.18);
-      --text:#17150F; --text-soft:#5E584C; --text-faint:#8C8678;
-      --accent:#9A7330; --accent-ink:#FFFDF8; --accent-soft:rgba(154,115,48,0.10);
-      --good:#2E6B4E; --good-soft:rgba(46,107,78,0.08);
-      --bad:#A8402F;  --bad-soft:rgba(168,64,47,0.08);
-      --warn:#8C6514; --warn-soft:rgba(140,101,20,0.09);
-      --shadow:0 1px 2px rgba(23,21,15,0.04), 0 18px 40px -26px rgba(23,21,15,0.25);
-      --grain-opacity:0.035;
-    }
-  }
-  :root[data-theme="light"]{
-    --bg:#F4F0E6; --surface:#FFFDF8; --surface-2:#F3EEE3; --scene:#101114;
-    --line:rgba(23,21,15,0.09); --line-strong:rgba(23,21,15,0.18);
-    --text:#17150F; --text-soft:#5E584C; --text-faint:#8C8678;
-    --accent:#9A7330; --accent-ink:#FFFDF8; --accent-soft:rgba(154,115,48,0.10);
-    --good:#2E6B4E; --good-soft:rgba(46,107,78,0.08);
-    --bad:#A8402F;  --bad-soft:rgba(168,64,47,0.08);
-    --warn:#8C6514; --warn-soft:rgba(140,101,20,0.09);
-    --shadow:0 1px 2px rgba(23,21,15,0.04), 0 18px 40px -26px rgba(23,21,15,0.25);
-    --grain-opacity:0.035;
+    color-scheme: light;
+    --desk:#F2EDE2;          /* page — warm paper */
+    --sheet:#FBF8F1;         /* loose sheets inside the file */
+    --manila:#E4D3A6;        /* folder stock */
+    --manila-deep:#D3BE87;   /* folder edge / tab shadow */
+    --manila-soft:#F1E6C8;
+    --ink:#221B13;
+    --ink-2:#5A5044;
+    --ink-3:#8D8372;
+    --rule:rgba(34,27,19,0.13);
+    --rule-strong:rgba(34,27,19,0.28);
+    --red:#9C2A20;
+    --red-soft:rgba(156,42,32,0.07);
+
+    --f-display:'Newsreader', 'Iowan Old Style', Georgia, serif;
+    --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    --f-sans:'IBM Plex Sans', system-ui, sans-serif;
+    --f-cond:'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
+    --f-hand:'Caveat', 'Bradley Hand', cursive;
   }
 
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:
-      radial-gradient(900px 420px at 50% -120px, var(--accent-soft), transparent 70%),
-      var(--bg);
-    color:var(--text);
-    font-family:'Inter', system-ui, sans-serif;
-    padding:28px 16px 72px;
+    background:var(--desk);
+    color:var(--ink);
+    font-family:var(--f-sans);
+    font-size:15px;
+    line-height:1.55;
     -webkit-font-smoothing:antialiased;
-    min-height:100vh;
+  }
+  a{color:inherit;}
+  .mono{font-family:var(--f-mono);}
+
+  .desk{max-width:1160px;margin:0 auto;padding:28px 48px 80px;}
+
+  /* ---------- masthead: a compact folder label ---------- */
+  .masthead{
+    display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+    padding-bottom:18px;border-bottom:1px solid var(--rule-strong);margin-bottom:56px;
+  }
+  .mh-path{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.14em;color:var(--ink-3);margin-bottom:10px;}
+  .mh-path span{color:var(--red);padding:0 4px;}
+  .mh-name{font-family:var(--f-cond);font-weight:600;font-size:19px;letter-spacing:0.06em;line-height:1;display:block;}
+  .mh-tag{font-size:13px;color:var(--ink-2);display:block;margin-top:5px;}
+  .mh-case{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+  .mh-case .label{font-family:var(--f-mono);font-size:10px;letter-spacing:0.16em;color:var(--ink-3);}
+  .case-stamp{
+    font-family:var(--f-mono);font-weight:500;font-size:20px;letter-spacing:0.12em;color:var(--red);
+    border:1.5px solid var(--red);padding:1px 8px 0 10px;line-height:1.35;transform:rotate(-2deg);
+    opacity:0.92;
+  }
+  .mh-status{white-space:nowrap;font-family:var(--f-mono);font-size:10px;letter-spacing:0.14em;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px;}
+  .mh-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);}
+
+  /* ---------- page grid ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns:40px minmax(0,1fr) 248px;
+    grid-template-areas:
+      "rail hero   hero"
+      "rail folder aside"
+      "rail board  aside"
+      "rail result aside"
+      "rail foot   aside";
+    column-gap:44px;
+    align-items:start;
+  }
+  .hero{grid-area:hero;}
+  .folder{grid-area:folder;}
+  #board{grid-area:board;}
+  #result{grid-area:result;}
+  .foot{grid-area:foot;}
+  .aside{grid-area:aside;align-self:start;position:sticky;top:28px;}
+
+  /* vertical file margin — printed along the folder's edge */
+  .rail{
+    grid-area:rail;grid-row:1 / -1;align-self:stretch;
+    border-right:1px solid var(--rule-strong);position:relative;
+  }
+  .rail-text{
+    position:sticky;top:28px;
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-family:var(--f-mono);font-size:10px;letter-spacing:0.18em;color:var(--ink-3);
+    display:flex;gap:22px;white-space:nowrap;padding:4px 0;
+  }
+  .rail-text b{font-weight:500;color:var(--ink);}
+  .rail-text .st-red b{color:var(--red);}
+
+  /* ---------- hero ---------- */
+  .hero{margin-bottom:44px;}
+  h1{
+    font-family:var(--f-display);font-weight:500;font-optical-sizing:auto;
+    font-size:clamp(40px,6vw,72px);line-height:1.0;letter-spacing:-0.022em;
+    margin:0 0 22px;
+  }
+  .mark{position:relative;white-space:nowrap;font-style:italic;font-weight:400;}
+  .mark svg{position:absolute;left:-2%;bottom:-0.08em;width:104%;height:0.22em;overflow:visible;}
+  .mark path{fill:none;stroke:var(--red);stroke-width:2.2;stroke-linecap:round;opacity:0.85;}
+  p.lede{font-size:16.5px;line-height:1.65;color:var(--ink-2);margin:0;max-width:46ch;}
+
+  /* ---------- the intake folder ---------- */
+  .folder{position:relative;padding-top:30px;margin-bottom:28px;animation:file-in 0.5s ease-out both;}
+  @keyframes file-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .folder-tab{
+    position:absolute;top:0;left:0;height:31px;padding:0 22px;display:flex;align-items:center;
+    background:var(--manila);border:1px solid var(--manila-deep);border-bottom:none;border-radius:6px 6px 0 0;
+    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.18em;color:var(--ink);
+  }
+  .folder-tab::before{content:'';width:5px;height:5px;background:var(--red);border-radius:50%;margin-right:10px;}
+  .folder-shell{
+    background:var(--manila);border:1px solid var(--manila-deep);border-radius:0 6px 6px 6px;
+    padding:12px 12px 12px 12px;
+    box-shadow:0 1px 0 rgba(255,255,255,0.35) inset, 0 18px 30px -24px rgba(60,40,10,0.45);
+  }
+  .sheet{
+    background:var(--sheet);border:1px solid rgba(34,27,19,0.10);
+    box-shadow:0 1px 2px rgba(60,40,10,0.06);
     position:relative;
   }
-  body::before{
-    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:var(--grain-opacity);
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  .intake{padding:30px 40px 34px;}
+  .intake-meta{
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--f-mono);font-size:10px;letter-spacing:0.16em;color:var(--ink-3);
+    padding-bottom:14px;border-bottom:1px solid var(--rule);margin-bottom:30px;
   }
-  .wrap{max-width:620px;margin:0 auto;position:relative;z-index:1;}
-  .mono{font-family:'JetBrains Mono', ui-monospace, monospace;}
+  .intake-meta b{font-weight:500;color:var(--ink-2);}
 
-  /* masthead */
-  header.top{
-    display:flex;justify-content:space-between;align-items:center;gap:14px;
-    padding:4px 0 18px;margin-bottom:44px;border-bottom:1px solid var(--line);
-  }
-  .brand{display:flex;align-items:center;gap:12px;}
-  .brand-mark{
-    width:34px;height:34px;border-radius:50%;border:1px solid var(--line-strong);
-    display:grid;place-items:center;color:var(--accent);flex:none;
-  }
-  .brand-text{display:flex;flex-direction:column;gap:2px;}
-  .brand-name{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:21px;letter-spacing:0.01em;line-height:1;}
-  .brand-name em{color:var(--accent);font-style:italic;}
-  .brand small{font-family:'JetBrains Mono',monospace;color:var(--text-faint);font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;}
-  .case-no{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-faint);letter-spacing:0.14em;text-transform:uppercase;text-align:right;white-space:nowrap;}
-  .case-no b{display:block;color:var(--text);font-weight:500;font-size:15px;letter-spacing:0.06em;margin-top:3px;}
+  /* registration mark — printer's crosshair at a sheet corner */
+  .reg{position:absolute;width:13px;height:13px;}
+  .reg::before,.reg::after{content:'';position:absolute;background:var(--red);opacity:0.55;}
+  .reg::before{left:6px;top:0;width:1px;height:13px;}
+  .reg::after{top:6px;left:0;height:1px;width:13px;}
+  .reg.tr{top:10px;right:10px;}
+  .reg.bl{bottom:10px;left:10px;}
 
-  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
-  .eyebrow::before{content:'';width:28px;height:1px;background:currentColor;opacity:0.7;}
-  h1{
-    font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(36px,8.5vw,54px);
-    line-height:1.04;margin:0 0 18px;letter-spacing:-0.015em;text-wrap:balance;
+  .field{position:relative;margin-bottom:30px;}
+  .field-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;margin-bottom:8px;}
+  .field-label{font-family:var(--f-mono);font-size:11px;letter-spacing:0.14em;color:var(--ink-2);text-transform:uppercase;}
+  .field-label .num{color:var(--red);}
+  .field-hint{font-size:12.5px;color:var(--ink-3);}
+  .annot{
+    font-family:var(--f-hand);font-size:21px;color:var(--red);line-height:1;white-space:nowrap;
+    position:absolute;right:calc(100% + 18px);top:-3px;transform:rotate(-4deg);pointer-events:none;
   }
-  h1 em{font-style:italic;color:var(--accent);}
-  p.lede{color:var(--text-soft);font-size:15.5px;line-height:1.7;margin:0 0 36px;max-width:52ch;}
+  /* red corner marker on the active field, instead of a glow */
+  .field::before{
+    content:'';position:absolute;left:-14px;top:-6px;width:9px;height:9px;
+    border-left:1.5px solid var(--red);border-top:1.5px solid var(--red);opacity:0;transition:opacity 0.15s;
+  }
+  .field:focus-within::before{opacity:1;}
 
-  .card{
-    background:var(--surface);border:1px solid var(--line);border-radius:16px;
-    padding:24px;margin-bottom:16px;box-shadow:var(--shadow);position:relative;
+  input[type="text"], textarea{
+    width:100%;border:none;background:transparent;color:var(--ink);padding:6px 0 8px;
+    border-bottom:1px solid var(--rule-strong);border-radius:0;font-family:var(--f-sans);font-size:16px;line-height:1.6;
+    transition:border-color 0.15s;
   }
-  .field-label{
-    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;
-    color:var(--text-faint);margin-bottom:12px;
+  input[type="text"]::placeholder, textarea::placeholder{color:var(--ink-3);opacity:0.7;}
+  input[type="text"]:focus, textarea:focus{outline:none;border-bottom-color:var(--red);}
+  input#nameInput{font-family:var(--f-display);font-size:38px;font-weight:500;letter-spacing:-0.01em;line-height:1.2;padding:2px 0 8px;}
+  textarea{
+    resize:vertical;min-height:84px;padding-top:2px;
+    /* typed onto ruled lines */
+    background-image:repeating-linear-gradient(to bottom, transparent 0, transparent calc(1.6em - 1px), var(--rule) calc(1.6em - 1px), var(--rule) 1.6em);
+    background-position:0 2px;background-attachment:local;border-bottom-color:transparent;
   }
-  .field-label span{text-transform:none;letter-spacing:0;color:var(--text-faint);}
-  textarea, input[type="text"]{
-    width:100%;font-family:'Inter', sans-serif;font-size:15px;color:var(--text);
-    background:var(--surface-2);border:1px solid var(--line-strong);border-radius:10px;padding:13px 15px;
-    resize:vertical;line-height:1.55;transition:border-color 0.2s, box-shadow 0.2s;
-  }
-  textarea::placeholder, input::placeholder{color:var(--text-faint);}
-  textarea:focus, input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);}
-  input#nameInput{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;font-weight:500;padding:8px 15px 10px;letter-spacing:0.01em;}
+  textarea:focus{border-bottom-color:var(--red);}
 
+  .intake-foot{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-top:8px;}
   .run-btn{
-    position:relative;width:100%;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;
-    letter-spacing:0.04em;background:var(--accent);color:var(--accent-ink);
-    border:none;border-radius:10px;padding:16px;cursor:pointer;margin-top:16px;overflow:hidden;
-    display:flex;align-items:center;justify-content:center;gap:10px;transition:filter 0.2s, transform 0.15s;
+    font-family:var(--f-cond);font-weight:600;font-size:14px;letter-spacing:0.14em;text-transform:uppercase;
+    background:var(--red);color:#FBF6EC;border:1px solid #7E2018;border-radius:3px;
+    padding:15px 26px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:14px;
+    box-shadow:0 2px 0 #6E1C15;transition:transform 0.08s, box-shadow 0.08s;
   }
-  .run-btn::after{
-    content:'';position:absolute;inset:0;background:linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.28) 50%, transparent 70%);
-    transform:translateX(-100%);transition:transform 0.7s ease;
-  }
-  .run-btn:not(:disabled):hover{filter:brightness(1.07);}
-  .run-btn:not(:disabled):hover::after{transform:translateX(100%);}
-  .run-btn:not(:disabled):active{transform:scale(0.99);}
-  .run-btn:disabled{opacity:0.7;cursor:default;}
-  .run-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
-  .spinner{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin 0.7s linear infinite;display:none;}
-  .run-btn.loading .spinner{display:inline-block;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-
-  .ghost-btn{
-    font-family:'Inter',sans-serif;font-size:13px;font-weight:500;background:transparent;
-    border:1px solid var(--line-strong);color:var(--text);padding:12px;border-radius:10px;cursor:pointer;
-    white-space:nowrap;transition:background 0.2s, border-color 0.2s;
-  }
-  .ghost-btn:hover{background:var(--surface-2);border-color:var(--text-faint);}
+  .run-btn .arrow{font-family:var(--f-sans);letter-spacing:0;font-weight:500;}
+  .run-btn:not(:disabled):hover{transform:translateY(1px);box-shadow:0 1px 0 #6E1C15;}
+  .run-btn:not(:disabled):active{transform:translateY(2px);box-shadow:0 0 0 #6E1C15;}
+  .run-btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
+  .run-btn:disabled{cursor:default;opacity:0.85;}
+  .run-btn.loading .arrow{display:none;}
+  .spinner{display:none;}
+  .intake-note{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--ink-3);}
 
   .error-box{
-    display:none;background:var(--bad-soft);border:1px solid var(--bad);color:var(--bad);
-    border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.6;margin-top:16px;
+    display:none;margin-top:22px;padding:14px 16px;border:1px solid var(--red);border-left-width:3px;
+    background:var(--red-soft);color:var(--red);font-size:13.5px;line-height:1.6;
   }
-  .error-box pre{background:rgba(0,0,0,0.15);padding:10px;border-radius:8px;overflow-x:auto;font-size:11.5px;margin:8px 0 0;white-space:pre-wrap;word-break:break-word;font-family:'JetBrains Mono',monospace;}
+  .error-box strong{font-weight:600;}
+  .error-box pre{background:rgba(34,27,19,0.05);padding:10px;margin:8px 0 0;overflow-x:auto;font-size:11.5px;white-space:pre-wrap;word-break:break-word;font-family:var(--f-mono);color:var(--ink-2);}
 
-  /* ---------- investigation board ---------- */
-  @property --beam-x{syntax:'<percentage>';inherits:true;initial-value:12%;}
-  #board{display:none;padding:0;overflow:hidden;}
-  #board.show{display:block;animation:rise 0.45s cubic-bezier(0.22,1,0.36,1);}
-  .board-head{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 22px;
-    border-bottom:1px solid var(--line);
-    font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-soft);
+  /* ---------- index card (aside) ---------- */
+  .index-card{
+    background:var(--sheet);border:1px solid rgba(34,27,19,0.10);padding:16px 18px 6px;
+    box-shadow:0 1px 2px rgba(60,40,10,0.06);margin-top:6px;
   }
-  .board-head .rec{display:inline-flex;align-items:center;gap:10px;}
-  .board-head .rec::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 var(--accent);animation:pulse 1.6s ease-out infinite;}
-  #board.done .board-head .rec::before{animation:none;background:var(--good);}
-  #board.stalled .board-head .rec::before{background:var(--bad);}
-  .board-head .clock{font-variant-numeric:tabular-nums;color:var(--text);letter-spacing:0.08em;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(201,164,92,0.55);}100%{box-shadow:0 0 0 10px rgba(201,164,92,0);}}
+  .index-card h2{
+    font-family:var(--f-mono);font-weight:500;font-size:10.5px;letter-spacing:0.18em;margin:0 0 10px;
+    padding-bottom:9px;border-bottom:1.5px solid var(--red);color:var(--ink);
+  }
+  .index-card ol{list-style:none;margin:0;padding:0;}
+  .index-card li{display:grid;grid-template-columns:26px 1fr;padding:9px 0;border-bottom:1px solid var(--rule);font-size:13px;line-height:1.45;}
+  .index-card li:last-child{border-bottom:none;}
+  .index-card li .n{font-family:var(--f-mono);font-size:11px;color:var(--red);padding-top:1px;}
+  .index-card li b{font-weight:600;display:block;}
+  .index-card li span.d{color:var(--ink-3);font-size:12px;}
 
-  .scene{
-    position:relative;height:150px;overflow:hidden;background:var(--scene);
-    display:flex;align-items:center;justify-content:center;
-    animation:beam 2.8s cubic-bezier(0.45,0,0.55,1) infinite alternate;
+  /* ---------- case log (while the checks run) ---------- */
+  #board{display:none;margin-bottom:22px;}
+  #board.show{display:block;animation:sheet-in 0.45s ease-out both;}
+  .log{padding:22px 32px 18px;}
+  .log-head{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;
+    padding-bottom:12px;border-bottom:1px solid var(--rule-strong);
   }
-  @keyframes beam{from{--beam-x:10%;}to{--beam-x:90%;}}
-  .scene::before{
-    /* faint floor line */
-    content:'';position:absolute;left:0;right:0;bottom:30px;height:1px;background:linear-gradient(90deg, transparent, rgba(236,228,210,0.08), transparent);
-  }
-  .beam{
-    position:absolute;top:-40%;bottom:-40%;width:240px;left:var(--beam-x);transform:translateX(-50%);
-    background:radial-gradient(closest-side, rgba(255,236,200,0.16), rgba(255,236,200,0.05) 55%, transparent);
-    pointer-events:none;
-  }
-  .scene-name{
-    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 24px;
-    font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(34px,10vw,58px);letter-spacing:0.02em;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(236,228,210,0.10);
-  }
-  .scene-name.lit{
-    color:#F3EBD9;
-    -webkit-mask-image:radial-gradient(circle 90px at var(--beam-x) 50%, #000 35%, transparent 75%);
-            mask-image:radial-gradient(circle 90px at var(--beam-x) 50%, #000 35%, transparent 75%);
-    transition:-webkit-mask-image 0.6s, mask-image 0.6s;
-  }
-  #board.done .scene{animation:none;}
-  #board.done .beam{opacity:0;transition:opacity 0.6s;}
-  #board.done .scene-name.lit{-webkit-mask-image:none;mask-image:none;animation:reveal 0.8s ease both;}
-  @keyframes reveal{from{opacity:0.3;letter-spacing:0.08em;}to{opacity:1;letter-spacing:0.02em;}}
+  .log-head .who{color:var(--ink);}
+  .log-head .who #sceneName{text-transform:none;letter-spacing:0.02em;font-weight:500;}
+  .log-head .right{display:flex;align-items:center;gap:14px;}
+  .clock{font-variant-numeric:tabular-nums;color:var(--ink-2);}
   .scene-stamp{
-    position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
-    font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.28em;text-transform:uppercase;
-    color:#C9A45C;padding:5px 12px;border:1px solid rgba(201,164,92,0.45);border-radius:999px;opacity:0;white-space:nowrap;
+    display:none;font-family:var(--f-mono);font-size:10px;letter-spacing:0.18em;color:var(--red);
+    border:1px solid var(--red);padding:2px 7px;transform:rotate(-2deg);
   }
-  #board.done .scene-stamp{opacity:1;transition:opacity 0.5s 0.2s;}
-  #board.stalled .scene-stamp{color:#E4806F;border-color:rgba(228,128,111,0.45);}
-
-  .leads{list-style:none;margin:0;padding:6px 22px 12px;}
+  #board.done .scene-stamp{display:inline-block;}
+  #boardStatus{color:var(--ink-2);}
+  .leads{list-style:none;margin:0;padding:4px 0 0;}
   .lead{
-    display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);
-    font-size:13.5px;color:var(--text-soft);opacity:0.4;transition:opacity 0.3s, color 0.3s;
+    display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:10px;
+    padding:9px 0;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--ink-3);
+    transition:color 0.2s;
   }
   .lead:last-child{border-bottom:none;}
-  .lead.active, .lead.solved{opacity:1;color:var(--text);}
-  .lead-icon{width:14px;height:14px;flex:none;display:grid;place-items:center;}
-  .lead-icon::before{content:'';width:6px;height:6px;border-radius:50%;border:1px solid var(--text-faint);}
-  .lead.active .lead-icon::before{width:11px;height:11px;border:1.5px solid var(--accent);border-right-color:transparent;animation:spin 0.8s linear infinite;}
-  .lead.solved .lead-icon::before{width:7px;height:7px;border:none;background:var(--good);box-shadow:0 0 0 3px var(--good-soft);}
-  .lead.solved.bad .lead-icon::before{background:var(--bad);box-shadow:0 0 0 3px var(--bad-soft);}
-  .lead.solved.meh .lead-icon::before{background:var(--warn);box-shadow:0 0 0 3px var(--warn-soft);}
-  .lead-text{flex:1;min-width:0;line-height:1.45;}
-  .lead-text b{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:12.5px;color:var(--text);overflow-wrap:anywhere;}
-  .lead-status{flex:none;}
-  .lead.active .lead-status::after{
-    content:'searching...';display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;
-    width:12ch;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-faint);animation:dots 1.2s steps(4) infinite;
-  }
-  @keyframes dots{from{width:9ch;}to{width:13ch;}}
-  .lead .domain-badge{display:inline-block;animation:fade-in 0.35s ease both;white-space:nowrap;}
-  @keyframes fade-in{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}
+  .lead.active,.lead.solved{color:var(--ink);}
+  .lead-icon{width:12px;height:12px;border:1px solid var(--rule-strong);display:grid;place-items:center;font-family:var(--f-mono);font-size:10px;line-height:1;}
+  .lead.active .lead-icon{border-color:var(--ink-2);}
+  .lead.solved .lead-icon{border-color:var(--ink);background:var(--ink);color:var(--sheet);}
+  .lead.solved .lead-icon::before{content:'✓';}
+  .lead.solved.bad .lead-icon{border-color:var(--red);background:var(--red);}
+  .lead.solved.bad .lead-icon::before{content:'×';}
+  .lead.solved.meh .lead-icon{background:transparent;color:var(--ink);border-color:var(--ink-2);}
+  .lead.solved.meh .lead-icon::before{content:'?';}
+  .lead-text b{font-family:var(--f-mono);font-weight:500;font-size:12.5px;overflow-wrap:anywhere;}
+  .lead.active .lead-status::after{content:'checking';font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--ink-3);text-transform:uppercase;}
 
+  /* ---------- report sheets ---------- */
   #result{display:none;}
-  #result.show{display:block;animation:rise 0.5s cubic-bezier(0.22,1,0.36,1);}
-  @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+  #result.show{display:block;}
+  #result.show > .sheet, #result.show > .report-foot{animation:sheet-in 0.5s ease-out both;animation-delay:calc(var(--i, 0) * 70ms);}
+  @keyframes sheet-in{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
+  #result > .sheet{margin-bottom:14px;padding:30px 36px 28px;}
 
-  /* verdict */
-  .stamp-block{
-    position:relative;text-align:center;padding:40px 22px 34px;border:1px solid var(--line);
-    border-radius:16px;margin-bottom:16px;background:
-      radial-gradient(420px 180px at 50% 0%, var(--accent-soft), transparent 70%), var(--surface);
-    box-shadow:var(--shadow);overflow:hidden;
+  .sheet-head{
+    display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+    padding-bottom:12px;border-bottom:1px solid var(--rule-strong);margin-bottom:6px;
   }
-  .case-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.26em;text-transform:uppercase;color:var(--text-faint);margin-bottom:14px;}
-  .stamp-name{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:clamp(30px,8vw,42px);color:var(--text);margin-bottom:20px;line-height:1.1;}
+  .sheet-title{font-family:var(--f-display);font-weight:500;font-size:25px;letter-spacing:-0.01em;margin:0;line-height:1.2;}
+  .sheet-title .n{font-family:var(--f-mono);font-size:12px;font-weight:400;letter-spacing:0.1em;color:var(--red);margin-right:12px;vertical-align:4px;}
+  .sub-head{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;margin:22px 0 4px;}
+
+  /* finding labels */
+  .status{
+    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.14em;white-space:nowrap;
+    padding:3px 8px 2px;border:1px solid currentColor;color:var(--ink);
+  }
+  .status.clear{color:var(--ink);}
+  .status.flag{color:var(--red);background:var(--red-soft);}
+  .status.review{color:var(--ink-2);border-style:dashed;}
+  .status.evidence{color:var(--ink);background:var(--manila-soft);border-color:var(--manila-deep);}
+  .status.pending{color:var(--ink-3);border-style:dashed;}
+
+  /* report cover */
+  .cover{padding:34px 36px 30px !important;}
+  .cover-top{
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);
+    padding-bottom:12px;border-bottom:1px solid var(--rule-strong);margin-bottom:26px;
+  }
+  .cover-top b{color:var(--ink);font-weight:500;}
+  .cover-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 28px;align-items:center;}
+  .case-label{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.16em;color:var(--ink-3);text-transform:uppercase;margin-bottom:8px;}
+  .stamp-name{font-family:var(--f-display);font-weight:500;font-size:clamp(34px,5vw,50px);letter-spacing:-0.02em;line-height:1.05;margin-bottom:12px;overflow-wrap:anywhere;}
+  .stamp-sub{font-size:14.5px;color:var(--ink-2);max-width:44ch;line-height:1.6;}
   .stamp{
-    display:inline-flex;align-items:center;gap:12px;font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;
-    letter-spacing:0.28em;padding:11px 22px 11px 26px;border-radius:999px;border:1px solid currentColor;
-    text-transform:uppercase;animation:seal-in 0.6s cubic-bezier(0.22,1,0.36,1);
+    font-family:var(--f-cond);font-weight:600;font-size:17px;letter-spacing:0.16em;text-transform:uppercase;
+    padding:10px 16px 9px;border:2px solid currentColor;outline:1px solid currentColor;outline-offset:3px;
+    transform:rotate(-3deg);white-space:nowrap;opacity:0.9;justify-self:end;
   }
-  .stamp::before,.stamp::after{content:'';width:18px;height:1px;background:currentColor;opacity:0.5;}
-  @keyframes seal-in{from{opacity:0;transform:scale(1.12);filter:blur(4px);}to{opacity:1;transform:scale(1);filter:none;}}
-  .stamp.good{color:var(--good);background:var(--good-soft);}
-  .stamp.bad{color:var(--bad);background:var(--bad-soft);}
-  .stamp.mid{color:var(--warn);background:var(--warn-soft);}
-  .stamp-sub{margin-top:20px;font-size:14px;color:var(--text-soft);line-height:1.6;max-width:42ch;margin-left:auto;margin-right:auto;}
+  .stamp.good{color:var(--ink);}
+  .stamp.bad{color:var(--red);}
+  .stamp.mid{color:var(--ink-2);}
+  .contents{margin-top:28px;border-top:1px solid var(--rule);}
+  .contents a{
+    display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule);
+    text-decoration:none;font-size:14px;
+  }
+  .contents a:hover .c-name{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;}
+  .contents .c-n{font-family:var(--f-mono);font-size:11px;color:var(--red);width:22px;flex:none;}
+  .contents .c-lead{flex:1;border-bottom:1px dotted var(--rule-strong);transform:translateY(-4px);min-width:20px;}
 
-  .real-section{margin-bottom:28px;}
-  .real-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px;display:flex;align-items:center;gap:9px;}
-  .real-label .liveDot{width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-soft);flex:none;}
-  .domain-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:13px;}
+  /* evidence rows (domains, handles) */
+  .domain-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--rule);font-family:var(--f-mono);font-size:13.5px;}
   .domain-row:last-child{border-bottom:none;}
-  .domain-name{font-weight:500;}
+  .domain-name{flex:1;display:flex;align-items:baseline;gap:6px;min-width:0;font-weight:500;}
+  .domain-name::after{content:'';flex:1;border-bottom:1px dotted var(--rule-strong);min-width:16px;transform:translateY(-3px);}
+  .domain-name span{font-weight:400;}
+  .domain-row > span:last-child{flex:none;}
+  .domain-row a{font-family:var(--f-sans);font-size:12.5px;color:var(--red);text-decoration:none;}
+  .domain-row a:hover{text-decoration:underline;text-underline-offset:3px;}
   .domain-badge{
-    font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;padding:4px 10px;border-radius:999px;
-    border:1px solid color-mix(in srgb, currentColor 40%, transparent);text-transform:uppercase;letter-spacing:0.1em;
+    font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;
+    padding:2px 7px 1px;border:1px solid currentColor;white-space:nowrap;display:inline-block;
   }
-  .domain-badge.avail{color:var(--good);background:var(--good-soft);}
-  .domain-badge.taken{color:var(--bad);background:var(--bad-soft);}
-  .domain-badge.warn{color:var(--warn);background:var(--warn-soft);}
-  .domain-badge.unknown{color:var(--text-soft);background:transparent;}
-  .domain-row a{font-family:'Inter',sans-serif;font-size:12px;color:var(--accent);font-weight:500;text-decoration:none;}
-  .domain-row a:hover{text-decoration:underline;}
-  .niche-item{padding:12px 0;border-bottom:1px solid var(--line);}
+  .domain-badge.avail{color:var(--ink);}
+  .domain-badge.taken{color:var(--red);}
+  .domain-badge.taken.minor{color:var(--ink-2);}
+  .domain-badge.warn{color:var(--ink);background:var(--manila-soft);border-color:var(--manila-deep);}
+  .domain-badge.unknown{color:var(--ink-3);border-style:dashed;}
+
+  .niche-item{padding:13px 0;border-bottom:1px solid var(--rule);}
   .niche-item:last-child{border-bottom:none;}
-  .niche-title{font-size:14px;font-weight:500;margin-bottom:4px;line-height:1.4;}
-  .niche-title a{color:var(--text);text-decoration:none;background-image:linear-gradient(var(--accent),var(--accent));background-size:0 1px;background-position:0 100%;background-repeat:no-repeat;transition:background-size 0.3s;}
-  .niche-title a:hover{background-size:100% 1px;}
-  .niche-snippet{font-size:13px;color:var(--text-soft);line-height:1.55;}
-  .niche-empty{font-size:13px;color:var(--text-faint);font-style:italic;margin:6px 0;}
+  .niche-title{font-size:14.5px;font-weight:500;line-height:1.4;margin-bottom:3px;}
+  .niche-title a{text-decoration:none;}
+  .niche-title a:hover{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;}
+  .niche-snippet{font-size:13.5px;color:var(--ink-2);line-height:1.55;}
+  .niche-empty{font-size:13.5px;color:var(--ink-3);font-style:italic;margin:10px 0 4px;}
 
-  .variant{padding:18px 0;border-bottom:1px solid var(--line);}
-  .variant:first-of-type{padding-top:4px;}
-  .variant:last-child{border-bottom:none;padding-bottom:0;}
-  .variant-name{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;font-size:24px;margin-bottom:12px;}
-  .tld-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
-  .tld-chips .domain-badge{text-transform:none;letter-spacing:0.02em;}
-  .tld-chips a.domain-badge{text-decoration:none;}
+  .section-note{font-size:13px;color:var(--ink-2);line-height:1.6;margin:14px 0 6px;max-width:60ch;}
+  .section-note strong{color:var(--ink);font-weight:600;}
+  .note-annot{font-family:var(--f-hand);font-size:20px;color:var(--red);transform:rotate(-3deg);display:inline-block;margin-left:6px;}
+
+  /* memorability — read like a typed assessment, not a dashboard */
+  .checks{display:flex;flex-direction:column;}
+  .check-row{padding:14px 0;border-bottom:1px solid var(--rule);}
+  .check-row:last-child{border-bottom:none;}
+  .check-top{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
+  .check-name{font-size:14.5px;font-weight:500;flex:none;}
+  .check-top::after{content:'';flex:1;border-bottom:1px dotted var(--rule-strong);order:1;transform:translateY(-4px);}
+  .check-pct{order:2;font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;}
+  .meter{height:2px;background:var(--rule);}
+  .meter-fill{height:100%;width:0;transition:width 0.9s ease-out;}
+  .meter-fill.pos{background:var(--ink);}
+  .meter-fill.neg{background:var(--red);}
+  .check-note{font-size:12.5px;color:var(--ink-3);margin-top:7px;}
+
+  /* appendix: close relatives */
+  .variant{padding:18px 0;border-bottom:1px solid var(--rule);}
+  .variant:last-child{border-bottom:none;padding-bottom:4px;}
+  .variant-name{font-family:var(--f-display);font-size:23px;font-weight:500;margin-bottom:10px;}
+  .tld-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
+  .tld-chips .domain-badge{text-transform:none;letter-spacing:0.04em;text-decoration:none;}
   .variant .niche-item{padding:10px 0;}
-  .section-note{font-size:12.5px;color:var(--text-soft);margin:-2px 0 12px;line-height:1.6;}
-  .section-note strong{color:var(--text);font-weight:600;}
 
-  .checks{display:flex;flex-direction:column;gap:18px;padding-top:24px;border-top:1px solid var(--line);}
-  .check-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;margin-bottom:9px;}
-  .check-name{color:var(--text);font-weight:500;}
-  .check-pct{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;font-variant-numeric:tabular-nums;}
-  .meter{height:3px;background:var(--line-strong);border-radius:999px;overflow:hidden;}
-  .meter-fill{height:100%;width:0%;border-radius:999px;transition:width 1.1s cubic-bezier(0.16,1,0.3,1);}
-  .meter-fill.pos{background:var(--good);}
-  .meter-fill.neg{background:var(--bad);}
-  .check-note{font-size:12px;color:var(--text-faint);margin-top:7px;}
+  .report-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 0;}
+  .ghost-btn{
+    font-family:var(--f-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+    background:transparent;border:1px solid var(--rule-strong);color:var(--ink);padding:11px 16px;cursor:pointer;border-radius:2px;
+  }
+  .ghost-btn:hover{border-color:var(--ink);}
+  .ghost-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .raw-toggle{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--ink-3);background:none;border:none;cursor:pointer;padding:0;margin-left:auto;text-decoration:underline;text-underline-offset:3px;}
+  #rawOutput{display:none;width:100%;margin-top:8px;}
+  #rawOutput pre{background:var(--sheet);border:1px solid var(--rule);padding:12px;font-size:11px;overflow:auto;white-space:pre-wrap;word-break:break-word;max-height:260px;font-family:var(--f-mono);color:var(--ink-2);}
 
-  .actions{display:flex;gap:10px;margin-top:28px;}
-  .actions button{flex:1;}
+  .foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule-strong);font-size:12.5px;color:var(--ink-3);line-height:1.7;max-width:70ch;}
+  .foot a{color:var(--ink-2);text-decoration-color:var(--red);text-underline-offset:3px;}
 
-  footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);font-size:12px;color:var(--text-faint);line-height:1.7;text-align:center;}
-  footer a{color:var(--accent);text-decoration:none;}
-  footer a:hover{text-decoration:underline;}
-
-  .raw-toggle{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:var(--text-faint);background:none;border:none;cursor:pointer;padding:0;margin-top:20px;}
-  .raw-toggle:hover{color:var(--text-soft);}
-  #rawOutput{display:none;margin-top:10px;}
-  #rawOutput pre{background:var(--surface-2);border:1px solid var(--line);padding:12px;border-radius:10px;font-size:11px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;max-height:260px;overflow-y:auto;font-family:'JetBrains Mono',monospace;color:var(--text-soft);}
-
+  /* ---------- responsive ---------- */
+  @media (max-width: 980px){
+    .layout{
+      grid-template-columns:minmax(0,1fr);
+      grid-template-areas:"hero" "rail" "folder" "board" "result" "foot";
+    }
+    .aside{display:none;}
+    .br-wide{display:none;}
+    .rail{grid-row:auto;border-right:none;border-top:1px solid var(--rule-strong);margin-bottom:20px;}
+    .rail-text{position:static;writing-mode:horizontal-tb;transform:none;flex-wrap:wrap;gap:6px 18px;padding:10px 0 0;white-space:normal;}
+    .annot{position:static;transform:rotate(-3deg);font-size:19px;margin-left:auto;}
+  }
+  @media (max-width: 600px){
+    .desk{padding:20px 16px 64px;}
+    .masthead{margin-bottom:36px;align-items:flex-start;}
+    .mh-tag{font-size:12px;}
+    .mh-status{font-size:9px;letter-spacing:0.1em;}
+    .field-label{white-space:nowrap;}
+    .field-hint{flex-basis:100%;font-size:12px;}
+    .case-stamp{font-size:16px;}
+    .folder-shell{padding:7px;}
+    .intake{padding:22px 18px 24px;}
+    .field::before{left:-10px;}
+    input#nameInput{font-size:30px;}
+    #result > .sheet{padding:22px 18px 20px;}
+    .cover{padding:24px 18px 22px !important;}
+    .cover-grid{grid-template-columns:1fr;}
+    .stamp{justify-self:start;}
+    .log{padding:18px 18px 14px;}
+    .sheet-title{font-size:21px;}
+    .raw-toggle{margin-left:0;}
+  }
   @media (prefers-reduced-motion: reduce){
-    *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}
-    .scene-name.lit{-webkit-mask-image:none;mask-image:none;}
-    .beam{display:none;}
+    *,*::before,*::after{animation:none !important;transition:none !important;}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="desk">
 
-  <header class="top">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
-      </span>
-      <span class="brand-text">
-        <span class="brand-name">Name Worth It<em>?</em></span>
-        <small>Private inquiries · product names</small>
-      </span>
+  <header class="masthead">
+    <div>
+      <div class="mh-path">CASE FILES<span>/</span>OPEN</div>
+      <span class="mh-name">NAME WORTH IT?</span>
+      <span class="mh-tag">Background checks for product names</span>
     </div>
-    <div class="case-no">Case No.<b id="caseNo">0001</b></div>
+    <div class="mh-case">
+      <span class="label">CASE NO.</span>
+      <b class="case-stamp" id="caseNo">0001</b>
+      <span class="mh-status">INVESTIGATION OPEN</span>
+    </div>
   </header>
 
-  <div class="eyebrow">Discreet background checks</div>
-  <h1>Open a file on the name <em>before</em> you commit to it.</h1>
-  <p class="lede">Give us the name and what it's for. We'll run it: who else is using it nearby, whether the domains are clear, and if it'll actually stick in someone's head.</p>
+  <div class="layout">
 
-  <div class="card">
-    <div class="field-label">Subject's name</div>
-    <input type="text" id="nameInput" placeholder="e.g. Nimbus" autocomplete="off" value="Nimbus">
-  </div>
-
-  <div class="card">
-    <div class="field-label">What it does <span>— one line, also what we search against</span></div>
-    <textarea id="context" placeholder="e.g. A tool for freelance designers to send client invoices and get paid faster">A browser extension that automates LinkedIn outreach for sales teams</textarea>
-    <button class="run-btn" id="runBtn" type="button">
-      <span class="spinner"></span>
-      <span id="runBtnLabel">Open the case</span>
-    </button>
-    <div class="error-box" id="errorBox"></div>
-  </div>
-
-  <div class="card" id="board" aria-live="polite">
-    <div class="board-head">
-      <span class="rec" id="boardStatus">investigation in progress</span>
-      <span class="clock" id="boardClock">00:00.0</span>
-    </div>
-    <div class="scene">
-      <div class="beam" aria-hidden="true"></div>
-      <div class="scene-name" id="sceneName">—</div>
-      <div class="scene-name lit" id="sceneNameLit" aria-hidden="true">—</div>
-      <div class="scene-stamp" id="sceneStamp">case closed</div>
-    </div>
-    <ul class="leads" id="leadsEl"></ul>
-  </div>
-
-  <div id="result">
-    <div class="stamp-block">
-      <div class="case-label">Case closed · findings</div>
-      <div class="stamp-name" id="stampName">"—"</div>
-      <div class="stamp" id="stampEl">—</div>
-      <div class="stamp-sub" id="stampSub"></div>
-    </div>
-
-    <div class="card">
-      <div class="real-section">
-        <div class="real-label"><span class="liveDot"></span>domains — live lookup</div>
-        <div id="domainsEl"></div>
+    <div class="rail" aria-hidden="true">
+      <div class="rail-text">
+        <span>FILE: <b data-case-no>0001</b></span>
+        <span id="railStatusWrap">STATUS: <b id="railStatus">OPEN</b></span>
+        <span>TYPE: <b>PRODUCT NAME</b></span>
+        <span>CHECKS: <b>04</b></span>
       </div>
-      <div class="real-section">
-        <div class="real-label"><span class="liveDot"></span>spotted in your niche — live search</div>
+    </div>
+
+    <section class="hero">
+      <h1>Open a file on the name<br class="br-wide"> <span class="mark">before<svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M1 7 C 22 3, 48 9, 70 5 S 94 4, 99 6"/></svg></span> you commit to it.</h1>
+      <p class="lede">Give us the name and what it's for. We'll run it: who else is using it nearby, whether the domains are clear, and if it'll actually stick in someone's head.</p>
+    </section>
+
+    <aside class="aside">
+      <div class="index-card">
+        <h2>PROCEDURE</h2>
+        <ol>
+          <li><span class="n">01</span><span><b>Name collisions</b><span class="d">Who's already using it in your niche, and on X / Instagram.</span></span></li>
+          <li><span class="n">02</span><span><b>Domain status</b><span class="d">.com .io .net .ai .app .co, checked live.</span></span></li>
+          <li><span class="n">03</span><span><b>Search / market context</b><span class="d">Trademark chatter on the open web.</span></span></li>
+          <li><span class="n">04</span><span><b>Memorability</b><span class="d">Would it stick, and can people spell it.</span></span></li>
+          <li><span class="n">A</span><span><b>Close relatives</b><span class="d">Near-variants, in case the original is crowded.</span></span></li>
+        </ol>
+      </div>
+    </aside>
+
+    <section class="folder" aria-label="Subject intake">
+      <div class="folder-tab">SUBJECT INTAKE</div>
+      <div class="folder-shell">
+        <div class="sheet intake">
+          <span class="reg tr" aria-hidden="true"></span>
+          <div class="intake-meta"><span>FILE <b data-case-no>0001</b></span><span>RECEIVED <b id="receivedDate">—</b></span></div>
+
+          <div class="field">
+            <div class="field-head">
+              <label class="field-label" for="nameInput"><span class="num">01</span> / Subject name</label>
+              <span class="annot" aria-hidden="true">start here →</span>
+            </div>
+            <input type="text" id="nameInput" placeholder="e.g. Nimbus" autocomplete="off" value="Nimbus">
+          </div>
+
+          <div class="field">
+            <div class="field-head">
+              <label class="field-label" for="context"><span class="num">02</span> / What it does</label>
+              <span class="field-hint">(one line — also what we search against)</span>
+            </div>
+            <textarea id="context" rows="2" placeholder="e.g. A tool for freelance designers to send client invoices and get paid faster">A browser extension that automates LinkedIn outreach for sales teams</textarea>
+          </div>
+
+          <div class="intake-foot">
+            <button class="run-btn" id="runBtn" type="button">
+              <span class="spinner"></span>
+              <span id="runBtnLabel">Open the case</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </button>
+            <span class="intake-note">04 CHECKS · LIVE LOOKUPS</span>
+          </div>
+          <div class="error-box" id="errorBox"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="board" aria-live="polite">
+      <div class="sheet log">
+        <div class="log-head">
+          <span class="who">Case log — <span id="sceneName">—</span></span>
+          <span class="right"><span id="boardStatus">investigation in progress</span><span class="clock" id="boardClock">00:00.0</span><span class="scene-stamp" id="sceneStamp">case closed</span></span>
+        </div>
+        <ul class="leads" id="leadsEl"></ul>
+      </div>
+    </section>
+
+    <section id="result">
+      <div class="sheet cover" style="--i:0">
+        <div class="cover-top"><span>INVESTIGATION REPORT</span><span>FILE <b data-case-no>0001</b></span></div>
+        <div class="cover-grid">
+          <div>
+            <div class="case-label">Case closed · findings</div>
+            <div class="stamp-name" id="stampName">"—"</div>
+            <div class="stamp-sub" id="stampSub"></div>
+          </div>
+          <div class="stamp" id="stampEl">—</div>
+        </div>
+        <nav class="contents" aria-label="Report contents">
+          <a href="#sec-collisions"><span class="c-n">01</span><span class="c-name">Name collisions</span><span class="c-lead"></span><span class="status pending" data-status="collisions">—</span></a>
+          <a href="#sec-domains"><span class="c-n">02</span><span class="c-name">Domain status</span><span class="c-lead"></span><span class="status pending" data-status="domains">—</span></a>
+          <a href="#sec-market"><span class="c-n">03</span><span class="c-name">Search / market context</span><span class="c-lead"></span><span class="status pending" data-status="market">—</span></a>
+          <a href="#sec-memory"><span class="c-n">04</span><span class="c-name">Memorability</span><span class="c-lead"></span><span class="status pending" data-status="memory">—</span></a>
+        </nav>
+      </div>
+
+      <div class="sheet" id="sec-collisions" style="--i:1">
+        <div class="sheet-head"><h2 class="sheet-title"><span class="n">01</span>Name collisions</h2><span class="status pending" data-status="collisions">—</span></div>
+        <div class="sub-head">Spotted in your niche — live search</div>
         <div id="nicheEl"></div>
-      </div>
-      <div class="real-section">
-        <div class="real-label"><span class="liveDot"></span>social handles — live lookup</div>
+        <div class="sub-head">Social handles — live lookup</div>
         <div id="socialsEl"></div>
       </div>
-      <div class="real-section">
-        <div class="real-label"><span class="liveDot"></span>trademark signal — live search</div>
+
+      <div class="sheet" id="sec-domains" style="--i:2">
+        <div class="sheet-head"><h2 class="sheet-title"><span class="n">02</span>Domain status</h2><span class="status pending" data-status="domains">—</span></div>
+        <div id="domainsEl"></div>
+      </div>
+
+      <div class="sheet" id="sec-market" style="--i:3">
+        <div class="sheet-head"><h2 class="sheet-title"><span class="n">03</span>Search / market context</h2><span class="status pending" data-status="market">—</span></div>
+        <div class="sub-head">Trademark signal — live search <span class="note-annot" aria-hidden="true">signal only</span></div>
         <p class="section-note"><strong>A signal, not a legal clearance.</strong> These are web results for "<span id="tmName"></span>" trademark — not a search of any trademark register. Nothing here means it's safe to file, and a hit doesn't mean it's blocked.</p>
         <div id="trademarkEl"></div>
       </div>
-      <div class="checks" id="checksEl"></div>
-      <div class="actions">
-        <button class="ghost-btn" id="copyBtn" type="button">copy report</button>
-        <button class="ghost-btn" id="runAgainBtn" type="button">new case</button>
-      </div>
-      <button class="raw-toggle" id="rawToggle" type="button">show raw response</button>
-      <div id="rawOutput"><pre id="rawPre"></pre></div>
-    </div>
 
-    <div class="card" id="variantsCard">
-      <div class="real-section" style="margin-bottom:0;">
-        <div class="real-label"><span class="liveDot"></span>close relatives — live lookup</div>
+      <div class="sheet" id="sec-memory" style="--i:4">
+        <div class="sheet-head"><h2 class="sheet-title"><span class="n">04</span>Memorability</h2><span class="status pending" data-status="memory">—</span></div>
+        <div class="checks" id="checksEl"></div>
+      </div>
+
+      <div class="sheet" id="variantsCard" style="--i:5">
+        <span class="reg bl" aria-hidden="true"></span>
+        <div class="sheet-head"><h2 class="sheet-title"><span class="n">A</span>Close relatives</h2><span class="field-label">Appendix</span></div>
         <p class="section-note">Same domain and niche checks, run on a few near-variants of the name in case the original is crowded.</p>
         <div id="variantsEl"></div>
       </div>
-    </div>
+
+      <div class="report-foot" style="--i:6">
+        <button class="ghost-btn" id="copyBtn" type="button">copy report</button>
+        <button class="ghost-btn" id="runAgainBtn" type="button">new case</button>
+        <button class="raw-toggle" id="rawToggle" type="button">show raw response</button>
+        <div id="rawOutput"><pre id="rawPre"></pre></div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      Every line in the case log is a real lookup. Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The trademark section is a web-search signal, not a trademark search — still run a proper one before you file anything.
+    </footer>
+
   </div>
-
-  <footer>
-    Every lead on the investigation board is a real lookup. Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The trademark section is a web-search signal, not a trademark search — still run a proper one before you file anything.
-  </footer>
-
 </div>
 
 <script>
@@ -456,6 +609,27 @@
     localStorage.setItem('nwi_case_no', String(n));
     caseNo.textContent = String(n).padStart(4, '0');
   }catch(e){}
+  document.querySelectorAll('[data-case-no]').forEach(function(el){ el.textContent = caseNo.textContent; });
+  try{
+    $('receivedDate').textContent = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+  }catch(e){}
+
+  // file status printed in the left margin
+  const railStatus = $('railStatus');
+  const railStatusWrap = $('railStatusWrap');
+  function setFileStatus(text, important){
+    railStatus.textContent = text;
+    railStatusWrap.classList.toggle('st-red', !!important);
+  }
+
+  // section verdicts on the report: CLEAR / FLAGGED / NEEDS REVIEW / EVIDENCE FOUND
+  const STATUS_CLASS = { 'CLEAR': 'clear', 'FLAGGED': 'flag', 'NEEDS REVIEW': 'review', 'EVIDENCE FOUND': 'evidence' };
+  function setSectionStatus(key, label){
+    document.querySelectorAll('[data-status="' + key + '"]').forEach(function(el){
+      el.textContent = label;
+      el.className = 'status ' + (STATUS_CLASS[label] || 'pending');
+    });
+  }
 
   function showError(title, detail, extra){
     errorBox.innerHTML = '<strong>' + title + '</strong><br>' + detail + (extra ? '<pre>' + extra + '</pre>' : '');
@@ -479,7 +653,7 @@
     const viaDns = d.source === 'dns';
     return {
       cls: d.available === true ? 'avail' : d.available === false ? 'taken' : 'unknown',
-      label: d.available === true ? (viaDns ? 'likely clear' : 'clear') : d.available === false ? 'taken' : 'unknown',
+      label: d.available === true ? (viaDns ? 'likely available' : 'available') : d.available === false ? 'taken' : 'unknown',
       title: viaDns ? 'RDAP was inconclusive — checked via DNS instead' : ''
     };
   }
@@ -487,7 +661,10 @@
   function renderDomains(domains){
     domainsEl.innerHTML = TLD_ORDER.filter(t => domains && domains[t]).map(function(tld){
       const d = domains[tld];
-      const { cls, label, title } = domainStatus(d);
+      const st = domainStatus(d);
+      const { label, title } = st;
+      // only a taken .com is a red-ink finding; the rest are noted in ink
+      const cls = st.cls === 'taken' && tld !== 'com' ? 'taken minor' : st.cls;
       const link = d.available === true
         ? '<a href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(d.domain) + '" target="_blank" rel="noopener">claim it →</a>'
         : '';
@@ -516,9 +693,9 @@
     socialsEl.innerHTML = order.filter(p => socials && socials[p]).map(function(p){
       const s = socials[p];
       const cls = s.taken === true ? 'taken' : s.taken === false ? 'avail' : 'unknown';
-      const label = s.taken === true ? 'taken' : s.taken === false ? 'open' : (s.note ? 'too long' : 'unknown');
+      const label = s.taken === true ? 'taken' : s.taken === false ? 'available' : (s.note ? 'too long' : 'unknown');
       const link = s.note ? '' : '<a href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">' + (s.taken === false ? 'grab it →' : 'look →') + '</a>';
-      return '<div class="domain-row"><span class="domain-name">@' + escapeHtml(s.handle) + ' <span style="font-weight:400;color:var(--ink-soft);">on ' + escapeHtml(s.label) + '</span></span>' +
+      return '<div class="domain-row"><span class="domain-name">@' + escapeHtml(s.handle) + ' <span style="font-weight:400;color:var(--ink-3);">on ' + escapeHtml(s.label) + '</span></span>' +
         '<span style="display:flex;align-items:center;gap:10px;"><span class="domain-badge ' + cls + '"' + (s.note ? ' title="' + escapeHtml(s.note) + '"' : '') + '>' + label + '</span>' + link + '</span></div>';
     }).join('') || '<p class="niche-empty">Could not check social handles this run.</p>';
   }
@@ -619,6 +796,27 @@
       ['sounds like an existing brand', c, 'neg', 'lower is better — nobody wants to be "the other one"']
     ];
 
+    // section verdicts — red (FLAGGED) only for findings that should stop you
+    const nicheCount = (nicheMatches || []).length;
+    const handlesTaken = ['x', 'instagram'].some(p => socials && socials[p] && socials[p].taken === true);
+    setSectionStatus('collisions',
+      c >= 0.55 ? 'FLAGGED' : nicheCount ? 'EVIDENCE FOUND' : (handlesTaken || serpError) ? 'NEEDS REVIEW' : 'CLEAR');
+
+    const doms = TLD_ORDER.map(t => domains && domains[t]).filter(Boolean);
+    const com = domains && domains.com;
+    setSectionStatus('domains',
+      com && com.available === true ? 'CLEAR'
+      : doms.length && doms.every(d => d.available === false) ? 'FLAGGED'
+      : 'NEEDS REVIEW');
+
+    setSectionStatus('market',
+      (trademarkMatches || []).length ? 'EVIDENCE FOUND' : trademarkError ? 'NEEDS REVIEW' : 'CLEAR');
+
+    setSectionStatus('memory',
+      (m >= 0.65 && e >= 0.6 && g < 0.5) ? 'CLEAR' : (g >= 0.6 && m < 0.5) ? 'FLAGGED' : 'NEEDS REVIEW');
+
+    setFileStatus('CLOSED', verdictClass === 'bad');
+
     checksEl.innerHTML = rows.map(function(row){
       const [rname, val, dir, note] = row;
       const fillClass = dir === 'neg' ? (val >= 0.5 ? 'neg' : 'pos') : (val >= 0.5 ? 'pos' : 'neg');
@@ -654,7 +852,6 @@
   const boardStatus = $('boardStatus');
   const boardClock = $('boardClock');
   const sceneName = $('sceneName');
-  const sceneNameLit = $('sceneNameLit');
   const sceneStamp = $('sceneStamp');
   const leadsEl = $('leadsEl');
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -687,7 +884,7 @@
       leads.push({ id: 'soc-' + pair[0], html: pair[1], solve: function(d){
         const s = d.socials && d.socials[pair[0]];
         if (!s || s.taken === null) return ['meh', badge('unknown', s && s.note ? 'too long' : 'no answer')];
-        return s.taken ? ['bad', badge('taken', 'taken')] : ['ok', badge('avail', 'open')];
+        return s.taken ? ['bad', badge('taken', 'taken')] : ['ok', badge('avail', 'available')];
       } });
     });
     leads.push({ id: 'niche', html: 'Canvassing your niche for lookalikes', solve: function(d){
@@ -695,7 +892,7 @@
       if (!n && d.serp_error) return ['meh', badge('unknown', 'cold trail')];
       return n ? ['meh', badge('warn', n + (n === 1 ? ' sighting' : ' sightings'))] : ['ok', badge('avail', 'no trace')];
     } });
-    leads.push({ id: 'tm', html: 'Pulling trademark chatter <span style="color:var(--ink-soft)">(web signal)</span>', solve: function(d){
+    leads.push({ id: 'tm', html: 'Pulling trademark chatter <span style="color:var(--ink-3)">(web signal)</span>', solve: function(d){
       const n = (d.trademark_matches || []).length;
       if (!n && d.trademark_error) return ['meh', badge('unknown', 'cold trail')];
       return n ? ['meh', badge('warn', n + (n === 1 ? ' mention' : ' mentions'))] : ['ok', badge('avail', 'nothing found')];
@@ -718,7 +915,6 @@
     boardTimers.forEach(clearTimeout); boardTimers = [];
     currentLeads = buildLeads(name);
     sceneName.textContent = name;
-    sceneNameLit.textContent = name;
     sceneStamp.textContent = 'case closed';
     boardStatus.textContent = 'investigation in progress';
     board.classList.remove('done', 'stalled');
@@ -766,7 +962,7 @@
       el.querySelector('.lead-status').innerHTML = out[1];
       await sleep(data.cached ? 60 : 140);
     }
-    boardStatus.textContent = 'investigation log — closed';
+    boardStatus.textContent = 'log closed';
     board.classList.add('done');
     await sleep(650);
   }
@@ -779,7 +975,8 @@
       el.classList.add('solved', 'meh');
       el.querySelector('.lead-status').innerHTML = badge('unknown', 'cold trail');
     });
-    boardStatus.textContent = 'investigation stalled';
+    boardStatus.textContent = 'stalled';
+    setFileStatus('ON HOLD', true);
     sceneStamp.textContent = reason || 'case on hold';
     board.classList.add('done', 'stalled');
   }
@@ -804,7 +1001,8 @@
 
     runBtn.disabled = true;
     runBtn.classList.add('loading');
-    runBtnLabel.textContent = 'investigating...';
+    runBtnLabel.textContent = 'Opening file...';
+    setFileStatus('IN PROGRESS');
     startBoard(name);
 
     try{
@@ -849,6 +1047,7 @@
   runBtn.addEventListener('click', run);
   runAgainBtn.addEventListener('click', function(){
     hideBoard();
+    setFileStatus('OPEN');
     resultEl.classList.remove('show');
     resultEl.style.display = 'none';
     nameEl.focus();
