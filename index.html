@@ -278,7 +278,7 @@
   </div>
 
   <footer>
-    Domains checked live via RDAP, niche checked via live web search (for the name and a few close variants), name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. Not a trademark search — still run a proper one before you file anything.
+    Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. Not a trademark search — still run a proper one before you file anything.
   </footer>
 
 </div>
@@ -333,24 +333,28 @@
     });
   }
 
-  const TLD_ORDER = ['com', 'io', 'net'];
+  const TLD_ORDER = ['com', 'io', 'net', 'ai', 'app', 'co'];
 
+  // DNS-fallback "clear" only means nothing is delegated — a registered
+  // domain with no DNS would look the same — so it's labelled softer.
   function domainStatus(d){
+    const viaDns = d.source === 'dns';
     return {
       cls: d.available === true ? 'avail' : d.available === false ? 'taken' : 'unknown',
-      label: d.available === true ? 'clear' : d.available === false ? 'taken' : 'unknown'
+      label: d.available === true ? (viaDns ? 'likely clear' : 'clear') : d.available === false ? 'taken' : 'unknown',
+      title: viaDns ? 'RDAP was inconclusive — checked via DNS instead' : ''
     };
   }
 
   function renderDomains(domains){
     domainsEl.innerHTML = TLD_ORDER.filter(t => domains && domains[t]).map(function(tld){
       const d = domains[tld];
-      const { cls, label } = domainStatus(d);
+      const { cls, label, title } = domainStatus(d);
       const link = d.available === true
         ? '<a href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(d.domain) + '" target="_blank" rel="noopener">claim it →</a>'
         : '';
       return '<div class="domain-row"><span class="domain-name">' + escapeHtml(d.domain) + '</span>' +
-        '<span style="display:flex;align-items:center;gap:10px;"><span class="domain-badge ' + cls + '">' + label + '</span>' + link + '</span></div>';
+        '<span style="display:flex;align-items:center;gap:10px;"><span class="domain-badge ' + cls + '"' + (title ? ' title="' + title + '"' : '') + '>' + label + (title ? ' · dns' : '') + '</span>' + link + '</span></div>';
     }).join('') || '<p class="niche-empty">Could not check domains this run.</p>';
   }
 
@@ -379,8 +383,8 @@
     variantsEl.innerHTML = variants.map(function(v){
       const chips = TLD_ORDER.filter(t => v.domains && v.domains[t]).map(function(tld){
         const d = v.domains[tld];
-        const { cls, label } = domainStatus(d);
-        const text = '.' + tld + ' ' + label;
+        const { cls, label, title } = domainStatus(d);
+        const text = '.' + tld + ' ' + label + (title ? ' · dns' : '');
         return d.available === true
           ? '<a class="domain-badge ' + cls + '" title="' + escapeHtml(d.domain) + '" href="https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(d.domain) + '" target="_blank" rel="noopener">' + text + '</a>'
           : '<span class="domain-badge ' + cls + '" title="' + escapeHtml(d.domain) + '">' + text + '</span>';

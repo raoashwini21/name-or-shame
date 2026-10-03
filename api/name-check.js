@@ -2,7 +2,11 @@
 // no CORS setup needed, no n8n, nothing else to stand up.
 //
 // Does two live checks, no LLM involved in either:
-//   1. Domain availability for .com/.io/.net via RDAP (free, no API key).
+//   1. Domain availability for .com/.io/.net/.ai/.app/.co via RDAP (free, no
+//      API key). When RDAP is inconclusive (timeout, 5xx, rate-limited), falls
+//      back to a DNS NS lookup: NS records = taken, NXDOMAIN = likely clear
+//      (a registered domain with no DNS at all would slip through, so the UI
+//      labels DNS-sourced "clear" as "likely clear").
 //   2. A real web search (Serper.dev) for the name alongside your one-line
 //      description, to catch an existing company already using it.
 // Both checks are also run against 2-3 close variants of the name (a suffix,
@@ -18,7 +22,11 @@
 // endpoint, not a hard cap. If usage grows enough to need a real one
 // (persistent store, per-key quotas, etc.), that's the point to add it.
 
-const TLDS = ['com', 'io', 'net'];
+const dns = require('dns');
+
+const TLDS = ['com', 'io', 'net', 'ai', 'app', 'co'];
+
+const dnsResolver = new dns.promises.Resolver({ timeout: 3000, tries: 1 });
 
 const RATE_LIMIT_MAX = 8;        // requests
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // per minute, per IP
@@ -85,18 +93,31 @@ function withTimeout(promise, ms) {
   ]);
 }
 
+async function checkDomainDns(domain) {
+  try {
+    const ns = await withTimeout(dnsResolver.resolveNs(domain), 4000);
+    return { domain, available: ns.length ? false : null, source: 'dns' };
+  } catch (e) {
+    // ENOTFOUND = NXDOMAIN: nothing delegated under that name.
+    if (e.code === 'ENOTFOUND') return { domain, available: true, source: 'dns' };
+    // ENODATA = the name exists in DNS, just without its own NS set.
+    if (e.code === 'ENODATA') return { domain, available: false, source: 'dns' };
+    return { domain, available: null, source: 'dns' };
+  }
+}
+
 async function checkDomain(domain) {
   try {
     const res = await withTimeout(
       fetch('https://rdap.org/domain/' + domain, { method: 'GET' }),
       8000
     );
-    if (res.status === 404) return { domain, available: true };
-    if (res.status === 200) return { domain, available: false };
-    return { domain, available: null };
+    if (res.status === 404) return { domain, available: true, source: 'rdap' };
+    if (res.status === 200) return { domain, available: false, source: 'rdap' };
   } catch (e) {
-    return { domain, available: null };
+    // fall through to DNS
   }
+  return checkDomainDns(domain);
 }
 
 async function checkDomains(slug) {
