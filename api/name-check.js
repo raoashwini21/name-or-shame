@@ -29,6 +29,7 @@
 // endpoint, not a hard cap. If usage grows enough to need a real one
 // (persistent store, per-key quotas, etc.), that's the point to add it.
 
+const crypto = require('crypto');
 const dns = require('dns');
 
 const TLDS = ['com', 'io', 'net', 'ai', 'app', 'co'];
@@ -48,6 +49,37 @@ function isRateLimited(ip) {
   // keep the map from growing forever across a long-lived instance
   if (rateLimitBuckets.size > 5000) rateLimitBuckets.clear();
   return recent.length > RATE_LIMIT_MAX;
+}
+
+// Full-response cache so repeat lookups of the same name + context within
+// 10 minutes skip every external call (RDAP, DNS, Serper, socials, Jev).
+// In-memory like the old limiter: per instance, gone on cold start — it's
+// there to absorb double-clicks and re-runs, not to be a shared cache.
+const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_MAX_ENTRIES = 500;
+const responseCache = new Map();
+
+function cacheKey(name, context, variants) {
+  return crypto.createHash('sha256').update(JSON.stringify([name, context, variants])).digest('hex');
+}
+
+function cacheGet(key) {
+  const hit = responseCache.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.at > CACHE_TTL_MS) {
+    responseCache.delete(key);
+    return null;
+  }
+  return hit.value;
+}
+
+function cacheSet(key, value) {
+  responseCache.delete(key);
+  responseCache.set(key, { at: Date.now(), value });
+  // Map keeps insertion order, so the first key is the oldest write.
+  while (responseCache.size > CACHE_MAX_ENTRIES) {
+    responseCache.delete(responseCache.keys().next().value);
+  }
 }
 
 function slugify(name) {
@@ -288,6 +320,13 @@ module.exports = async function handler(req, res) {
     const slug = slugify(name);
     const variantNames = generateVariants(name);
 
+    const key = cacheKey(name, context, variantNames);
+    const cachedBody = cacheGet(key);
+    if (cachedBody) {
+      res.status(200).json({ ...cachedBody, cached: true });
+      return;
+    }
+
     const [domains, nicheResult, variants, socials, trademarkResult] = await Promise.all([
       checkDomains(slug),
       searchNiche(name, context),
@@ -359,7 +398,7 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    res.status(200).json({
+    const responseBody = {
       name,
       domains,
       niche_matches: nicheResult.matches,
@@ -370,7 +409,14 @@ module.exports = async function handler(req, res) {
       trademark_error: trademarkResult.error,
       scores,
       raw
-    });
+    };
+
+    // Don't pin a transient search failure in the cache for 10 minutes.
+    const searchFailed = [nicheResult, trademarkResult, ...variants.map((v) => ({ error: v.serp_error }))]
+      .some((r) => r.error);
+    if (scores && !searchFailed) cacheSet(key, responseBody);
+
+    res.status(200).json({ ...responseBody, cached: false });
   } catch (e) {
     res.status(500).json({ error: 'Unexpected server error.', detail: String(e) });
   }
