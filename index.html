@@ -4,1280 +4,202 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Name Worth It?</title>
-<meta name="description" content="Open a case on the name you're about to lock in. Domains, lookalikes, and a verdict — before you build a brand around it.">
+<meta name="description" content="Open a case on the name you're about to build a brand around. Domains, handles, market collisions and memorability — before someone else gets there first.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    color-scheme: light;
-    --bg:#F6F3EC;
-    --ink:#171512;
-    --red:#9F2A20;
-    --red-deep:#7F1F17;
-    --graphite:#292826;
-    --graphite-2:#353330;
-    --evidence:#EFE4C5;
-    --olive:#66705A;
-    --paper:#FFFDF8;
-    --wall:#EBE6DA;
-    --ink-2:#4A4640;
-    --ink-3:#8A857B;
-    --ink-on-dark:#E8E3D6;
-    --ink-on-dark-2:#A39D90;
-    --hair:rgba(23,21,18,0.10);
-    --hair-2:rgba(23,21,18,0.18);
-    --hair-3:rgba(23,21,18,0.32);
-
-    --f-serif:'Instrument Serif', Georgia, serif;
-    --f-sans:'Geist', 'Inter', system-ui, sans-serif;
-    --f-mono:'Geist Mono', ui-monospace, Menlo, monospace;
-    --f-hand:'Caveat', 'Bradley Hand', cursive;
-
-    --ease:cubic-bezier(.16,1,.3,1);
-    --ease-io:cubic-bezier(.65,0,.35,1);
-
-    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    --ink-tex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -4.6 3.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background-color:var(--bg);background-image:var(--grain);color:var(--ink);
-    font-family:var(--f-sans);font-size:15px;line-height:1.5;
-    -webkit-font-smoothing:antialiased;overflow-x:clip;
-  }
-  a{color:inherit;}
-  button{font:inherit;color:inherit;}
-  ::selection{background:rgba(159,42,32,0.18);}
-
-  /* ===================== CASE STATUS BAR ===================== */
-  .statusbar{
-    position:sticky;top:0;z-index:40;background:var(--graphite);color:var(--ink-on-dark);
-    font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;
-    box-shadow:0 1px 0 rgba(0,0,0,0.3);
-  }
-  .sb-in{max-width:1360px;margin:0 auto;padding:0 28px;height:46px;display:flex;align-items:center;gap:28px;overflow-x:auto;scrollbar-width:none;white-space:nowrap;}
-  .sb-in::-webkit-scrollbar{display:none;}
-  .sb-brand{font-family:var(--f-serif);font-size:19px;letter-spacing:0;text-transform:none;color:#F6F3EC;margin-right:6px;}
-  .sb-brand i{color:#D2584B;}
-  .sb-item{color:var(--ink-on-dark-2);}
-  .sb-item b{color:var(--ink-on-dark);font-weight:500;}
-  .sb-item b.red{color:#D2584B;}
-  .sb-sep{width:1px;height:14px;background:rgba(232,227,214,0.16);flex:none;}
-  .sb-live{margin-left:auto;display:flex;align-items:center;gap:12px;color:var(--ink-on-dark);}
-  .sb-live .dot{width:6px;height:6px;border-radius:50%;background:#D2584B;}
-  .sb-live.on .dot{animation:blink 1.4s var(--ease-io) infinite;}
-  .sb-live.done .dot{background:#9AA88A;}
-  @keyframes blink{50%{opacity:.2;}}
-  .sb-clock{color:var(--ink-on-dark-2);font-variant-numeric:tabular-nums;}
-  .sb-progress{height:2px;background:transparent;position:relative;}
-  .sb-progress i{position:absolute;left:0;top:0;bottom:0;width:0;background:#C8392B;transition:width .8s var(--ease);}
-
-  /* ===================== WORKSPACE ===================== */
-  .page{max-width:1360px;margin:0 auto;padding:44px 28px 72px;}
-  .ws{display:grid;grid-template-columns:430px minmax(0,1fr);gap:48px;align-items:start;transition:grid-template-columns 1s var(--ease);}
-  .ws.investigating{grid-template-columns:300px minmax(0,1fr);gap:32px;}
-
-  /* left column */
-  .left{position:sticky;top:78px;}
-  .intro{overflow:hidden;max-height:520px;transition:max-height .8s var(--ease), opacity .45s ease, margin .8s var(--ease);margin-bottom:34px;}
-  .ws.investigating .intro{max-height:0;opacity:0;margin-bottom:0;}
-  .eyebrow{font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.18em;color:var(--ink-3);display:flex;align-items:center;gap:10px;margin-bottom:22px;}
-  .eyebrow b{color:var(--red);font-weight:500;}
-  .eyebrow::before{content:'';width:18px;height:1px;background:var(--red);}
-  h1{font-family:var(--f-serif);font-weight:400;font-size:78px;line-height:0.92;letter-spacing:-0.025em;margin:0;}
-  h1 .u{position:relative;white-space:nowrap;}
-  h1 .u::after{content:'';position:absolute;left:2%;right:0;bottom:0.02em;height:2px;background:var(--red);transform-origin:left;animation:underline 1.2s var(--ease) .5s both;}
-  @keyframes underline{from{transform:scaleX(0);}}
-  .lede{font-size:17px;line-height:1.55;color:var(--ink-2);max-width:30ch;margin:24px 0 0;}
-
-  /* intake panel — part of the product, not a loose sheet */
-  .intake{background:var(--paper);box-shadow:0 0 0 1px var(--hair), 0 22px 44px -30px rgba(23,21,18,0.45);position:relative;}
-  .intake-head{display:flex;justify-content:space-between;align-items:center;background:var(--graphite);color:var(--ink-on-dark);padding:11px 18px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.18em;}
-  .intake-head b{color:#D2584B;font-weight:500;}
-  .intake-body{padding:24px 22px 24px;}
-  .fld{position:relative;margin-bottom:24px;}
-  .fld label{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12.5px;font-weight:500;color:var(--ink);margin-bottom:6px;}
-  .fld label .hint{font-weight:400;color:var(--ink-3);font-size:11.5px;}
-  .fld input,.fld textarea{width:100%;border:none;background:transparent;color:var(--ink);border-radius:0;outline:none;caret-color:var(--red);}
-  .fld input{font-family:var(--f-sans);font-size:30px;font-weight:500;letter-spacing:-0.02em;padding:4px 0 8px;border-bottom:1px solid var(--hair-3);}
-  .fld textarea{font-size:15px;line-height:28px;height:84px;resize:none;padding:0;background-image:repeating-linear-gradient(to bottom, transparent 0 27px, var(--hair-2) 27px 28px);background-attachment:local;}
-  .fld input::placeholder,.fld textarea::placeholder{color:#B7B1A6;}
-  .fld .rule{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease);}
-  .fld:focus-within .rule{transform:scaleX(1);}
-  .fld:focus-within label{color:var(--red);}
-  .ws.investigating .fld input{font-size:22px;}
-  .ws.investigating .fld textarea{font-size:13.5px;line-height:24px;height:72px;background-image:repeating-linear-gradient(to bottom, transparent 0 23px, var(--hair-2) 23px 24px);}
-  .ws.investigating .fld label .hint{display:none;}
-
-  .cta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-  .btn-red{
-    position:relative;display:inline-flex;align-items:center;gap:14px;cursor:pointer;overflow:hidden;
-    font-family:var(--f-sans);font-weight:600;font-size:13px;letter-spacing:0.16em;text-transform:uppercase;
-    color:#FFF6EF;border:none;border-radius:3px;padding:17px 24px 16px 26px;
-    background:linear-gradient(180deg, #B03226 0%, #9F2A20 50%, #8A231A 100%);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 0 rgba(0,0,0,0.22), 0 1px 0 #5E1610, 0 12px 22px -12px rgba(159,42,32,0.7);
-    transition:transform .16s var(--ease), box-shadow .16s var(--ease), filter .3s;
-  }
-  .btn-red::before{content:'';position:absolute;inset:0;background-image:var(--grain);mix-blend-mode:overlay;pointer-events:none;}
-  .btn-red .arr{display:inline-block;transition:transform .35s var(--ease);}
-  .btn-red:not(:disabled):hover{transform:translateY(1px);filter:brightness(1.05);box-shadow:inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 0 rgba(0,0,0,0.22), 0 1px 0 #5E1610, 0 6px 12px -8px rgba(159,42,32,0.7);}
-  .btn-red:not(:disabled):hover .arr{transform:translateX(4px);}
-  .btn-red:not(:disabled):active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.25), 0 0 0 #5E1610;}
-  .btn-red:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
-  .btn-red:disabled{cursor:default;}
-  .btn-red.loading .arr{opacity:0;}
-  .btn-red.loading::after{content:'';position:absolute;top:0;bottom:0;width:40%;left:-40%;background:linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);animation:sweep 1.5s var(--ease-io) infinite;}
-  @keyframes sweep{to{left:100%;}}
-  .ws.investigating .btn-red{padding:13px 18px 12px 20px;font-size:11.5px;}
-  .cta-note{font-family:var(--f-mono);font-size:10px;letter-spacing:0.14em;color:var(--ink-3);line-height:1.6;}
-  .error-box{display:none;margin-top:18px;padding:12px 14px;border-left:2px solid var(--red);background:rgba(159,42,32,0.06);color:var(--red);font-size:13px;line-height:1.5;}
-  .error-box strong{font-weight:600;}
-  .error-box pre{font-family:var(--f-mono);font-size:11px;background:rgba(23,21,18,0.04);padding:8px;margin:8px 0 0;max-height:160px;overflow:auto;white-space:pre-wrap;word-break:break-word;color:var(--ink-2);}
-
-  .left-foot{margin-top:22px;font-family:var(--f-mono);font-size:10px;letter-spacing:0.14em;color:var(--ink-3);line-height:1.9;}
-  .left-foot b{color:var(--ink);font-weight:500;}
-
-  /* ===================== EVIDENCE WALL ===================== */
-  .wall{
-    position:relative;display:grid;grid-template-columns:176px minmax(0,1fr);min-height:700px;
-    background-color:var(--wall);
-    background-image:var(--grain),
-      linear-gradient(rgba(23,21,18,0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(23,21,18,0.035) 1px, transparent 1px);
-    background-size:auto, 32px 32px, 32px 32px;
-    box-shadow:0 0 0 1px var(--hair-2), 0 40px 80px -50px rgba(23,21,18,0.5);
-  }
-  /* the dark evidence rail */
-  .rail{background:var(--graphite);color:var(--ink-on-dark);padding:22px 18px;font-family:var(--f-mono);position:relative;}
-  .rail-k{font-size:9.5px;letter-spacing:0.2em;color:var(--ink-on-dark-2);}
-  .rail-case{font-size:22px;letter-spacing:0.08em;color:#D2584B;margin:4px 0 20px;font-weight:500;}
-  .rail-subject{font-family:var(--f-serif);font-size:26px;letter-spacing:-0.01em;line-height:1;color:#F6F3EC;margin:4px 0 24px;overflow-wrap:anywhere;}
-  .leads{list-style:none;margin:0 0 22px;padding:0;border-top:1px solid rgba(232,227,214,0.12);}
-  .leads li{display:grid;grid-template-columns:22px 1fr 10px;align-items:center;gap:6px;padding:9px 0;border-bottom:1px solid rgba(232,227,214,0.08);font-size:9.5px;letter-spacing:0.12em;color:var(--ink-on-dark-2);transition:color .4s;}
-  .leads li .n{color:rgba(232,227,214,0.35);}
-  .leads li .s{width:7px;height:7px;border-radius:50%;border:1px solid rgba(232,227,214,0.35);transition:all .4s;}
-  .leads li.active{color:var(--ink-on-dark);}
-  .leads li.active .s{border-color:#D2584B;animation:blink 1.2s var(--ease-io) infinite;}
-  .leads li.done{color:var(--ink-on-dark);}
-  .leads li.done .s{background:#D2584B;border-color:#D2584B;}
-  .leads li.done.ok .s{background:#9AA88A;border-color:#9AA88A;}
-  .leads li.cold .s{border-color:rgba(232,227,214,0.2);}
-  .rail-meta{font-size:9.5px;letter-spacing:0.14em;color:var(--ink-on-dark-2);line-height:2;}
-  .rail-meta b{color:var(--ink-on-dark);font-weight:500;}
-
-  .stage{position:relative;min-width:0;padding:46px 40px 44px;}
-  .stage-label{position:absolute;left:40px;top:16px;font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.2em;color:var(--ink-3);display:flex;align-items:center;gap:10px;z-index:3;}
-  .stage-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 2s var(--ease-io) infinite;}
-
-  /* ---------- live preview (before submission) ---------- */
-  .preview{position:absolute;inset:0;transition:opacity .6s ease, transform .8s var(--ease);}
-  .ws.investigating .preview{opacity:0;transform:scale(.985);pointer-events:none;}
-  .preview .pv{position:absolute;animation:pv-in 1s var(--ease) both;}
-  @keyframes pv-in{from{opacity:0;translate:0 14px;}to{opacity:1;translate:0 0;}}
-  /* sample composition: subject centred, evidence arranged around it */
-  #pvReg{left:28px;top:62px;width:216px;transform:rotate(-1.2deg);}
-  #pvSocial{right:28px;top:74px;width:204px;transform:rotate(1.4deg);}
-  #pvSubject{left:50%;top:262px;width:232px;margin-left:-116px;}
-  #pvMarket{right:28px;top:430px;width:214px;transform:rotate(-0.8deg);}
-  #pvMemo{left:32px;top:450px;width:222px;transform:rotate(1.6deg);}
-  #pvSlip{left:50%;bottom:40px;width:210px;margin-left:-90px;transform:rotate(-1deg);}
-  .pv-threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible;filter:drop-shadow(0 1.5px 1px rgba(60,15,10,0.25));}
-  .pv-threads path{fill:none;stroke:var(--red);stroke-width:1.2;stroke-linecap:round;}
-  .pv-threads path.t1{stroke-dasharray:420;stroke-dashoffset:420;animation:draw 1.6s var(--ease) 1.4s forwards;}
-  .pv-threads path.t2{stroke-dasharray:420;stroke-dashoffset:420;animation:draw 1.6s var(--ease) 3.6s forwards;}
-  .pv-threads path.loose{stroke-dasharray:260;stroke-dashoffset:260;animation:draw 2.2s var(--ease) 2.4s forwards;opacity:.85;}
-  @keyframes draw{to{stroke-dashoffset:0;}}
-
-  /* ---------- shared evidence vocabulary ---------- */
-  .frag{position:relative;background-color:var(--paper);background-image:var(--grain);
-    box-shadow:0 0 0 1px rgba(23,21,18,0.06), 0 1px 2px rgba(23,21,18,0.08), 0 16px 26px -18px rgba(23,21,18,0.55);}
-  .mono-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.18em;color:var(--ink-3);}
-  .bar-k{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--ink);color:#EFEAE0;padding:7px 12px;font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.18em;}
-  .bar-k b{color:#E06A5C;font-weight:500;}
-  .pin{position:absolute;width:13px;height:13px;z-index:7;margin:-6.5px 0 0 -6.5px;border-radius:50%;
-    background:radial-gradient(circle at 34% 30%, #E07A6C 0%, #A62E23 45%, #651710 100%);
-    box-shadow:2px 5px 4px -1px rgba(25,10,6,0.38), 0 0 0 0.5px rgba(60,10,5,0.45);}
-  .pin.pop{animation:pin-in .55s var(--ease) both;}
-  @keyframes pin-in{from{opacity:0;transform:translateY(-12px) scale(1.3);}}
-  .stamp{
-    display:inline-block;font-family:var(--f-sans);font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--red);
-    border:2px solid currentColor;padding:5px 9px 4px;font-size:12px;line-height:1;transform:rotate(-7deg);opacity:.9;
-    -webkit-mask-image:var(--ink-tex);mask-image:var(--ink-tex);-webkit-mask-size:240px 120px;mask-size:240px 120px;
-  }
-  .stamp.olive{color:var(--olive);}
-  .stamp.ink{color:var(--ink);}
-  .stamp.land{animation:stamp-land .38s cubic-bezier(.3,1.25,.5,1) both;}
-  @keyframes stamp-land{from{opacity:0;transform:rotate(-3deg) scale(1.6);}to{opacity:.9;transform:rotate(-7deg) scale(1);}}
-  .st{font-family:var(--f-mono);font-size:10.5px;font-weight:500;letter-spacing:0.1em;white-space:nowrap;text-decoration:none;}
-  .ok{color:var(--olive);}
-  .bad{color:var(--red);}
-  .unk{color:var(--ink-3);}
-  a.st:hover{text-decoration:underline;text-underline-offset:3px;}
-
-  /* scan line used on registry documents */
-  .scan{position:absolute;left:0;right:0;height:22px;top:30px;pointer-events:none;
-    background:linear-gradient(to bottom, transparent, rgba(159,42,32,0.10) 70%, rgba(159,42,32,0.55) 96%, transparent);
-    animation:scan 4.8s var(--ease-io) 1s infinite;}
-  @keyframes scan{0%{top:30px;opacity:0;}8%{opacity:1;}70%{top:calc(100% - 22px);opacity:1;}80%,100%{top:calc(100% - 22px);opacity:0;}}
-
-  /* registry record (tabbed document) */
-  .registry{padding:0 0 12px;}
-  .registry .tab{position:absolute;left:12px;top:-17px;height:18px;padding:0 10px;background:var(--graphite);color:#EFEAE0;font-family:var(--f-mono);font-size:8.5px;letter-spacing:0.18em;display:flex;align-items:center;border-radius:3px 3px 0 0;}
-  .reg-row{display:flex;align-items:center;gap:10px;padding:7px 14px;font-family:var(--f-mono);font-size:12px;border-bottom:1px solid var(--hair);}
-  .reg-row .d{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .reg-sep{font-family:var(--f-mono);font-size:9px;letter-spacing:0.2em;color:var(--ink-3);padding:12px 14px 4px;}
-  .reg-foot{font-family:var(--f-mono);font-size:9px;color:var(--ink-3);padding:10px 14px 0;line-height:1.5;}
-  .registry .stamp{position:absolute;right:12px;bottom:12px;}
-
-  /* clipped search results */
-  .clips{padding-top:8px;}
-  .clips .label{display:inline-flex;gap:10px;background:var(--ink);color:#EFEAE0;font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.18em;padding:6px 10px;margin-bottom:-4px;position:relative;z-index:2;}
-  .clips .label b{color:#E06A5C;font-weight:500;}
-  .clip-item{position:relative;padding:14px 16px 12px;margin-top:8px;}
-  .clip-item:nth-child(odd){margin-left:10px;}
-  .clip-item .meta{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.12em;color:var(--ink-3);display:flex;gap:12px;flex-wrap:wrap;}
-  .clip-item a.t{display:block;font-weight:500;font-size:14.5px;line-height:1.3;margin:4px 0;text-decoration:none;color:var(--ink);}
-  .clip-item a.t:hover{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:3px;}
-  .clip-item p{margin:0;font-size:12.5px;line-height:1.45;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-  .clips .stamp{position:absolute;right:16px;top:-6px;z-index:3;}
-  .more summary{cursor:pointer;list-style:none;font-family:var(--f-mono);font-size:10px;letter-spacing:0.14em;color:var(--ink-2);margin-top:10px;padding-left:10px;}
-  .more summary::-webkit-details-marker{display:none;}
-  .more summary::before{content:'+ ';color:var(--red);}
-  .fine{font-size:11px;color:var(--ink-3);margin:10px 0 0 10px;}
-
-  /* social profile fragment (torn printout) */
-  .profile{padding:22px 16px 12px;clip-path:polygon(0 8px,6% 2px,12% 7px,19% 1px,27% 6px,34% 2px,42% 8px,50% 3px,57% 7px,65% 1px,72% 6px,80% 2px,87% 7px,94% 2px,100% 6px,100% 100%,0 100%);}
-  .prof-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--hair);}
-  .prof-row .av{width:34px;height:34px;border-radius:50%;background:var(--graphite);color:#EFEAE0;display:grid;place-items:center;font-family:var(--f-serif);font-size:18px;}
-  .prof-row .h{font-family:var(--f-mono);font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .prof-row .p{font-size:11.5px;color:var(--ink-3);}
-  .prof-row .p a{color:var(--ink-2);}
-
-  /* typed case note */
-  .casenote{background-color:var(--evidence);padding:20px 18px 16px;font-family:var(--f-mono);}
-  .casenote .hd{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.18em;color:rgba(23,21,18,0.55);border-bottom:1px solid rgba(23,21,18,0.2);padding-bottom:8px;margin-bottom:10px;}
-  .casenote ol{margin:0;padding:0 0 0 18px;font-size:11.5px;line-height:1.55;color:var(--ink);}
-  .casenote li{margin-bottom:8px;}
-  .casenote li a{text-decoration:none;font-weight:500;}
-  .casenote li a:hover{text-decoration:underline;}
-  .casenote li span{color:rgba(23,21,18,0.62);}
-  .casenote .disc{font-size:9.5px;letter-spacing:0.06em;color:rgba(23,21,18,0.55);margin-top:8px;line-height:1.5;}
-
-  /* handwritten investigator note */
-  .handnote{padding:16px 18px 14px 40px;
-    background-image:var(--grain), linear-gradient(to right, transparent 28px, rgba(159,42,32,0.45) 28px, rgba(159,42,32,0.45) 29px, transparent 29px), repeating-linear-gradient(to bottom, transparent 0 27px, rgba(70,100,140,0.18) 27px 28px);
-    background-position:0 0, 0 0, 0 8px;}
-  .hn-k{font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.16em;color:var(--ink-3);height:28px;}
-  .hn-row{display:flex;align-items:baseline;gap:8px;height:28px;font-family:var(--f-hand);font-size:23px;line-height:28px;color:#22304A;}
-  .hn-row .l{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .hn-row .v{font-size:19px;color:#4A5770;}
-  .hn-row .m{width:20px;text-align:center;font-weight:600;font-size:25px;}
-
-  /* domain slips (close relatives) */
-  .slips{display:flex;flex-direction:column;gap:10px;}
-  .slipx{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:10px 16px 10px 14px;border-left:3px solid var(--ink);}
-  #pvSlip.slipx{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 14px;}
-  .slipx:nth-child(2){margin-left:22px;}
-  .slipx:nth-child(3){margin-left:8px;}
-  .slipx .nm{font-family:var(--f-serif);font-size:24px;line-height:1.05;overflow-wrap:break-word;word-break:normal;}
-  .slipx .tl{grid-column:1 / -1;font-family:var(--f-mono);font-size:10px;color:var(--ink-3);display:flex;gap:10px;flex-wrap:wrap;}
-  .slipx .tl a{text-decoration:none;}
-  .slipx details{grid-column:1 / -1;font-size:11.5px;color:var(--ink-3);}
-  .slipx details summary{cursor:pointer;list-style:none;}
-  .slipx details summary::-webkit-details-marker{display:none;}
-  .slipx details a{display:block;color:var(--ink-2);text-decoration:none;margin-top:4px;line-height:1.35;}
-  .slipx details a:hover{text-decoration:underline;}
-
-  /* subject card */
-  .subject{position:relative;text-align:left;}
-  .subject .body{padding:18px 18px 16px;}
-  .subject .nm{font-family:var(--f-serif);font-size:clamp(40px,4vw,56px);line-height:0.95;letter-spacing:-0.02em;overflow-wrap:anywhere;}
-  .subject .ctx{font-size:12.5px;color:var(--ink-2);line-height:1.45;margin-top:10px;}
-
-  /* ---------- the real board ---------- */
-  .board{display:none;position:relative;}
-  .ws.investigating .board{display:block;}
-  .grid{
-    position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px 28px;
-    grid-template-areas:
-      "dom  col  col"
-      "dom  subj soc"
-      "mkt  subj soc"
-      "mkt  mem  rel";
-    align-items:start;transition:opacity .6s ease, filter .6s ease;
-  }
-  .grid > .subject{grid-area:subj;align-self:center;z-index:4;}
-  .slot{position:relative;min-width:0;}
-  .slot[data-k="domains"]{grid-area:dom;}
-  .slot[data-k="collisions"]{grid-area:col;}
-  .slot[data-k="handles"]{grid-area:soc;}
-  .slot[data-k="market"]{grid-area:mkt;}
-  .slot[data-k="memory"]{grid-area:mem;}
-  .slot[data-k="relatives"]{grid-area:rel;}
-  .pending{min-height:120px;border:1px dashed rgba(23,21,18,0.16);padding:12px 14px;font-family:var(--f-mono);font-size:9.5px;letter-spacing:0.18em;color:rgba(23,21,18,0.36);position:relative;overflow:hidden;}
-  .pending::after{content:'';position:absolute;left:0;right:0;height:40%;top:-40%;background:linear-gradient(to bottom, transparent, rgba(159,42,32,0.06), transparent);animation:pend 2.6s var(--ease-io) infinite;}
-  @keyframes pend{to{top:100%;}}
-  .slot[data-k="domains"] .pending{min-height:300px;}
-  .slot.cold .pending{color:rgba(159,42,32,0.6);border-color:rgba(159,42,32,0.3);}
-  .slot.cold .pending::after{display:none;}
-  .threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:6;filter:drop-shadow(0 1.5px 1px rgba(60,15,10,0.25));}
-  .threads path{fill:none;stroke:var(--red);stroke-width:1.2;stroke-linecap:round;}
-  .threads path.draw{animation:draw 1.1s var(--ease) forwards;}
-
-  .piece{position:relative;transform:rotate(var(--r,0deg));transition:transform .5s var(--ease);}
-  .piece.land{animation:surface .9s var(--ease) both;}
-  @keyframes surface{from{opacity:0;transform:translate(var(--fx,0px),18px) rotate(calc(var(--r,0deg) + 2deg));}to{opacity:1;transform:rotate(var(--r,0deg));}}
-  @media (hover:hover){ .piece:hover{transform:rotate(0deg) translateY(-2px);} }
-
-  /* ---------- verdict: the workspace resolves ---------- */
-  .ws.is-verdict .grid{opacity:.18;filter:saturate(.4);}
-  .ws.is-verdict .threads path{stroke:#B9877F;}
-  .verdict{
-    position:absolute;left:50%;top:40px;width:min(600px, calc(100% - 48px));z-index:20;transform:translateX(-50%);
-    background-color:var(--paper);background-image:var(--grain);display:none;
-    box-shadow:0 0 0 1px rgba(23,21,18,0.08), 0 2px 4px rgba(23,21,18,0.1), 0 60px 100px -50px rgba(23,21,18,0.7);
-  }
-  .ws.is-verdict .verdict{display:block;animation:resolve 1s var(--ease) both;}
-  @keyframes resolve{from{opacity:0;transform:translate(-50%,30px);}to{opacity:1;transform:translate(-50%,0);}}
-  .v-head{display:flex;justify-content:space-between;align-items:center;background:var(--graphite);color:var(--ink-on-dark);padding:12px 22px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.18em;}
-  .v-head b{color:#D2584B;font-weight:500;}
-  .v-body{padding:28px 30px 26px;position:relative;}
-  .v-subject{font-family:var(--f-serif);font-size:58px;line-height:0.95;letter-spacing:-0.02em;overflow-wrap:anywhere;padding-right:150px;}
-  .v-score{display:flex;align-items:flex-end;gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid var(--ink);}
-  .v-score .k{font-family:var(--f-mono);font-size:10px;letter-spacing:0.2em;color:var(--ink-3);margin-bottom:10px;}
-  .v-score .num{font-family:var(--f-sans);font-weight:300;font-size:92px;line-height:0.8;letter-spacing:-0.05em;font-variant-numeric:tabular-nums;}
-  .v-score .of{font-family:var(--f-mono);font-size:14px;color:var(--ink-3);margin-bottom:6px;}
-  .v-meter{flex:1;align-self:center;height:6px;background:var(--hair);position:relative;margin-left:8px;}
-  .v-meter i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--red);transition:width 1.4s var(--ease) .3s;}
-  .v-meter i.low{background:var(--olive);}
-  .v-stamp{
-    position:absolute;right:26px;top:22px;max-width:220px;text-align:center;
-    font-family:var(--f-sans);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;line-height:1;font-size:26px;
-    color:var(--red);border:3.5px solid currentColor;outline:1.5px solid currentColor;outline-offset:4px;padding:12px 14px 10px;
-    transform:rotate(-8deg);opacity:0;
-    -webkit-mask-image:var(--ink-tex);mask-image:var(--ink-tex);-webkit-mask-size:240px 120px;mask-size:240px 120px;
-  }
-  .v-stamp.good{color:var(--olive);}
-  .ws.is-verdict .v-stamp{animation:big-stamp .42s cubic-bezier(.3,1.3,.5,1) .7s forwards;}
-  @keyframes big-stamp{from{opacity:0;transform:rotate(-3deg) scale(1.7);}to{opacity:.92;transform:rotate(-8deg) scale(1);}}
-  .v-find{list-style:none;margin:22px 0 0;padding:0;}
-  .v-find li{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:15px;}
-  .v-find li::before{content:'';flex:none;width:7px;height:7px;border-radius:50%;background:var(--red);transform:translateY(-1px);}
-  .v-find li.ok::before{background:var(--olive);}
-  .v-find li.unk::before{background:transparent;border:1px solid var(--ink-3);}
-  .v-why{font-size:13px;color:var(--ink-3);margin:14px 0 0;}
-  .v-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:24px;}
-  .btn-line{font-family:var(--f-sans);font-weight:600;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;cursor:pointer;background:transparent;border:1px solid var(--ink);color:var(--ink);padding:15px 20px 14px;border-radius:3px;transition:background .25s, color .25s;}
-  .btn-line:hover{background:var(--ink);color:var(--bg);}
-  .v-links{display:flex;gap:16px;margin-left:auto;}
-  .txt-btn{background:none;border:none;padding:0;cursor:pointer;font-family:var(--f-mono);font-size:10px;letter-spacing:0.08em;color:var(--ink-3);text-decoration:underline;text-decoration-color:var(--hair-3);text-underline-offset:3px;}
-  .txt-btn:hover{color:var(--ink);}
-  #rawOutput{display:none;margin-top:14px;}
-  #rawOutput pre{font-family:var(--f-mono);font-size:10.5px;background:rgba(23,21,18,0.04);padding:12px;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0;}
-  .v-foot{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10px;letter-spacing:0.18em;color:var(--ink-3);margin-top:22px;}
-  .v-foot b{color:var(--ink);font-weight:500;}
-
-  /* docked verdict while reviewing the evidence */
-  .dock{display:none;position:relative;z-index:10;margin:-10px 0 26px;align-items:center;gap:18px;flex-wrap:wrap;
-    background:var(--graphite);color:var(--ink-on-dark);padding:12px 16px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:0.14em;}
-  .ws.is-reviewing .dock{display:flex;animation:pv-in .6s var(--ease) both;}
-  .dock .stamp{color:#E06A5C;font-size:11px;transform:rotate(-3deg);}
-  .dock .stamp.olive{color:#9AA88A;}
-  .dock b{color:#F6F3EC;font-weight:500;}
-  .dock button{margin-left:auto;background:none;border:1px solid rgba(232,227,214,0.3);color:var(--ink-on-dark);font-family:var(--f-mono);font-size:10px;letter-spacing:0.14em;padding:8px 12px;cursor:pointer;}
-  .dock button:hover{border-color:var(--ink-on-dark);}
-
-  .foot{max-width:1360px;margin:0 auto;padding:0 28px 48px;font-size:12px;color:var(--ink-3);line-height:1.7;}
-  .foot p{max-width:80ch;margin:0;padding-top:18px;border-top:1px solid var(--hair-2);}
-  .foot a{color:var(--ink-2);text-decoration-color:var(--red);text-underline-offset:3px;}
-
-  /* ===================== RESPONSIVE ===================== */
-  @media (max-width: 1100px){
-    .ws,.ws.investigating{grid-template-columns:minmax(0,1fr);gap:36px;}
-    .left{position:static;}
-    .intake{max-width:560px;}
-    h1{font-size:64px;}
-  }
-  @media (max-width: 760px){
-    .page{padding:30px 16px 56px;}
-    .sb-in{padding:0 16px;gap:18px;}
-    h1{font-size:50px;}
-    .lede{font-size:15.5px;}
-    .wall{grid-template-columns:minmax(0,1fr);min-height:0;}
-    .rail{padding:14px 16px;}
-    .rail-case{font-size:16px;margin:2px 0 8px;}
-    .rail-subject{display:none;}
-    .leads{display:grid;grid-template-columns:1fr 1fr;column-gap:14px;margin-bottom:8px;}
-    .rail-meta{display:none;}
-    .stage{padding:40px 16px 28px;min-height:540px;}
-    #pvReg{left:12px;top:52px;width:176px;}
-    #pvSocial{right:10px;top:86px;width:150px;}
-    #pvSubject{top:262px;width:210px;margin-left:-105px;}
-    #pvMemo{left:14px;top:410px;width:214px;}
-    #pvSocial .prof-row{margin-bottom:28px;}
-    #pvMarket,#pvSlip{display:none;}
-    .ws.investigating .stage{min-height:0;}
-    .stage-label{left:16px;}
-    .grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"subj" "col" "dom" "soc" "mkt" "rel" "mem";gap:28px;}
-    .slot .piece > .pin{left:auto !important;right:-3px !important;top:18px !important;bottom:auto !important;margin:-6.5px -6.5px 0 0 !important;}
-    .ws.investigating .stage{display:flex;flex-direction:column;}
-    .verdict{position:relative;left:auto;top:auto;transform:none;width:auto;margin-bottom:24px;order:-1;}
-    .ws.is-verdict .verdict{animation:pv-in .8s var(--ease) both;}
-    .ws.is-verdict .grid{opacity:.35;}
-    .v-body{padding:22px 18px 20px;}
-    .v-subject{font-size:44px;padding-right:0;}
-    .v-stamp{position:relative;right:auto;top:auto;display:inline-block;margin:18px 0 4px;font-size:20px;}
-    .v-score .num{font-size:72px;}
-    .v-links{margin-left:0;width:100%;}
-  }
-  @media (prefers-reduced-motion: reduce){
-    *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
-  }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/case.css">
 </head>
 <body>
 
-<!-- live case status -->
-<div class="statusbar" role="status">
-  <div class="sb-in">
-    <span class="sb-brand">Name Worth It<i>?</i></span>
-    <span class="sb-item">CASE <b class="red" id="caseNo">0001</b></span><span class="sb-sep"></span>
-    <span class="sb-item">STATUS: <b id="sbStatus">OPEN</b></span><span class="sb-sep"></span>
-    <span class="sb-item">CHECKS: <b>06</b></span><span class="sb-sep"></span>
-    <span class="sb-item"><b>LIVE LOOKUPS</b></span><span class="sb-sep"></span>
-    <span class="sb-item">DESK <b>01</b></span>
-    <span class="sb-live" id="sbLive"><span class="dot"></span><span id="sbMsg">AWAITING SUBJECT</span><span class="sb-clock" id="sbClock"></span></span>
+<!-- CaseHeader -->
+<header class="case-header" role="status" aria-live="polite">
+  <div class="row">
+    <span class="ch-brand">Name Worth It<i>?</i></span>
+    <span class="ch-item">CASE <b class="case-no" data-case-no>0001</b></span><span class="ch-sep"></span>
+    <span class="ch-item">STATUS: <b id="chStatus">OPEN</b></span><span class="ch-sep"></span>
+    <span class="ch-item">CHECKS: <b id="chChecks">00/06</b></span><span class="ch-sep"></span>
+    <span class="ch-item">EVIDENCE: <b id="chEvidence">00</b></span><span class="ch-sep"></span>
+    <span class="ch-item"><b>LIVE LOOKUPS</b></span><span class="ch-sep"></span>
+    <span class="ch-item">DESK <b>01</b></span>
+    <span class="ch-live" id="chLive"><span class="dot"></span><span id="chLiveText">AWAITING SUBJECT</span></span>
   </div>
-  <div class="sb-progress"><i id="sbProgress"></i></div>
-</div>
+  <div class="ch-progress"><i id="chProgress"></i></div>
+</header>
 
-<div class="page">
-  <main class="ws" id="ws">
+<!-- ============================ CASE INTAKE ============================ -->
+<section class="screen intake-screen on" id="intakeScreen" aria-label="Case intake">
+  <div>
+    <div class="eyebrow">CASE <b data-case-no>0001</b> &nbsp;·&nbsp; PRODUCT NAME INQUIRY</div>
+    <h1 class="hero-h">Open a case<br><em>on your name.</em></h1>
+    <p class="hero-lede">Before you build a brand around it, find out who got there first.</p>
 
-    <!-- LEFT: headline + intake -->
-    <section class="left">
-      <div class="intro">
-        <div class="eyebrow">CASE <b data-case-no>0001</b> &nbsp;·&nbsp; PRODUCT NAME INQUIRY</div>
-        <h1>Open a case<br><span class="u">on your name.</span></h1>
-        <p class="lede">Before you build a brand around it, find out who got there first.</p>
+    <div class="checks-index">
+      <ol>
+        <li><span class="n">01</span><span class="t">COLLISIONS</span><span class="d">Who's already using it in your niche <span class="src">· WEB SEARCH</span></span></li>
+        <li><span class="n">02</span><span class="t">DOMAINS</span><span class="d">.com .io .net .ai .app .co <span class="src">· RDAP / DNS</span></span></li>
+        <li><span class="n">03</span><span class="t">HANDLES</span><span class="d">X and Instagram <span class="src">· LIVE PROFILE CHECK</span></span></li>
+        <li><span class="n">04</span><span class="t">MARKET</span><span class="d">Trademark mentions on the open web <span class="src">· WEB SEARCH</span></span></li>
+        <li><span class="n">05</span><span class="t">RELATIVES</span><span class="d">Close variants, in case it's crowded</span></li>
+        <li><span class="n">06</span><span class="t">MEMORY</span><span class="d">Memorable, sayable, distinctive <span class="src">· JEV</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- the intake document -->
+  <form class="intake-doc" id="intakeForm" autocomplete="off" onsubmit="return false">
+    <div class="doc-top">
+      <div class="doc-title">
+        <div class="form">FORM NW-1 · CASE INTAKE</div>
+        <h2>Particulars of the subject</h2>
       </div>
-
-      <div class="intake" id="intake">
-        <div class="intake-head"><span>CASE INTAKE</span><b>001</b></div>
-        <div class="intake-body">
-          <div class="fld">
-            <label for="nameInput">Subject name</label>
-            <input type="text" id="nameInput" placeholder="e.g. Nimbus" autocomplete="off" spellcheck="false" value="Nimbus">
-            <span class="rule" aria-hidden="true"></span>
-          </div>
-          <div class="fld">
-            <label for="context">What does it do? <span class="hint">one line — also what we search against</span></label>
-            <textarea id="context" rows="3" placeholder="e.g. A tool for freelance designers to send client invoices and get paid faster">A browser extension that automates LinkedIn outreach for sales teams</textarea>
-            <span class="rule" aria-hidden="true"></span>
-          </div>
-          <div class="cta-row">
-            <button class="btn-red" id="runBtn" type="button"><span id="runBtnLabel">Open case</span><span class="arr" aria-hidden="true">→</span></button>
-            <span class="cta-note">06 CHECKS<br>LIVE LOOKUPS</span>
-          </div>
-          <div class="error-box" id="errorBox" role="alert"></div>
-        </div>
+      <div class="office">
+        <div class="k">FOR OFFICE USE · CASE NO.</div>
+        <div class="cn" data-case-no>0001</div>
+        <div class="dt"><span class="k" style="margin-right:6px">RECEIVED</span><span class="js-date">—</span></div>
       </div>
-
-      <div class="left-foot">
-        DOMAINS · HANDLES · NAME COLLISIONS<br>MARKET SIGNAL · MEMORABILITY · CLOSE RELATIVES
+    </div>
+    <div class="doc-body">
+      <div class="field">
+        <label for="nameInput"><span class="n">1</span> SUBJECT NAME</label>
+        <input type="text" id="nameInput" placeholder="e.g. Nimbus" spellcheck="false" value="Nimbus">
+        <span class="rule" aria-hidden="true"></span>
       </div>
-    </section>
-
-    <!-- RIGHT: the evidence wall -->
-    <section class="wall" id="result" aria-live="polite">
-      <aside class="rail">
-        <div class="rail-k">CASE FILE</div>
-        <div class="rail-case" data-case-no>0001</div>
-        <div class="rail-k">SUBJECT</div>
-        <div class="rail-subject" id="railSubject">Nimbus</div>
-        <ol class="leads" id="leads">
-          <li data-k="collisions"><span class="n">01</span><span>COLLISIONS</span><span class="s"></span></li>
-          <li data-k="domains"><span class="n">02</span><span>DOMAINS</span><span class="s"></span></li>
-          <li data-k="handles"><span class="n">03</span><span>HANDLES</span><span class="s"></span></li>
-          <li data-k="market"><span class="n">04</span><span>MARKET</span><span class="s"></span></li>
-          <li data-k="relatives"><span class="n">05</span><span>RELATIVES</span><span class="s"></span></li>
-          <li data-k="memory"><span class="n">06</span><span>MEMORY</span><span class="s"></span></li>
-        </ol>
-        <div class="rail-meta">
-          THREADS <b id="threadCount">2</b><br>
-          ELAPSED <b id="railClock">—</b><br>
-          OPENED <b class="js-date">—</b>
-        </div>
-      </aside>
-
-      <div class="stage" id="stage">
-        <div class="stage-label" id="stageLabel">SAMPLE CASE · LIVE PREVIEW</div>
-
-        <!-- a case already underway, before you submit -->
-        <div class="preview" id="preview" aria-hidden="true">
-          <svg class="pv-threads" id="pvThreads"><path class="t1"/><path class="t2"/><path class="loose"/></svg>
-
-          <div class="pv frag subject" id="pvSubject" style="animation-delay:.2s">
-            <span class="pin" style="left:50%;top:44px"></span>
-            <div class="bar-k"><span>CASE <b>0001</b></span><span>SUBJECT</span></div>
-            <div class="body"><div class="nm">Nimbus</div><div class="ctx">LinkedIn outreach for sales teams</div></div>
-          </div>
-
-          <div class="pv frag registry" id="pvReg" style="animation-delay:.45s">
-            <span class="tab">REGISTRY</span>
-            <div class="bar-k"><span>DOMAIN</span><span>RDAP</span></div>
-            <div class="reg-row"><span class="d">nimbus.com</span><span class="st bad">TAKEN</span></div>
-            <div class="reg-row"><span class="d">nimbus.io</span><span class="st bad">TAKEN</span></div>
-            <div class="reg-row"><span class="d">nimbus.app</span><span class="st ok">CLEAR</span></div>
-            <div class="reg-row" style="border:none"><span class="d">nimbus.ai</span><span class="st unk">· · ·</span></div>
-            <span class="pin" id="pvRegPin" style="right:14px;left:auto;top:auto;bottom:14px;margin-right:-6.5px"></span>
-            <div class="scan"></div>
-          </div>
-
-          <div class="pv frag profile" id="pvSocial" style="animation-delay:.7s">
-            <div class="mono-k">SOCIAL · PROFILE</div>
-            <div class="prof-row"><span class="av">n</span><span><span class="h">@nimbus</span><br><span class="p">on X</span></span><span></span></div>
-            <span class="pin" id="pvSocPin" style="left:auto;right:16px;top:24px;margin-right:-6.5px"></span>
-            <span class="stamp land" style="position:absolute;right:12px;bottom:10px;animation-delay:3.2s">FOUND</span>
-          </div>
-
-          <div class="pv frag casenote" id="pvMarket" style="animation-delay:.95s">
-            <span class="pin" id="pvMktPin" style="left:50%;top:10px"></span>
-            <div class="hd"><span>CASE NOTE</span><span>MARKET</span></div>
-            <div style="font-size:14px;font-weight:500;margin-bottom:8px;letter-spacing:0">3 matching names</div>
-            <ol><li>Nimbus <span>— cloud</span></li><li>Nimbus <span>— notes app</span></li><li>Nimbus <span>— HR suite</span></li></ol>
-          </div>
-
-          <div class="pv frag handnote" id="pvMemo" style="animation-delay:1.2s">
-            <span class="pin pop" style="right:16px;left:auto;top:12px;margin-right:-6.5px;animation-delay:2.6s"></span>
-            <div class="hn-k">MEMORY</div>
-            <div class="hn-row"><span class="l">memorable</span><span class="v">71%</span><span class="m ok">✓</span></div>
-            <div class="hn-row"><span class="l">distinctive</span><span class="v"></span><span class="m">?</span></div>
-          </div>
-
-          <div class="pv frag slipx" id="pvSlip" style="animation-delay:1.45s">
-            <span class="nm" style="font-size:20px">getnimbus.com</span><span class="st ok">CLEAR</span>
-          </div>
-        </div>
-
-        <!-- the real investigation -->
-        <div class="board" id="board">
-          <div class="dock" id="dock">
-            <span class="stamp" id="dockStamp">—</span>
-            <span>RISK <b id="dockScore">—</b>/100</span>
-            <span>SUBJECT <b id="dockSubject">—</b></span>
-            <button type="button" id="dockShow">SHOW VERDICT</button>
-          </div>
-          <div class="grid" id="grid">
-            <svg class="threads" id="threads" aria-hidden="true"></svg>
-            <div class="frag subject" id="subject">
-              <span class="pin" style="left:50%;top:44px"></span>
-              <div class="bar-k"><span>CASE <b data-case-no>0001</b></span><span>SUBJECT</span></div>
-              <div class="body"><div class="nm" id="subjectName">—</div><div class="ctx" id="subjectCtx"></div></div>
-            </div>
-            <div class="slot" data-k="domains"></div>
-            <div class="slot" data-k="collisions"></div>
-            <div class="slot" data-k="handles"></div>
-            <div class="slot" data-k="market"></div>
-            <div class="slot" data-k="memory"></div>
-            <div class="slot" data-k="relatives"></div>
-          </div>
-        </div>
-
-        <!-- the verdict the workspace resolves around -->
-        <article class="verdict" id="verdict" aria-label="Verdict">
-          <div class="v-head"><span>CASE <b data-case-no>0001</b> · VERDICT</span><span class="js-date">—</span></div>
-          <div class="v-body">
-            <div class="mono-k">SUBJECT</div>
-            <div class="v-subject" id="stampName">—</div>
-            <div class="v-stamp" id="stampEl">—</div>
-            <div class="v-score">
-              <div><div class="k">RISK SCORE</div><span class="num" id="riskNum">—</span></div>
-              <span class="of">/ 100</span>
-              <span class="v-meter"><i id="riskMeter"></i></span>
-            </div>
-            <ul class="v-find" id="reportRows"></ul>
-            <p class="v-why" id="stampSub"></p>
-            <div class="v-actions">
-              <button class="btn-line" id="viewEvidence" type="button">View evidence</button>
-              <button class="btn-red" id="runAgainBtn" type="button"><span>Try another name</span><span class="arr" aria-hidden="true">→</span></button>
-            </div>
-            <div class="v-foot"><span><b>CASE CLOSED</b> · <span class="js-date">—</span></span>
-              <span class="v-links"><button class="txt-btn" id="copyBtn" type="button">copy report</button><button class="txt-btn" id="rawToggle" type="button">show raw response</button></span>
-            </div>
-            <div id="rawOutput"><pre id="rawPre"></pre></div>
-            <p class="v-why" style="font-size:11px;margin-top:12px">Risk score is weighted from the evidence on this board — collisions, domains, handles and the memorability read.</p>
-          </div>
-        </article>
+      <div class="field">
+        <label for="context"><span class="n">2</span> WHAT DOES IT DO? <span class="hint">one line — also what we search against</span></label>
+        <textarea id="context" rows="3" placeholder="e.g. A tool for freelance designers to send client invoices and get paid faster">LinkedIn outreach for sales teams</textarea>
+        <span class="rule" aria-hidden="true"></span>
       </div>
-    </section>
-  </main>
-</div>
+    </div>
+    <div class="doc-foot">
+      <button class="btn-case" id="runBtn" type="submit"><span id="runBtnLabel">Open case</span><span class="arr" aria-hidden="true">→</span></button>
+      <span class="note">06 CHECKS<br>LIVE LOOKUPS</span>
+    </div>
+    <div class="error-box" id="errorBox" role="alert"></div>
+    <div class="doc-sign"><span>SUBMITTED TO · DESK 01</span><span>LOOKUPS RUN LIVE AGAINST PUBLIC RECORDS</span></div>
+  </form>
+</section>
 
-<footer class="foot"><p>
-  Every piece of evidence is a real lookup. Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The market evidence is a web-search signal, not a trademark search — still run a proper one before you file anything. The case on the right before you submit is a sample.
+<footer class="page-foot screen on" id="intakeFoot"><p>
+  Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The market evidence is a web-search signal, not a trademark search — still run a proper one before you file anything.
 </p></footer>
 
-<script>
-(function(){
-  // Same-origin call — this file and the serverless function it hits
-  // (api/name-check.js) are deployed together. No key to bring here —
-  // the function runs on a server-held Jev key.
-  const RELAY_URL = '/api/name-check';
+<!-- "CASE 0001 — OPENED" -->
+<div class="opening" id="opening" aria-hidden="true">
+  <div class="card">
+    <div class="cn">CASE <span data-case-no>0001</span></div>
+    <div class="word">Opened.</div>
+    <div class="rule"></div>
+    <div class="sub" id="openingSub">SUBJECT —</div>
+  </div>
+</div>
 
-  const $ = (id) => document.getElementById(id);
-  const ws = $('ws');
-  const nameEl = $('nameInput');
-  const contextEl = $('context');
-  const runBtn = $('runBtn');
-  const runBtnLabel = $('runBtnLabel');
-  const errorBox = $('errorBox');
-  const resultEl = $('result');
-  const grid = $('grid');
-  const threadsEl = $('threads');
-  const subjectEl = $('subject');
-  const stampName = $('stampName');
-  const stampEl = $('stampEl');
-  const stampSub = $('stampSub');
-  const reportRows = $('reportRows');
-  const copyBtn = $('copyBtn');
-  const runAgainBtn = $('runAgainBtn');
-  const rawToggle = $('rawToggle');
-  const rawOutput = $('rawOutput');
-  const rawPre = $('rawPre');
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const sleep = (ms) => new Promise(r => setTimeout(r, reduceMotion ? 0 : ms));
+<!-- ============================ THE DESK ============================ -->
+<main class="screen" id="deskScreen" aria-label="Investigation workspace">
+  <div class="desk">
 
-  // purely cosmetic case counter, local to this browser
-  let caseNum = '0001';
-  try{
-    let n = parseInt(localStorage.getItem('nwi_case_no') || '0', 10) + 1;
-    localStorage.setItem('nwi_case_no', String(n));
-    caseNum = String(n).padStart(4, '0');
-  }catch(e){}
-  $('caseNo').textContent = caseNum;
-  document.querySelectorAll('[data-case-no]').forEach(function(el){ el.textContent = caseNum; });
-  let today = '';
-  try{ today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase(); }catch(e){}
-  document.querySelectorAll('.js-date').forEach(function(el){ el.textContent = today || '—'; });
+    <!-- CaseFileSidebar -->
+    <nav class="casefile" aria-label="Case file">
+      <div class="casefile-in">
+        <div class="cf-k">CASE FILE</div>
+        <div class="cf-no" data-case-no>0001</div>
+        <div class="cf-k">SUBJECT</div>
+        <div class="cf-subject" id="cfSubject">—</div>
+        <dl class="cf-meta">
+          <dt>STATUS</dt><dd id="cfStatus">—</dd>
+          <dt>OPENED</dt><dd class="js-date">—</dd>
+        </dl>
+        <ol class="cf-sections" id="cfSections"></ol>
+        <dl class="cf-counts">
+          <dt>EVIDENCE</dt><dd id="cfEvidence">00</dd>
+          <dt>LEADS</dt><dd id="cfLeads">00</dd>
+          <dt>CHECKS</dt><dd id="cfChecks">00/06</dd>
+        </dl>
+        <button class="cf-new" id="cfNew" type="button">← NEW CASE</button>
+      </div>
+    </nav>
 
-  function showError(title, detail, extra){
-    errorBox.innerHTML = '<strong>' + title + '</strong><br>' + detail + (extra ? '<pre>' + extra + '</pre>' : '');
-    errorBox.style.display = 'block';
-  }
-  function hideError(){ errorBox.style.display = 'none'; errorBox.innerHTML = ''; }
+    <!-- InvestigationCanvas -->
+    <section class="canvas" id="result" aria-label="Evidence board">
+      <div class="canvas-head">
+        <div class="title">EVIDENCE BOARD &nbsp;·&nbsp; CASE <b data-case-no>0001</b></div>
+        <div class="legend"><span><span class="m-found">●</span> EVIDENCE FOUND</span><span><span class="m-clear">✓</span> CLEAR</span><span>◌ PENDING</span><span>HOVER TO CROSS-REFERENCE</span></div>
+      </div>
+      <div class="board" id="board">
+        <svg class="links" id="links" aria-hidden="true"></svg>
+        <!-- SubjectCard -->
+        <article class="subject" id="subject" tabindex="-1">
+          <span class="pin" style="left:50%;top:1px"></span>
+          <div class="band"><span>CASE <b data-case-no>0001</b></span><span>SUBJECT</span></div>
+          <div class="body">
+            <div class="nm" id="subjectName">—</div>
+            <div class="ctx" id="subjectCtx"></div>
+            <div class="state"><span>STATE</span><b id="subjectState">UNDER INVESTIGATION</b></div>
+          </div>
+          <span class="complete-stamp">CASE COMPLETE</span>
+        </article>
+        <div class="slot" data-k="domains"></div>
+        <div class="slot" data-k="handles"></div>
+        <div class="slot" data-k="collisions"></div>
+        <div class="slot" data-k="market"></div>
+        <div class="slot" data-k="relatives"></div>
+        <div class="slot" data-k="memory"></div>
+      </div>
+    </section>
 
-  function pct(v){ return v === null || v === undefined ? '—' : Math.round(v * 100) + '%'; }
+    <!-- Case intelligence → CaseReport -->
+    <aside class="intel" id="intel" aria-label="Case intelligence">
+      <div class="intel-in">
+        <div class="ws-error" id="wsError" role="alert"></div>
 
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, function(ch){
-      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch];
-    });
-  }
+        <div class="live-intel">
+          <div class="now" id="now"><div class="k">NOW</div><div class="act" id="nowAct">—</div></div>
+          <h3>INVESTIGATION LOG <span id="logCount">0</span></h3>
+          <ol class="log" id="log"></ol>
+          <h3>EMERGING FINDINGS</h3>
+          <ul class="findings" id="findings"></ul>
+        </div>
 
-  const TLD_ORDER = ['com', 'io', 'net', 'ai', 'app', 'co'];
+        <!-- CaseReport -->
+        <div class="report" id="report">
+          <article class="rp-sheet">
+            <div class="rp-band"><span>CASE REPORT</span><b data-case-no>0001</b></div>
+            <div class="rp-body">
+              <div class="k">SUBJECT</div>
+              <div class="rp-subject" id="stampName">—</div>
 
-  // DNS-fallback "clear" only means nothing is delegated — a registered
-  // domain with no DNS would look the same — so it's marked with a *.
-  function domainVerdict(d){
-    if (!d || d.available === null || d.available === undefined) return { cls: 'unk', label: 'UNKNOWN' };
-    if (d.available === true) return { cls: 'ok', label: d.source === 'dns' ? 'CLEAR*' : 'CLEAR' };
-    return { cls: 'bad', label: 'TAKEN' };
-  }
-  function buyUrl(domain){ return 'https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(domain); }
-  function st(cls, label, href){
-    return href
-      ? '<a class="st ' + cls + '" href="' + href + '" target="_blank" rel="noopener" title="claim it">' + label + ' ↗</a>'
-      : '<span class="st ' + cls + '">' + label + '</span>';
-  }
-  function stamp(label, cls){ return '<span class="stamp land ' + (cls || '') + '" style="animation-delay:.55s">' + label + '</span>'; }
+              <div class="rp-sec"><span class="k">WHAT WE FOUND</span><ul class="rp-found" id="reportRows"></ul></div>
 
-  // ------------------------------------------------------------------
-  //  The status bar & rail
-  // ------------------------------------------------------------------
-  const sbStatus = $('sbStatus'), sbMsg = $('sbMsg'), sbLive = $('sbLive'), sbClock = $('sbClock'), sbProgress = $('sbProgress');
-  const railClock = $('railClock'), threadCount = $('threadCount');
-  function setStatus(status, msg){ if (status) sbStatus.textContent = status; if (msg) sbMsg.textContent = msg; }
-  function progress(f){ sbProgress.style.width = Math.round(Math.max(0, Math.min(1, f)) * 100) + '%'; }
-  function leadState(key, state, ok){
-    const li = document.querySelector('#leads li[data-k="' + key + '"]');
-    if (!li) return;
-    li.classList.remove('active', 'done', 'ok', 'cold');
-    if (state) li.classList.add(state);
-    if (ok) li.classList.add('ok');
-  }
+              <div class="rp-sec"><span class="k">NAME STATUS</span>
+                <div class="classification"><div class="class-stamp" id="stampEl">—</div><div class="class-meta" id="classMeta"></div></div>
+              </div>
 
-  // ------------------------------------------------------------------
-  //  Live preview threads (sample case, before submission)
-  // ------------------------------------------------------------------
-  function centerOf(el, box){ const r = el.getBoundingClientRect(); return [r.left + r.width / 2 - box.left, r.top + r.height / 2 - box.top]; }
-  function edgePoint(rect, tx, ty){
-    const cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
-    const dx = tx - cx, dy = ty - cy;
-    if (!dx && !dy) return [cx, cy];
-    const s = Math.min((rect.w / 2) / Math.abs(dx || 1e-6), (rect.h / 2) / Math.abs(dy || 1e-6), 1);
-    return [cx + dx * s, cy + dy * s];
-  }
-  function sag(ax, ay, bx, by, seed){
-    const dist = Math.hypot(bx - ax, by - ay);
-    const mx = (ax + bx) / 2 + (seed || 0) * 3, my = (ay + by) / 2 + Math.min(36, 10 + dist * 0.08);
-    return 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' Q' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + bx.toFixed(1) + ' ' + by.toFixed(1);
-  }
-  function drawPreviewThreads(){
-    const pv = $('preview'), svg = $('pvThreads');
-    const box = pv.getBoundingClientRect();
-    if (!box.width) return;
-    svg.setAttribute('viewBox', '0 0 ' + box.width + ' ' + box.height);
-    const s = $('pvSubject').getBoundingClientRect();
-    const rect = { x: s.left - box.left, y: s.top - box.top, w: s.width, h: s.height };
-    const paths = svg.querySelectorAll('path');
-    [[$('pvRegPin'), 0, -1], [$('pvSocPin'), 1, 2]].forEach(function(p){
-      const [px, py] = centerOf(p[0], box);
-      const [ax, ay] = edgePoint(rect, px, py);
-      paths[p[1]].setAttribute('d', sag(ax, ay, px, py, p[2]));
-    });
-    // one loose thread, not yet tied to anything
-    const [mx, my] = centerOf($('pvMktPin'), box);
-    paths[2].setAttribute('d', 'M' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' C ' + (mx - 40).toFixed(1) + ' ' + (my + 30).toFixed(1) + ', ' + (mx - 90).toFixed(1) + ' ' + (my - 10).toFixed(1) + ', ' + (mx - 130).toFixed(1) + ' ' + (my + 46).toFixed(1));
-  }
+              <div class="rp-sec"><span class="k">WHY</span><p class="rp-why" id="stampSub"></p></div>
 
-  // ------------------------------------------------------------------
-  //  Evidence — a different document for every lead
-  // ------------------------------------------------------------------
+              <div class="rp-sec"><span class="k">RECOMMENDED NEXT MOVE</span><ul class="next" id="nextMoves"></ul></div>
 
-  // DOMAIN RECORDS — tabbed registry record
-  function evDomains(domains, variants){
-    const row = function(d){
-      const v = domainVerdict(d);
-      return '<div class="reg-row"><span class="d">' + escapeHtml(d.domain) + '</span>' + st(v.cls, v.label, d.available === true ? buyUrl(d.domain) : null) + '</div>';
-    };
-    const own = TLD_ORDER.map(t => domains && domains[t]).filter(Boolean);
-    const aliases = (variants || []).map(v => v.domains && v.domains.com).filter(Boolean);
-    const anyDns = own.concat(aliases).some(d => d.source === 'dns' && d.available === true);
-    const com = domains && domains.com;
-    const mark = com && com.available === false ? stamp('TAKEN') : com && com.available === true ? stamp('CLEAR', 'olive') : '';
-    return '<div class="piece frag registry" style="--r:-0.8deg;--fx:-20px;margin-top:18px">' +
-      '<span class="tab">REGISTRY</span>' +
-      '<div class="bar-k"><span>DOMAIN RECORDS</span><span>RDAP</span></div>' +
-      (own.length ? own.map(row).join('') : '<div class="reg-row unk">Could not reach the registry this run.</div>') +
-      (aliases.length ? '<div class="reg-sep">ALIASES · .COM</div>' + aliases.map(row).join('') : '') +
-      '<div class="reg-foot">' + (anyDns ? '* RDAP inconclusive — checked via DNS.<br>' : '') + 'As of ' + escapeHtml(today) + '</div>' +
-      '<div style="height:34px"></div>' + mark +
-      '<span class="pin" style="right:18px;left:auto;top:auto;bottom:60px;margin-right:-6.5px"></span>' +
-    '</div>';
-  }
+              <div class="rp-actions">
+                <button class="btn-case" id="runAgainBtn" type="button"><span>New case</span><span class="arr" aria-hidden="true">→</span></button>
+                <button class="btn-quiet" id="copyBtn" type="button">copy report</button>
+              </div>
+              <div class="rp-links"><button class="txt-btn" id="rawToggle" type="button">show raw response</button></div>
+              <div id="rawOutput"><pre id="rawPre"></pre></div>
+            </div>
+          </article>
+          <details class="past-log"><summary>INVESTIGATION LOG</summary><ol class="log" id="pastLog"></ol></details>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
 
-  // NAME COLLISIONS — clipped search results. Risk is a rough read of each
-  // snippet against the name and the one-liner.
-  const STOP = new Set(['that','with','your','from','this','tool','tools','helps','help','their','them','into','about','which','where','when','what','have','will','more','than','they','team','teams','based','using','used','makes','make']);
-  function suspectRead(m, name, context){
-    const n = name.toLowerCase().trim();
-    const title = (m.title || '').toLowerCase();
-    const text = title + ' ' + (m.snippet || '').toLowerCase();
-    const reName = new RegExp('(^|[^a-z0-9])' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-z0-9])');
-    const exact = reName.test(title);
-    const words = Array.from(new Set((context.toLowerCase().match(/[a-z]{4,}/g) || []).filter(w => !STOP.has(w))));
-    const overlap = words.filter(w => text.includes(w)).length;
-    let host = '';
-    try{ host = new URL(m.link).hostname.replace(/^www\./, ''); }catch(e){}
-    const risk = exact && overlap >= 2 ? 'HIGH' : (exact || overlap >= 2) ? 'MEDIUM' : 'LOW';
-    return { host: host || '—', risk: risk };
-  }
-  function evCollisions(matches, serpError, name, context){
-    const clip = function(m){
-      const r = suspectRead(m, name, context);
-      return '<div class="frag clip-item"><div class="meta"><span>' + escapeHtml(r.host) + '</span><span class="' + (r.risk === 'HIGH' ? 'bad' : '') + '">RISK ' + r.risk + '</span></div>' +
-        '<a class="t" href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a><p>' + escapeHtml(m.snippet) + '</p></div>';
-    };
-    let body, mark = '';
-    if (matches && matches.length){
-      const rest = matches.slice(3);
-      body = matches.slice(0, 3).map(clip).join('') +
-        (rest.length ? '<details class="more"><summary>' + rest.length + ' more ' + (rest.length === 1 ? 'result' : 'results') + '</summary>' + rest.map(clip).join('') + '</details>' : '') +
-        '<div class="fine">Risk is a rough read of each snippet against your one-liner — a lead, not a ruling.</div>';
-      mark = stamp('FOUND');
-    } else if (serpError){
-      body = '<div class="frag clip-item"><p>' + escapeHtml(serpError) + '</p></div>';
-    } else {
-      body = '<div class="frag clip-item"><p>Nobody obvious using it in your niche.</p></div>';
-      mark = stamp('CLEAR', 'olive');
-    }
-    return '<div class="piece clips" style="--r:0.4deg;--fx:20px">' +
-      '<span class="label">NAME COLLISIONS <b>' + (matches ? matches.length : 0) + '</b></span>' + mark + body +
-      '<span class="pin" style="left:22px;top:auto;bottom:-2px"></span></div>';
-  }
+<!-- EvidenceDrawer -->
+<div class="drawer-scrim" id="drawerScrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle" aria-hidden="true">
+  <div class="dr-band"><span id="drRef">—</span><button type="button" id="drClose">CLOSE ×</button></div>
+  <div class="dr-body" id="drBody"></div>
+</aside>
 
-  // SOCIAL HANDLES — torn profile printout
-  function evHandles(socials){
-    const rows = ['x', 'instagram'].filter(p => socials && socials[p]).map(function(p){
-      const s = socials[p];
-      const v = s.taken === true ? ['bad', 'TAKEN'] : s.taken === false ? ['ok', 'OPEN'] : ['unk', s.note ? 'TOO LONG' : 'UNKNOWN'];
-      return '<div class="prof-row"><span class="av">' + escapeHtml((s.handle || '?').charAt(0)) + '</span>' +
-        '<span><span class="h">@' + escapeHtml(s.handle) + '</span><br><span class="p">' + escapeHtml(s.label) + (s.note ? '' : ' · <a href="' + escapeHtml(s.url) + '" target="_blank" rel="noopener">view</a>') + '</span></span>' +
-        '<span' + (s.note ? ' title="' + escapeHtml(s.note) + '"' : '') + '>' + st(v[0], v[1]) + '</span></div>';
-    }).join('');
-    const anyTaken = ['x', 'instagram'].some(p => socials && socials[p] && socials[p].taken === true);
-    return '<div class="piece frag profile" style="--r:1.1deg;--fx:20px">' +
-      '<div class="mono-k" style="margin-bottom:6px">SOCIAL · PROFILES</div>' +
-      (rows || '<div class="prof-row"><span></span><span class="p">Could not check handles this run.</span><span></span></div>') +
-      (anyTaken ? '<div style="text-align:right;margin-top:6px">' + stamp('FOUND') + '</div>' : '') +
-      '<span class="pin" style="left:18px;top:24px"></span></div>';
-  }
-
-  // MARKET — typed case note
-  function evMarket(name, matches, tmError){
-    let body;
-    if (matches && matches.length){
-      body = '<div style="font-family:var(--f-sans);font-size:14px;font-weight:500;margin-bottom:8px">' + matches.length + ' trademark ' + (matches.length === 1 ? 'mention' : 'mentions') + '</div><ol>' +
-        matches.map(function(m){
-          let host = ''; try{ host = new URL(m.link).hostname.replace(/^www\./, ''); }catch(e){}
-          return '<li><a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a><br><span>' + escapeHtml(host) + ' — ' + escapeHtml(m.snippet) + '</span></li>';
-        }).join('') + '</ol>';
-    } else if (tmError){
-      body = '<div style="font-size:11.5px">' + escapeHtml(tmError) + '</div>';
-    } else {
-      body = '<div style="font-family:var(--f-sans);font-size:14px;font-weight:500">Nothing on file.</div><div style="font-size:11.5px;margin-top:4px">No trademark mentions turned up in web search.</div>';
-    }
-    return '<div class="piece frag casenote" style="--r:-0.6deg;--fx:-20px">' +
-      '<span class="pin" style="left:50%;top:10px"></span>' +
-      '<div class="hd"><span>CASE NOTE</span><span>MARKET · "' + escapeHtml(name).toUpperCase() + '" TRADEMARK</span></div>' + body +
-      '<div class="disc">A web signal, not a legal clearance.</div></div>';
-  }
-
-  // MEMORABILITY — handwritten investigator note
-  function evMemory(s){
-    const m = s.memorable, e = s.easy_say_spell, g = s.too_generic, c = s.brand_collision;
-    const mk = function(ok, warn){ return ok ? '<span class="m ok">✓</span>' : warn ? '<span class="m bad">!</span>' : '<span class="m">?</span>'; };
-    const row = function(l, v, mark){ return '<div class="hn-row"><span class="l">' + l + '</span><span class="v">' + pct(v) + '</span>' + mark + '</div>'; };
-    return '<div class="piece frag handnote" style="--r:1deg;--fx:-10px">' +
-      '<span class="pin" style="right:18px;left:auto;top:12px;margin-right:-6.5px"></span>' +
-      '<div class="hn-k">MEMORY · JEV READ</div>' +
-      row('memorable', m, mk((m ?? 0) >= 0.65, (m ?? 0) < 0.5)) +
-      row('say &amp; spell', e, mk((e ?? 0) >= 0.6, (e ?? 0) < 0.45)) +
-      row('distinctive', g === null || g === undefined ? null : 1 - g, mk((g ?? 0) < 0.5, (g ?? 0) >= 0.6)) +
-      row('crowded', c, mk((c ?? 0) < 0.35, (c ?? 0) >= 0.55)) +
-    '</div>';
-  }
-
-  // CLOSE RELATIVES — domain slips
-  function evRelatives(variants){
-    if (!variants || !variants.length){
-      return '<div class="piece slips"><span class="pin" style="left:20px;top:10px"></span><div class="frag slipx"><span class="nm" style="font-size:16px">No close variants</span></div></div>';
-    }
-    const slips = variants.map(function(v){
-      const com = v.domains && v.domains.com;
-      const cv = domainVerdict(com);
-      const tl = TLD_ORDER.filter(t => t !== 'com' && v.domains && v.domains[t]).map(function(t){
-        const d = v.domains[t], dv = domainVerdict(d);
-        const inner = '.' + t + ' <span class="' + dv.cls + '">' + (dv.cls === 'ok' ? '✓' : dv.cls === 'bad' ? '×' : '?') + '</span>';
-        return d.available === true ? '<a href="' + buyUrl(d.domain) + '" target="_blank" rel="noopener">' + inner + '</a>' : '<span>' + inner + '</span>';
-      }).join('');
-      const n = (v.niche_matches || []).length;
-      const sight = n
-        ? '<details><summary>' + n + (n === 1 ? ' sighting' : ' sightings') + ' in your niche +</summary>' + v.niche_matches.map(function(m){ return '<a href="' + escapeHtml(m.link) + '" target="_blank" rel="noopener">' + escapeHtml(m.title) + '</a>'; }).join('') + '</details>'
-        : '<details><summary>' + (v.serp_error ? escapeHtml(v.serp_error) : 'no sightings in your niche') + '</summary></details>';
-      return '<div class="frag slipx"><span class="nm">' + escapeHtml(v.name) + '</span>' + st(cv.cls, '.com ' + cv.label, com && com.available === true ? buyUrl(com.domain) : null) +
-        '<span class="tl">' + tl + '</span>' + sight + '</div>';
-    }).join('');
-    return '<div class="piece slips" style="--fx:20px"><span class="pin" style="left:24px;top:10px"></span>' + slips + '</div>';
-  }
-
-  // ------------------------------------------------------------------
-  //  Red thread — the investigation connecting back to the subject
-  // ------------------------------------------------------------------
-  const CHAIN_ORDER = ['collisions', 'domains', 'handles', 'market', 'relatives', 'memory'];
-  function pinCenter(key, g){
-    const slot = grid.querySelector('.slot[data-k="' + key + '"]');
-    const pin = slot && slot.querySelector('.piece .pin');
-    if (!pin) return null;
-    const r = pin.getBoundingClientRect();
-    return [r.left + r.width / 2 - g.left, r.top + r.height / 2 - g.top];
-  }
-  function threadPath(key){
-    const g = grid.getBoundingClientRect();
-    const target = pinCenter(key, g);
-    if (!target) return null;
-    const [px, py] = target;
-    const single = getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length === 1;
-    let prev = null;
-    if (single){ for (let i = CHAIN_ORDER.indexOf(key) - 1; i >= 0 && !prev; i--) prev = pinCenter(CHAIN_ORDER[i], g); }
-    const seed = key.length * 7 % 5 - 2;
-    if (prev){
-      const mx = Math.max(prev[0], px) + 10 + Math.abs(seed) * 2, my = (prev[1] + py) / 2;
-      return 'M' + prev[0].toFixed(1) + ' ' + prev[1].toFixed(1) + ' Q' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + px.toFixed(1) + ' ' + py.toFixed(1);
-    }
-    const sr = subjectEl.getBoundingClientRect();
-    const [ax, ay] = edgePoint({ x: sr.left - g.left, y: sr.top - g.top, w: sr.width, h: sr.height }, px, py);
-    return sag(ax, ay, px, py, seed);
-  }
-  function addThread(key, animate){
-    const d = threadPath(key);
-    if (!d) return;
-    const g = grid.getBoundingClientRect();
-    threadsEl.setAttribute('viewBox', '0 0 ' + g.width + ' ' + g.height);
-    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    p.setAttribute('d', d);
-    p.dataset.k = key;
-    threadsEl.appendChild(p);
-    if (animate && !reduceMotion){
-      const len = p.getTotalLength();
-      p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
-      p.classList.add('draw');
-    }
-    threadCount.textContent = threadsEl.querySelectorAll('path').length;
-  }
-  function redrawThreads(){
-    if (!ws.classList.contains('investigating')) return;
-    const g = grid.getBoundingClientRect();
-    threadsEl.setAttribute('viewBox', '0 0 ' + g.width + ' ' + g.height);
-    threadsEl.querySelectorAll('path').forEach(function(p){
-      const d = threadPath(p.dataset.k);
-      if (d) p.setAttribute('d', d);
-      p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; p.classList.remove('draw');
-    });
-  }
-  let rt = null;
-  window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ drawPreviewThreads(); redrawThreads(); }, 80); });
-
-  // ------------------------------------------------------------------
-  //  The transformation: intake compresses, subject moves to centre
-  // ------------------------------------------------------------------
-  function flipFrom(fromEl, toEl){
-    if (reduceMotion || !toEl.animate) return;
-    const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
-    if (!a.width || !b.width) return;
-    toEl.animate([
-      { transform: 'translate(' + (a.left - b.left) + 'px,' + (a.top - b.top) + 'px) scale(' + (a.width / b.width) + ')', transformOrigin: 'top left' },
-      { transform: 'none', transformOrigin: 'top left' }
-    ], { duration: 900, easing: 'cubic-bezier(.16,1,.3,1)' });
-  }
-  function enterInvestigation(){
-    const pvRect = $('pvSubject');
-    const wasOpen = ws.classList.contains('investigating');
-    ws.classList.remove('is-verdict', 'is-reviewing');
-    if (!wasOpen){
-      // measure the sample subject while it's still visible, then fly the real one in from it
-      const ghost = pvRect.cloneNode(true);
-      ws.classList.add('investigating');
-      requestAnimationFrame(function(){ flipFrom(pvRect, subjectEl); });
-      void ghost;
-    }
-  }
-  function leaveInvestigation(){
-    ws.classList.remove('investigating', 'is-verdict', 'is-reviewing');
-    leadsReset();
-    $('railSubject').textContent = 'Nimbus';
-    threadCount.textContent = '2';
-    setStatus('OPEN', 'AWAITING SUBJECT');
-    sbLive.classList.remove('on', 'done');
-    sbClock.textContent = ''; railClock.textContent = '—';
-    progress(0);
-    $('stageLabel').textContent = 'SAMPLE CASE · LIVE PREVIEW';
-    requestAnimationFrame(drawPreviewThreads);
-  }
-  function leadsReset(){ document.querySelectorAll('#leads li').forEach(function(li){ li.className = ''; }); }
-
-  // ------------------------------------------------------------------
-  //  The investigation
-  // ------------------------------------------------------------------
-  const LEADS = [
-    ['collisions', 'CHECKING NAME COLLISIONS'],
-    ['domains',    'SEARCHING DOMAIN RECORDS'],
-    ['handles',    'CHECKING SOCIAL HANDLES'],
-    ['market',     'SCANNING MARKET'],
-    ['relatives',  'LOOKING FOR CLOSE RELATIVES'],
-    ['memory',     'TESTING MEMORABILITY']
-  ];
-  const PENDING_LABEL = { domains: 'DOMAIN RECORDS', collisions: 'NAME COLLISIONS', handles: 'SOCIAL HANDLES', market: 'MARKET', memory: 'MEMORABILITY', relatives: 'CLOSE RELATIVES' };
-  let timers = [];
-  let t0 = 0;
-  function clearTimers(){ timers.forEach(function(t){ clearInterval(t); clearTimeout(t); }); timers = []; }
-  function tick(){
-    const ms = performance.now() - t0, sec = Math.floor(ms / 1000);
-    const txt = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0') + '.' + Math.floor((ms % 1000) / 100);
-    sbClock.textContent = txt; railClock.textContent = txt;
-  }
-
-  function resetBoard(name, context){
-    clearTimers();
-    threadsEl.innerHTML = '';
-    threadCount.textContent = '0';
-    $('subjectName').textContent = name;
-    $('subjectCtx').textContent = context;
-    $('railSubject').textContent = name;
-    $('stageLabel').textContent = 'CASE ' + caseNum + ' · INVESTIGATION LIVE';
-    grid.querySelectorAll('.slot').forEach(function(s){
-      s.classList.remove('cold');
-      s.innerHTML = '<div class="pending">' + PENDING_LABEL[s.dataset.k] + '</div>';
-    });
-    leadsReset();
-    setStatus('INVESTIGATING', 'OPENING FILE');
-    sbLive.classList.add('on'); sbLive.classList.remove('done');
-    progress(0.04);
-    t0 = performance.now();
-    tick();
-    timers.push(setInterval(tick, 100));
-    // while the lookups run, walk the leads in the rail and the status bar
-    let i = -1;
-    const walk = function(){
-      if (i >= 0) leadState(LEADS[i][0], null);
-      i = (i + 1) % LEADS.length;
-      leadState(LEADS[i][0], 'active');
-      setStatus(null, LEADS[i][1]);
-      progress(Math.min(0.32, 0.06 + (performance.now() - t0) / 30000));
-    };
-    timers.push(setTimeout(walk, 500));
-    timers.push(setInterval(walk, 1100));
-  }
-
-  function place(key, html){
-    const slot = grid.querySelector('.slot[data-k="' + key + '"]');
-    slot.innerHTML = html;
-    const piece = slot.querySelector('.piece');
-    if (!reduceMotion){
-      piece.classList.add('land');
-      piece.addEventListener('animationend', function(e){ if (e.target === piece) piece.classList.remove('land'); });
-      const pin = piece.querySelector(':scope > .pin');
-      if (pin){ pin.classList.add('pop'); pin.style.animationDelay = '.45s'; }
-    }
-  }
-
-  function leadOk(key, data){
-    if (key === 'domains') return data.domains && data.domains.com && data.domains.com.available === true;
-    if (key === 'collisions') return !(data.niche_matches || []).length;
-    if (key === 'handles') return ['x', 'instagram'].every(p => data.socials && data.socials[p] && data.socials[p].taken === false);
-    if (key === 'market') return !(data.trademark_matches || []).length;
-    if (key === 'relatives') return (data.variants || []).some(v => v.domains && v.domains.com && v.domains.com.available === true);
-    if (key === 'memory') return (data.scores.memorable ?? 0) >= 0.65;
-    return false;
-  }
-
-  async function buildCase(data, name, context){
-    clearTimers();
-    leadsReset();
-    timers.push(setInterval(tick, 100));
-    const step = data.cached ? 280 : 720;
-    if (data.cached){ setStatus(null, 'PULLED FROM THE CABINET'); await sleep(300); }
-    const html = {
-      domains: function(){ return evDomains(data.domains, data.variants); },
-      collisions: function(){ return evCollisions(data.niche_matches, data.serp_error, name, context); },
-      handles: function(){ return evHandles(data.socials); },
-      market: function(){ return evMarket(name, data.trademark_matches, data.trademark_error); },
-      relatives: function(){ return evRelatives(data.variants); },
-      memory: function(){ return evMemory(data.scores); }
-    };
-    let n = 0;
-    for (const [key, msg] of LEADS){
-      setStatus(null, msg);
-      leadState(key, 'active');
-      place(key, html[key]());
-      n++; progress(0.35 + 0.55 * n / LEADS.length);
-      await sleep(Math.round(step * 0.55));
-      redrawThreads();
-      addThread(key, true);
-      leadState(key, 'done', leadOk(key, data));
-      await sleep(Math.round(step * 0.45));
-    }
-    redrawThreads();
-    setStatus(null, 'BUILDING VERDICT');
-    progress(0.96);
-    await sleep(data.cached ? 200 : 650);
-    clearTimers();
-    tick();
-  }
-
-  function failCase(reason){
-    clearTimers();
-    setStatus('ON HOLD', reason);
-    sbLive.classList.remove('on');
-    grid.querySelectorAll('.slot').forEach(function(s){
-      if (s.querySelector('.pending')){ s.classList.add('cold'); s.querySelector('.pending').textContent = PENDING_LABEL[s.dataset.k] + ' — TRAIL WENT COLD'; leadState(s.dataset.k, 'cold'); }
-    });
-  }
-
-  // ------------------------------------------------------------------
-  //  The verdict — verdict logic unchanged, only the presentation is new
-  // ------------------------------------------------------------------
-  function writeVerdict(name, data){
-    const scores = data.scores;
-    const domains = data.domains || {};
-    const socials = data.socials || {};
-    const m = scores.memorable ?? 0;
-    const e = scores.easy_say_spell ?? 0;
-    const g = scores.too_generic ?? 0;
-    const c = scores.brand_collision ?? 0;
-
-    let verdict, verdictClass, sub;
-    if (c >= 0.55){
-      verdict = 'IMPERSONATION'; verdictClass = 'bad';
-      sub = "lands too close to an existing name — expect confusion, maybe a letter from their lawyer";
-    } else if (g >= 0.6 && m < 0.5){
-      verdict = 'NO WITNESSES'; verdictClass = 'bad';
-      sub = "nothing distinctive enough for anyone to remember it afterward";
-    } else if (m >= 0.65 && e >= 0.6 && g < 0.5 && c < 0.35){
-      verdict = 'CLEARED'; verdictClass = 'good';
-      sub = 'distinctive, sayable, and clear of the obvious collisions — case closed';
-    } else {
-      verdict = 'UNDER WATCH'; verdictClass = 'mid';
-      sub = 'not ruled out, not ruled in — at least one thing here needs a second look';
-    }
-    const comFree = domains.com && domains.com.available === true;
-    const label = verdict === 'IMPERSONATION' ? 'CROWDED TERRITORY'
-      : verdict === 'NO WITNESSES' ? 'KEEP LOOKING'
-      : verdict === 'CLEARED' ? (comFree ? 'STRONG NAME' : 'CLEAR TO PROCEED')
-      : 'PROCEED WITH CAUTION';
-
-    // Risk score: a weighted read of the evidence on the board (0 = clear, 100 = crowded)
-    const nicheCount = (data.niche_matches || []).length;
-    const hs = ['x', 'instagram'].map(p => socials[p]).filter(Boolean);
-    const hTaken = hs.filter(s => s.taken === true).length, hOpen = hs.filter(s => s.taken === false).length;
-    const comRisk = domains.com ? (domains.com.available === true ? 0 : domains.com.available === false ? 1 : 0.5) : 0.5;
-    const risk = Math.round(100 * Math.max(0, Math.min(1,
-      0.32 * c + 0.14 * g + 0.14 * (1 - m) + 0.06 * (1 - e) +
-      0.14 * comRisk + 0.08 * (hs.length ? hTaken / hs.length : 0.5) + 0.12 * Math.min(nicheCount / 5, 1))));
-
-    // findings, in plain words
-    const strong = ['com', 'io', 'ai'].map(t => domains[t]).filter(Boolean);
-    const strongTaken = strong.filter(d => d.available === false).length;
-    const social = !hs.length || hTaken + hOpen === 0 ? ['social handles unknown', 'unk'] : hTaken && hOpen ? ['social handles mixed', ''] : hTaken ? ['social handles taken', ''] : ['social handles open', 'ok'];
-    const memo = (m >= 0.65 ? 'memorable' : m >= 0.5 ? 'fairly memorable' : 'hard to remember') + (g < 0.5 ? ' and distinctive' : ' but not distinctive');
-    const finds = [
-      [nicheCount ? nicheCount + ' name ' + (nicheCount === 1 ? 'collision' : 'collisions') + ' in your niche' : 'no name collisions in your niche', nicheCount ? '' : 'ok'],
-      [strong.length ? (strongTaken ? strongTaken + ' of ' + strong.length + ' strong domains unavailable' : 'strong domains open') : 'domains unknown', strong.length ? (strongTaken ? '' : 'ok') : 'unk'],
-      social,
-      [memo, m >= 0.65 && g < 0.5 ? 'ok' : '']
-    ];
-    reportRows.innerHTML = finds.map(function(f){ return '<li class="' + f[1] + '">' + escapeHtml(f[0]) + '</li>'; }).join('');
-
-    stampName.textContent = name;
-    stampEl.textContent = label;
-    stampEl.classList.toggle('good', verdictClass === 'good');
-    stampSub.textContent = sub;
-    $('riskNum').textContent = risk;
-    const meter = $('riskMeter');
-    meter.style.width = '0';
-    meter.classList.toggle('low', risk < 40);
-    rawPre.textContent = JSON.stringify(data.raw, null, 2);
-
-    $('dockStamp').textContent = label;
-    $('dockStamp').classList.toggle('olive', verdictClass === 'good');
-    $('dockScore').textContent = risk;
-    $('dockSubject').textContent = name;
-
-    stampEl.style.animation = 'none'; void stampEl.offsetWidth; stampEl.style.animation = '';
-    ws.classList.add('is-verdict');
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ meter.style.width = risk + '%'; }); });
-    setStatus('CLOSED', 'CASE CLOSED · ' + label);
-    sbLive.classList.remove('on'); sbLive.classList.add('done');
-    progress(1);
-    if (window.matchMedia('(max-width: 760px)').matches) $('verdict').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-
-    resultEl.dataset.shareText =
-      'Name Worth It case file on "' + name + '": ' + label + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
-      pct(g) + ' too generic, ' + pct(c) + ' brand collision risk).';
-  }
-
-  // ------------------------------------------------------------------
-  //  Run
-  // ------------------------------------------------------------------
-  async function run(){
-    hideError();
-
-    const name = nameEl.value.trim();
-    const context = contextEl.value.trim();
-
-    if (!name){ showError('Missing name', 'Type the name you want checked.'); return; }
-    if (!context){ showError('Missing context', "Add a one-line description of what it does — it's also what gets searched for the niche check."); return; }
-
-    runBtn.disabled = true;
-    runBtn.classList.add('loading');
-    runBtnLabel.textContent = 'Opening case...';
-    resetBoard(name, context);
-    enterInvestigation();
-    if (window.matchMedia('(max-width: 1100px)').matches) resultEl.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-
-    try{
-      const res = await fetch(RELAY_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name, context: context })
-      });
-
-      const text = await res.text();
-      let data;
-      try{ data = JSON.parse(text); }catch(e){ data = { raw: text }; }
-
-      if (res.status === 429){
-        failCase('TOO MANY CASES — WAIT A MINUTE');
-        showError('Too many checks right now', data.error || 'Give it a minute and try again.');
-        return;
-      }
-      if (!res.ok){
-        failCase('CASE ON HOLD');
-        showError('Got an error back (' + res.status + ')', data.error || 'Something went wrong on the checker side.', JSON.stringify(data, null, 2));
-        return;
-      }
-      if (!data.scores){
-        failCase('CASE ON HOLD');
-        showError('Got a response but couldn\'t read the scores out of it', 'Raw response below.', JSON.stringify(data, null, 2));
-        return;
-      }
-
-      await sleep(300);
-      await buildCase(data, name, context);
-      writeVerdict(name, data);
-    }catch(err){
-      failCase('THE TRAIL WENT COLD');
-      showError('Could not reach the checker', 'Try again in a moment.');
-    }finally{
-      runBtn.disabled = false;
-      runBtn.classList.remove('loading');
-      runBtnLabel.textContent = 'Open case';
-    }
-  }
-
-  runBtn.addEventListener('click', run);
-  nameEl.addEventListener('keydown', function(e){ if (e.key === 'Enter' && !runBtn.disabled) run(); });
-
-  $('viewEvidence').addEventListener('click', function(){
-    ws.classList.remove('is-verdict');
-    ws.classList.add('is-reviewing');
-    requestAnimationFrame(redrawThreads);
-  });
-  $('dockShow').addEventListener('click', function(){
-    ws.classList.remove('is-reviewing');
-    ws.classList.add('is-verdict');
-  });
-
-  runAgainBtn.addEventListener('click', function(){
-    clearTimers();
-    leaveInvestigation();
-    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
-    setTimeout(function(){ nameEl.focus({ preventScroll: true }); nameEl.select(); }, 450);
-  });
-
-  copyBtn.addEventListener('click', async function(){
-    const txt = resultEl.dataset.shareText || '';
-    try{
-      await navigator.clipboard.writeText(txt);
-      copyBtn.textContent = 'copied';
-      setTimeout(function(){ copyBtn.textContent = 'copy report'; }, 1500);
-    }catch(e){ showError('Could not copy', 'Select and copy the verdict manually.'); }
-  });
-
-  rawToggle.addEventListener('click', function(){
-    const showing = rawOutput.style.display === 'block';
-    rawOutput.style.display = showing ? 'none' : 'block';
-    rawToggle.textContent = showing ? 'show raw response' : 'hide raw response';
-  });
-
-  // draw the sample case's threads once it has laid out
-  requestAnimationFrame(drawPreviewThreads);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawPreviewThreads);
-  setTimeout(drawPreviewThreads, 1600);
-})();
-</script>
+<script src="/assets/case.js"></script>
 </body>
 </html>
