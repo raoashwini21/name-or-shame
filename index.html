@@ -4,203 +4,367 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Name Worth It?</title>
-<meta name="description" content="Open a case on the name you're about to build a brand around. Domains, handles, market collisions and memorability — before someone else gets there first.">
+<meta name="description" content="Open a file on your name. Check domains, competitors, handles and memorability — so you know if it's a name worth it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/case.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Courier+Prime:wght@400;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
 
-<!-- CaseHeader -->
-<header class="case-header" role="status" aria-live="polite">
-  <div class="row">
-    <span class="ch-brand">Name Worth It<i>?</i></span>
-    <span class="ch-item">CASE <b class="case-no" data-case-no>0001</b></span><span class="ch-sep"></span>
-    <span class="ch-item">STATUS: <b id="chStatus">OPEN</b></span><span class="ch-sep"></span>
-    <span class="ch-item">CHECKS: <b id="chChecks">00/06</b></span><span class="ch-sep"></span>
-    <span class="ch-item">EVIDENCE: <b id="chEvidence">00</b></span><span class="ch-sep"></span>
-    <span class="ch-item"><b>LIVE LOOKUPS</b></span><span class="ch-sep"></span>
-    <span class="ch-item">DESK <b>01</b></span>
-    <span class="ch-live" id="chLive"><span class="dot"></span><span id="chLiveText">AWAITING SUBJECT</span></span>
-  </div>
-  <div class="ch-progress"><i id="chProgress"></i></div>
+<!-- ============ Illustration library: one detective, a few poses ============ -->
+<svg class="defs" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E6468"/><stop offset="1" stop-color="#C3C7C8"/></linearGradient>
+    <!-- head, facing right, centred on 0,0 -->
+    <symbol id="det-head" viewBox="-50 -50 100 100" overflow="visible">
+      <path d="M-23 -2 C-30 10 -27 24 -15 29 L-6 10 Z" fill="#2B211C"/>
+      <ellipse cx="-19" cy="7" rx="5" ry="6.5" fill="#EFC6A2" stroke="#2B211C" stroke-width="2"/>
+      <path d="M-18 -5 C-18 -22 22 -24 24 -4 C26 14 18 29 2 29 C-12 29 -19 18 -18 -5 Z" fill="#F5D7B9" stroke="#2B211C" stroke-width="2.2"/>
+      <path d="M-18 -3 C-12 -12 2 -12 6 -6 C10 -11 18 -11 24 -4 L24 -11 L-18 -11 Z" fill="#2B211C"/>
+      <ellipse cx="12" cy="14" rx="5" ry="3" fill="#E58E7A" opacity=".45"/>
+      <ellipse cx="11.5" cy="4" rx="2.3" ry="3" fill="#2B211C"/>
+      <path d="M6.5 -2 L15.5 -3" stroke="#2B211C" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M22 6 C25 9 24.5 12 21 12.5" fill="none" stroke="#2B211C" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M12 20.5 C14.5 22 16.5 22 18.5 20.5" fill="none" stroke="#2B211C" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M-30 -4 C-39 -2 -43 3 -41 7 C-34 5 -26 2 -20 -1 Z" fill="#8C3125" stroke="#2B211C" stroke-width="2"/>
+      <path d="M-24 -6 C-26 -31 -6 -41 6 -39 C23 -37 31 -24 26 -6 C10 -10 -8 -10 -24 -6 Z" fill="#A83E2F" stroke="#2B211C" stroke-width="2.2"/>
+      <path d="M17 -8 C30 -11 43 -8 47 -2 C40 2 28 2 15 -1 Z" fill="#8C3125" stroke="#2B211C" stroke-width="2"/>
+      <path d="M3 -38 C1 -26 1 -16 3 -9 M-11 -34 C-13 -24 -13 -16 -11 -8 M15 -33 C16 -24 16 -16 15 -8" stroke="#7A2A1F" stroke-width="1.3" fill="none"/>
+      <path d="M-22 -11 L-13 -13 L-15 -2 Z" fill="#8C3125" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="4" cy="-39.5" r="2.6" fill="#7A2A1F" stroke="#2B211C" stroke-width="1.4"/>
+    </symbol>
+    <!-- magnifying glass, handle at 0,0 pointing up-right -->
+    <symbol id="lens" viewBox="-10 -50 60 60" overflow="visible">
+      <path d="M0 0 L12 -14" stroke="#2B211C" stroke-width="6" stroke-linecap="round"/>
+      <path d="M0 0 L12 -14" stroke="#5A4535" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="24" cy="-27" r="16" fill="#DDE8EA" fill-opacity=".55" stroke="#2B211C" stroke-width="4.5"/>
+      <path d="M15 -32 C17 -37 22 -39 26 -38" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" opacity=".85"/>
+    </symbol>
+    <!-- polaroid with sky -->
+    <symbol id="polaroid" viewBox="0 0 120 140">
+      <rect x="1" y="1" width="118" height="138" fill="#FBF7EF" stroke="#D8CDB9" stroke-width="1.5"/>
+      <rect x="9" y="9" width="102" height="96" fill="url(#sky)"/>
+      <g fill="#F2F2F0">
+        <circle cx="38" cy="70" r="16"/><circle cx="58" cy="60" r="20"/><circle cx="80" cy="70" r="15"/><rect x="22" y="70" width="74" height="18" rx="9"/>
+        <circle cx="86" cy="36" r="8" opacity=".8"/><circle cx="96" cy="38" r="7" opacity=".8"/>
+      </g>
+      <g fill="#C9CDCF" opacity=".7"><rect x="26" y="80" width="66" height="8" rx="4"/></g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <a class="logo" href="#" id="homeLink">Name Worth It?</a>
+  <span class="topmeta">CASE <b data-case-no>0001</b><span class="dt"> &nbsp;·&nbsp; <span class="js-date">—</span></span></span>
 </header>
 
-<!-- ============================ CASE INTAKE ============================ -->
-<section class="screen intake-screen on" id="intakeScreen" aria-label="Case intake">
-  <div>
-    <div class="eyebrow">CASE <b data-case-no>0001</b> &nbsp;·&nbsp; PRODUCT NAME INQUIRY</div>
-    <h1 class="hero-h"><span class="ln">Open a case</span><span class="ln">on <span class="redact">your name</span><span class="dot">.</span></span></h1>
-    <div class="hero-graphic" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    <p class="hero-lede">Before you build a brand around it, find out <b>who got there first.</b></p>
+<!-- ======================================================================
+     LANDING — 01 Case File + 02 Investigation Desk
+     ====================================================================== -->
+<main id="landing" class="screen on">
 
-    <div class="checks-index">
-      <ol>
-        <li><span class="n">01</span><span class="t">COLLISIONS</span><span class="d">Who's already using it in your niche <span class="src">· WEB SEARCH</span></span></li>
-        <li><span class="n">02</span><span class="t">DOMAINS</span><span class="d">.com .io .net .ai .app .co <span class="src">· RDAP / DNS</span></span></li>
-        <li><span class="n">03</span><span class="t">HANDLES</span><span class="d">X and Instagram <span class="src">· LIVE PROFILE CHECK</span></span></li>
-        <li><span class="n">04</span><span class="t">MARKET</span><span class="d">Trademark mentions on the open web <span class="src">· WEB SEARCH</span></span></li>
-        <li><span class="n">05</span><span class="t">RELATIVES</span><span class="d">Close variants, in case it's crowded</span></li>
-        <li><span class="n">06</span><span class="t">MEMORY</span><span class="d">Memorable, sayable, distinctive <span class="src">· JEV</span></span></li>
-      </ol>
-    </div>
-  </div>
+  <section class="panel" aria-labelledby="h01">
+    <div class="panel-head"><span class="pn">01</span><span class="pt">Case File</span><span class="dash"></span><span class="tag">OPEN. INVESTIGATE. CLARIFY.</span><span class="brand">Name Worth It?</span></div>
+    <div class="hero">
+      <div class="hero-copy">
+        <h1 id="h01">Open a file<br>on <em>your name.</em></h1>
+        <p class="lede">Check domains, competitors, clarity and more — so you know if it's a name worth it.</p>
 
-  <!-- the intake document -->
-  <form class="intake-doc" id="intakeForm" autocomplete="off" onsubmit="return false">
-    <div class="doc-top">
-      <div class="doc-title">
-        <div class="form">FORM NW-1 · CASE INTAKE</div>
-        <h2>Particulars of the subject</h2>
-      </div>
-      <div class="office">
-        <div class="k">FOR OFFICE USE · CASE NO.</div>
-        <div class="cn" data-case-no>0001</div>
-        <div class="dt"><span class="k" style="margin-right:6px">RECEIVED</span><span class="js-date">—</span></div>
-      </div>
-    </div>
-    <div class="doc-body">
-      <div class="field">
-        <label for="nameInput"><span class="n">1</span> SUBJECT NAME</label>
-        <input type="text" id="nameInput" placeholder="e.g. Nimbus" spellcheck="false" value="Nimbus">
-        <span class="rule" aria-hidden="true"></span>
-      </div>
-      <div class="field">
-        <label for="context"><span class="n">2</span> WHAT DOES IT DO? <span class="hint">one line — also what we search against</span></label>
-        <textarea id="context" rows="3" placeholder="e.g. A tool for freelance designers to send client invoices and get paid faster">LinkedIn outreach for sales teams</textarea>
-        <span class="rule" aria-hidden="true"></span>
-      </div>
-    </div>
-    <div class="doc-foot">
-      <button class="btn-case" id="runBtn" type="submit"><span id="runBtnLabel">Open case</span><span class="arr" aria-hidden="true">→</span></button>
-      <span class="note">06 CHECKS<br>LIVE LOOKUPS</span>
-    </div>
-    <div class="error-box" id="errorBox" role="alert"></div>
-    <div class="doc-sign"><span>SUBMITTED TO · DESK 01</span><span>LOOKUPS RUN LIVE AGAINST PUBLIC RECORDS</span></div>
-  </form>
-</section>
-
-<footer class="page-foot screen on" id="intakeFoot"><p>
-  Domains checked live via RDAP (DNS when RDAP is inconclusive), niche checked via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The market evidence is a web-search signal, not a trademark search — still run a proper one before you file anything.
-</p></footer>
-
-<!-- "CASE 0001 — OPENED" -->
-<div class="opening" id="opening" aria-hidden="true">
-  <div class="card">
-    <div class="cn">CASE <span data-case-no>0001</span></div>
-    <div class="word">Opened.</div>
-    <div class="rule"></div>
-    <div class="sub" id="openingSub">SUBJECT —</div>
-  </div>
-</div>
-
-<!-- ============================ THE DESK ============================ -->
-<main class="screen" id="deskScreen" aria-label="Investigation workspace">
-  <div class="desk">
-
-    <!-- CaseFileSidebar -->
-    <nav class="casefile" aria-label="Case file">
-      <div class="casefile-in">
-        <div class="cf-k">CASE FILE</div>
-        <div class="cf-no" data-case-no>0001</div>
-        <div class="cf-k">SUBJECT</div>
-        <div class="cf-subject" id="cfSubject">—</div>
-        <dl class="cf-meta">
-          <dt>STATUS</dt><dd id="cfStatus">—</dd>
-          <dt>OPENED</dt><dd class="js-date">—</dd>
-        </dl>
-        <ol class="cf-sections" id="cfSections"></ol>
-        <dl class="cf-counts">
-          <dt>EVIDENCE</dt><dd id="cfEvidence">00</dd>
-          <dt>LEADS</dt><dd id="cfLeads">00</dd>
-          <dt>CHECKS</dt><dd id="cfChecks">00/06</dd>
-        </dl>
-        <button class="cf-new" id="cfNew" type="button">← NEW CASE</button>
-      </div>
-    </nav>
-
-    <!-- InvestigationCanvas -->
-    <section class="canvas" id="result" aria-label="Evidence board">
-      <div class="canvas-head">
-        <div class="title">EVIDENCE BOARD &nbsp;·&nbsp; CASE <b data-case-no>0001</b></div>
-        <div class="legend"><span><span class="m-found">●</span> EVIDENCE FOUND</span><span><span class="m-clear">✓</span> CLEAR</span><span>◌ PENDING</span><span>HOVER TO CROSS-REFERENCE</span></div>
-      </div>
-      <div class="board" id="board">
-        <svg class="links" id="links" aria-hidden="true"></svg>
-        <!-- SubjectCard -->
-        <article class="subject" id="subject" tabindex="-1">
-          <span class="pin" style="left:50%;top:1px"></span>
-          <div class="band"><span>CASE <b data-case-no>0001</b></span><span>SUBJECT</span></div>
-          <div class="body">
-            <div class="nm" id="subjectName">—</div>
-            <div class="ctx" id="subjectCtx"></div>
-            <div class="state"><span>STATE</span><b id="subjectState">UNDER INVESTIGATION</b></div>
+        <form class="intake" id="intakeForm" autocomplete="off" novalidate>
+          <label class="sr" for="nameInput">Name to investigate</label>
+          <div class="field search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 L21 21"/></svg>
+            <input type="text" id="nameInput" placeholder="Your product name" spellcheck="false" value="Nimbus">
           </div>
-          <span class="complete-stamp">CASE COMPLETE</span>
-        </article>
-        <div class="slot" data-k="domains"></div>
-        <div class="slot" data-k="handles"></div>
-        <div class="slot" data-k="collisions"></div>
-        <div class="slot" data-k="market"></div>
-        <div class="slot" data-k="relatives"></div>
-        <div class="slot" data-k="memory"></div>
+          <label class="sr" for="context">What it does</label>
+          <div class="field ctx">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg>
+            <input type="text" id="context" placeholder="What does it do? One line — we search against it" value="LinkedIn outreach for sales teams">
+          </div>
+          <button class="btn-red" id="runBtn" type="submit"><span id="runBtnLabel">Investigate the name</span><span class="arr" aria-hidden="true">→</span></button>
+          <div class="error-box" id="errorBox" role="alert"></div>
+        </form>
+
+        <div class="scribble"><svg viewBox="0 0 30 40" aria-hidden="true"><path d="M20 3 C6 8 4 22 14 32 M14 32 L8 29 M14 32 L15 25"/></svg><span>real data. clear answers.<br>a brighter next step.</span></div>
       </div>
-    </section>
 
-    <!-- Case intelligence → CaseReport -->
-    <aside class="intel" id="intel" aria-label="Case intelligence">
-      <div class="intel-in">
-        <div class="ws-error" id="wsError" role="alert"></div>
+      <!-- scene: the case file and the detective at work -->
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 560 470">
+          <!-- folder stack -->
+          <rect x="250" y="44" width="236" height="300" rx="6" fill="#DDC08D" stroke="#C3A472" stroke-width="1.5" transform="rotate(4 368 194)"/>
+          <rect x="244" y="40" width="236" height="300" rx="6" fill="#E3C997" stroke="#C3A472" stroke-width="1.5" transform="rotate(1.5 362 190)"/>
+          <path d="M238 40 h78 l12 -14 h70 l12 14 h66 v300 h-238 z" fill="#E9D3A6" stroke="#C3A472" stroke-width="1.5"/>
+          <!-- case file sheet -->
+          <g transform="rotate(-2 330 170)">
+            <rect x="252" y="58" width="196" height="250" fill="#FBF7EE" stroke="#DCD0BA" stroke-width="1.5"/>
+            <text x="270" y="84" class="sv-mono" font-size="9" letter-spacing="1.5">CASE FILE</text>
+            <text x="270" y="103" class="sv-serif" font-size="14">Name Worth It?</text>
+            <line x1="270" y1="118" x2="430" y2="118" stroke="#E2D8C6"/>
+            <text x="270" y="140" class="sv-mono" font-size="8.5" letter-spacing="1">NAME</text><text x="320" y="140" class="sv-serif" font-size="11.5" id="artName">Nimbus</text>
+            <line x1="270" y1="150" x2="430" y2="150" stroke="#EEE6D8"/>
+            <text x="270" y="170" class="sv-mono" font-size="8.5" letter-spacing="1">TYPE</text><text x="320" y="170" class="sv-serif" font-size="11.5">Brand Name</text>
+            <line x1="270" y1="180" x2="430" y2="180" stroke="#EEE6D8"/>
+            <text x="270" y="200" class="sv-mono" font-size="8.5" letter-spacing="1">STATUS</text><text x="320" y="200" class="sv-serif" font-size="11.5">Under Investigation</text>
+            <line x1="270" y1="210" x2="430" y2="210" stroke="#EEE6D8"/>
+            <line x1="270" y1="232" x2="400" y2="232" stroke="#EEE6D8"/><line x1="270" y1="250" x2="380" y2="250" stroke="#EEE6D8"/>
+          </g>
+          <!-- polaroid + clip -->
+          <use href="#polaroid" x="408" y="34" width="100" height="117" transform="rotate(6 458 92)"/>
+          <path d="M448 32 v-18 a7 7 0 0 1 14 0 v30" fill="none" stroke="#5A5650" stroke-width="2.4" stroke-linecap="round" transform="rotate(6 458 92)"/>
+          <!-- stamp -->
+          <g transform="rotate(-10 430 300)"><rect x="370" y="284" width="122" height="32" fill="none" stroke="#B42B22" stroke-width="2.5" rx="3"/><text x="431" y="306" text-anchor="middle" class="sv-mono" font-size="14" font-weight="700" fill="#B42B22" letter-spacing="1.5">INVESTIGATE</text></g>
+          <!-- floor shadow -->
+          <ellipse cx="330" cy="438" rx="230" ry="16" fill="#E7DCC9"/>
+          <!-- name card on the floor -->
+          <g transform="rotate(8 420 400)">
+            <rect x="320" y="352" width="200" height="104" fill="#F7EFDF" stroke="#D8CBB2" stroke-width="1.5"/>
+            <text x="420" y="410" text-anchor="middle" class="sv-serif" font-size="40" id="artCard">Nimbus</text>
+            <path d="M350 424 C390 430 440 428 488 420" stroke="#B42B22" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <circle cx="454" cy="346" r="6" fill="#B42B22" stroke="#7E1C15" stroke-width="1.5"/>
+          <path d="M454 352 L458 370" stroke="#7E1C15" stroke-width="2"/>
+          <path d="M478 344 l10 -8 M482 356 l12 -2" stroke="#B42B22" stroke-width="2" stroke-linecap="round"/>
 
-        <div class="live-intel">
-          <div class="now" id="now"><div class="k">NOW</div><div class="act" id="nowAct">—</div></div>
-          <h3>INVESTIGATION LOG <span id="logCount">0</span></h3>
-          <ol class="log" id="log"></ol>
-          <h3>EMERGING FINDINGS</h3>
-          <ul class="findings" id="findings"></ul>
-        </div>
-
-        <!-- CaseReport -->
-        <div class="report" id="report">
-          <article class="rp-sheet">
-            <div class="rp-band"><span>CASE REPORT</span><b data-case-no>0001</b></div>
-            <div class="rp-body">
-              <div class="k">SUBJECT</div>
-              <div class="rp-subject" id="stampName">—</div>
-
-              <div class="rp-sec"><span class="k">WHAT WE FOUND</span><ul class="rp-found" id="reportRows"></ul></div>
-
-              <div class="rp-sec"><span class="k">NAME STATUS</span>
-                <div class="classification"><div class="class-stamp" id="stampEl">—</div><div class="class-meta" id="classMeta"></div></div>
-              </div>
-
-              <div class="rp-sec"><span class="k">WHY</span><p class="rp-why" id="stampSub"></p></div>
-
-              <div class="rp-sec"><span class="k">RECOMMENDED NEXT MOVE</span><ul class="next" id="nextMoves"></ul></div>
-
-              <div class="rp-actions">
-                <button class="btn-case" id="runAgainBtn" type="button"><span>New case</span><span class="arr" aria-hidden="true">→</span></button>
-                <button class="btn-quiet" id="copyBtn" type="button">copy report</button>
-              </div>
-              <div class="rp-links"><button class="txt-btn" id="rawToggle" type="button">show raw response</button></div>
-              <div id="rawOutput"><pre id="rawPre"></pre></div>
-            </div>
-          </article>
-          <details class="past-log"><summary>INVESTIGATION LOG</summary><ol class="log" id="pastLog"></ol></details>
-        </div>
+          <!-- the detective, crouched with the glass -->
+          <g transform="translate(120 190)">
+            <!-- back leg kneeling -->
+            <path d="M88 178 L58 206 L34 210" stroke="#2B211C" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M88 178 L58 206 L34 210" stroke="#3E3A35" stroke-width="15.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M18 204 C18 196 28 194 38 198 L42 214 L18 214 Z" fill="#2B211C"/>
+            <!-- coat -->
+            <path d="M84 92 C102 80 132 82 146 98 L162 176 C140 190 100 192 74 182 C74 148 78 116 84 92 Z" fill="#C8A77B" stroke="#2B211C" stroke-width="2.2"/>
+            <path d="M136 92 C144 100 148 112 152 128 L160 174 C154 178 148 181 142 182 L128 98 Z" fill="#A9895F" opacity=".55"/>
+            <path d="M78 150 C100 158 132 158 158 150" stroke="#2B211C" stroke-width="2.4" fill="none"/>
+            <path d="M100 90 L114 122 L128 90" fill="none" stroke="#2B211C" stroke-width="2"/>
+            <!-- front leg: knee up -->
+            <path d="M126 180 L170 180 L172 222" stroke="#2B211C" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M126 180 L170 180 L172 222" stroke="#3E3A35" stroke-width="15.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M162 218 L190 218 C196 220 196 228 190 230 L162 230 Z" fill="#2B211C"/>
+            <!-- arm resting on knee -->
+            <path d="M100 100 L132 146 L160 166" stroke="#2B211C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M100 100 L132 146 L160 166" stroke="#C8A77B" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <circle cx="164" cy="168" r="7" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+            <!-- arm holding the glass out -->
+            <path d="M132 100 L176 120 L196 140" stroke="#2B211C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M132 100 L176 120 L196 140" stroke="#C8A77B" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <use href="#lens" x="190" y="94" width="60" height="60" transform="rotate(30 200 144)"/>
+            <circle cx="198" cy="143" r="7" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+            <!-- head -->
+            <use href="#det-head" x="66" y="6" width="100" height="100" transform="rotate(14 116 56)"/>
+          </g>
+        </svg>
       </div>
-    </aside>
-  </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h02">
+    <div class="panel-head"><span class="pn">02</span><span class="pt">Investigation Desk</span><span class="dash"></span><span class="tag">DIG DEEPER. SEE THE WHOLE PICTURE.</span><span class="brand">Name Worth It?</span></div>
+    <div class="desk-hero">
+      <div class="desk-copy">
+        <h2 id="h02">A closer look<br>at <em class="js-name">Nimbus.</em></h2>
+        <p class="lede">We investigate the key signals that make a name work — so you can move forward with confidence.</p>
+      </div>
+      <div class="desk-art" aria-hidden="true">
+        <svg viewBox="0 0 620 330">
+          <!-- room -->
+          <rect x="0" y="0" width="620" height="240" fill="#EADFCB"/>
+          <path d="M150 0 V240 M470 0 V240" stroke="#E0D3BC" stroke-width="2"/>
+          <!-- wall polaroid + note -->
+          <use href="#polaroid" x="186" y="14" width="88" height="103" transform="rotate(-3 230 66)"/>
+          <rect x="224" y="6" width="14" height="12" fill="#C9A66A" transform="rotate(-8 231 12)"/>
+          <g transform="rotate(4 528 70)"><rect x="472" y="26" width="116" height="92" fill="#FBF7EE" stroke="#DCD0BA"/>
+            <text x="530" y="62" text-anchor="middle" class="sv-hand" font-size="17">Same name.</text><text x="530" y="84" text-anchor="middle" class="sv-hand" font-size="17">Different story.</text>
+            <path d="M500 98 C520 94 540 92 560 94" stroke="#B42B22" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>
+          <rect x="40" y="30" width="70" height="54" fill="#F6F0E4" stroke="#DCD0BA"/><path d="M52 46 h46 M52 58 h40 M52 70 h30" stroke="#D5C9B4"/>
+          <!-- desk -->
+          <rect x="0" y="236" width="620" height="94" fill="#8A5A3C"/>
+          <rect x="0" y="232" width="620" height="10" fill="#9C6847"/>
+          <!-- plant -->
+          <path d="M60 236 L66 196 L104 196 L110 236 Z" fill="#7A4B32" stroke="#2B211C" stroke-width="2"/>
+          <g fill="#6E7F4E" stroke="#2B211C" stroke-width="1.6">
+            <path d="M84 196 C60 170 50 140 62 110 C78 140 86 168 84 196 Z"/>
+            <path d="M86 196 C96 160 112 140 132 130 C126 160 108 182 86 196 Z"/>
+            <path d="M84 196 C74 170 74 150 84 130 C94 152 92 174 84 196 Z" fill="#83955C"/>
+          </g>
+          <!-- mug -->
+          <path d="M214 196 h52 v36 a8 8 0 0 1 -8 8 h-36 a8 8 0 0 1 -8 -8 z" fill="#F6F0E4" stroke="#2B211C" stroke-width="2"/>
+          <path d="M266 206 c14 0 14 22 0 22" fill="none" stroke="#2B211C" stroke-width="2"/>
+          <text x="240" y="222" text-anchor="middle" class="sv-serif" font-size="13">NW?</text>
+          <!-- books -->
+          <g stroke="#2B211C" stroke-width="2">
+            <rect x="470" y="210" width="140" height="26" fill="#E8D8B4"/><rect x="478" y="184" width="132" height="26" fill="#F0E2C0"/><rect x="466" y="158" width="140" height="26" fill="#E3D1AA"/>
+          </g>
+          <g class="sv-serif" font-size="13" text-anchor="middle" letter-spacing="1"><text x="540" y="228">MEMORABILITY</text><text x="544" y="202">COMPETITORS</text><text x="536" y="176">DOMAINS</text></g>
+          <!-- the detective reading the case file -->
+          <g transform="translate(300 40)">
+            <path d="M30 112 C52 92 128 92 150 112 L156 196 L24 196 Z" fill="#C8A77B" stroke="#2B211C" stroke-width="2.2"/>
+            <path d="M72 98 L90 132 L108 98" fill="none" stroke="#2B211C" stroke-width="2"/>
+            <use href="#det-head" x="40" y="-6" width="100" height="100" transform="rotate(8 90 44)"/>
+            <!-- open book -->
+            <path d="M18 140 C50 130 80 132 92 142 L92 210 C78 200 50 198 18 206 Z" fill="#E3C997" stroke="#2B211C" stroke-width="2"/>
+            <path d="M166 140 C134 130 104 132 92 142 L92 210 C106 200 134 198 166 206 Z" fill="#E9D3A6" stroke="#2B211C" stroke-width="2"/>
+            <text x="130" y="176" text-anchor="middle" class="sv-serif js-name-svg" font-size="21" transform="rotate(-8 130 176)">Nimbus</text>
+            <text x="132" y="192" text-anchor="middle" class="sv-mono" font-size="7" letter-spacing="1" transform="rotate(-8 132 192)">CASE FILE</text>
+            <circle cx="22" cy="176" r="8" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+            <circle cx="162" cy="176" r="8" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+          </g>
+          <rect x="300" y="250" width="120" height="8" fill="#F5EEDF" transform="rotate(-3 360 254)"/>
+          <rect x="420" y="256" width="90" height="6" fill="#F5EEDF" transform="rotate(4 465 259)"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="signals">
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 7.5h14M5 16.5h14"/></svg>
+        <div><h3>Domains</h3><p>Check availability across popular TLDs.</p><div class="chips"><span>.com</span><span>.io</span><span>.ai</span><span>.app</span><span>+ more</span></div></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><circle cx="16.5" cy="9" r="2.6"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M14 14.2c3.2-.4 6 1.3 6 4.8"/></svg>
+        <div><h3>Competitors</h3><p>See who's already using it and how they position it.</p></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>
+        <div><h3>Memorability</h3><p>Get a read on clarity, uniqueness and recall.</p></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-3.5 7.1"/></svg>
+        <div><h3>Social handles</h3><p>Is the @handle free on X and Instagram?</p></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><path d="M6 20V10M12 20V4M18 20v-7"/></svg>
+        <div><h3>Market signal</h3><p>Trademark mentions turning up on the open web.</p></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l8-8h8v8l-8 8z"/><circle cx="15.5" cy="8.5" r="1.5"/></svg>
+        <div><h3>Similar names</h3><p>Close variants, in case the original is crowded.</p></div></div>
+    </div>
+  </section>
+
+  <footer class="foot"><p>Domains checked live via RDAP (DNS when RDAP is inconclusive), competitors via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The market signal is a web search, not a trademark search — still run a proper one before you file anything.</p></footer>
 </main>
 
-<!-- EvidenceDrawer -->
-<div class="drawer-scrim" id="drawerScrim"></div>
+<!-- ======================================================================
+     04 — Search in Progress
+     ====================================================================== -->
+<main id="progress" class="screen" aria-live="polite">
+  <section class="panel">
+    <div class="panel-head"><span class="pn">04</span><span class="pt">Search in Progress</span><span class="dash"></span><span class="tag">REAL CHECKS. REAL ANSWERS.</span><span class="brand">Name Worth It?</span></div>
+    <div class="prog">
+      <div class="prog-copy">
+        <h2>Investigating<br><em id="progName">Nimbus…</em></h2>
+        <p class="lede">Running checks across the web to see what we can uncover.</p>
+        <ol class="checklist" id="checklist"></ol>
+        <div class="ws-error" id="wsError" role="alert"></div>
+      </div>
+      <div class="prog-art" aria-hidden="true">
+        <div class="scribble right"><span>following the trail<br>to a clearer answer.</span></div>
+        <svg viewBox="0 0 380 360" class="walker">
+          <g class="steps">
+            <ellipse cx="30" cy="340" rx="14" ry="6" fill="#D9CFBF" style="--d:0s"/><ellipse cx="68" cy="330" rx="14" ry="6" fill="#D9CFBF" style="--d:.3s"/>
+            <ellipse cx="106" cy="342" rx="14" ry="6" fill="#D9CFBF" style="--d:.6s"/><ellipse cx="144" cy="330" rx="14" ry="6" fill="#D9CFBF" style="--d:.9s"/>
+            <ellipse cx="180" cy="340" rx="14" ry="6" fill="#D9CFBF" style="--d:1.2s"/>
+          </g>
+          <g class="walk" transform="translate(150 70)">
+            <!-- back arm -->
+            <path d="M58 92 C46 112 44 132 52 150" stroke="#2B211C" stroke-width="18" stroke-linecap="round" fill="none"/>
+            <path d="M58 92 C46 112 44 132 52 150" stroke="#A9895F" stroke-width="13.5" stroke-linecap="round" fill="none"/>
+            <!-- legs -->
+            <path class="leg-a" d="M70 196 L54 254" stroke="#2B211C" stroke-width="19" stroke-linecap="round" fill="none"/>
+            <path class="leg-a" d="M70 196 L54 254" stroke="#3E3A35" stroke-width="14.5" stroke-linecap="round" fill="none"/>
+            <path class="leg-b" d="M98 196 L118 250" stroke="#2B211C" stroke-width="19" stroke-linecap="round" fill="none"/>
+            <path class="leg-b" d="M98 196 L118 250" stroke="#3E3A35" stroke-width="14.5" stroke-linecap="round" fill="none"/>
+            <path d="M38 252 C38 244 48 242 60 246 L62 262 L38 262 Z" fill="#2B211C"/>
+            <path d="M110 246 L136 246 C142 248 142 256 136 258 L110 258 Z" fill="#2B211C"/>
+            <!-- coat -->
+            <path d="M58 84 C74 76 104 76 118 84 L132 204 C112 212 66 212 46 204 Z" fill="#C8A77B" stroke="#2B211C" stroke-width="2.2"/>
+            <path d="M108 86 L122 204 C116 206 112 207 106 207 L98 88 Z" fill="#A9895F" opacity=".55"/>
+            <path d="M72 82 L88 114 L104 82" fill="none" stroke="#2B211C" stroke-width="2"/>
+            <path d="M50 146 C74 152 104 152 128 146" stroke="#2B211C" stroke-width="2.4" fill="none"/>
+            <circle cx="90" cy="130" r="2.6" fill="#2B211C"/><circle cx="90" cy="172" r="2.6" fill="#2B211C"/>
+            <!-- front arm with the glass -->
+            <path d="M108 94 L138 116 L158 112" stroke="#2B211C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M108 94 L138 116 L158 112" stroke="#C8A77B" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <use href="#lens" x="152" y="62" width="60" height="60"/>
+            <circle cx="160" cy="111" r="7" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+            <use href="#det-head" x="38" y="-6" width="100" height="100"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ======================================================================
+     03 — Evidence Board + case summary
+     ====================================================================== -->
+<main id="board" class="screen">
+  <section class="panel">
+    <div class="panel-head"><span class="pn">03</span><span class="pt">Evidence Board</span><span class="dash"></span><span class="tag">CONNECT THE CLUES. SEE THE STORY.</span><span class="brand">Name Worth It?</span></div>
+    <div class="board-wrap" id="result">
+      <div class="board-copy">
+        <h2>The bigger picture<br>behind <em id="boardName">Nimbus.</em></h2>
+        <p class="lede">We pull the key signals together so you can see what the name is really up against.</p>
+        <svg class="pointer" viewBox="0 0 220 300" aria-hidden="true">
+          <path d="M150 34 l10 -14 M166 44 l14 -6" stroke="#B42B22" stroke-width="2.6" stroke-linecap="round"/>
+          <g transform="translate(20 40)">
+            <path d="M74 208 L66 254" stroke="#2B211C" stroke-width="19" stroke-linecap="round"/><path d="M74 208 L66 254" stroke="#3E3A35" stroke-width="14.5" stroke-linecap="round"/>
+            <path d="M100 208 L108 254" stroke="#2B211C" stroke-width="19" stroke-linecap="round"/><path d="M100 208 L108 254" stroke="#3E3A35" stroke-width="14.5" stroke-linecap="round"/>
+            <path d="M50 252 C50 244 60 242 72 246 L74 262 L50 262 Z" fill="#2B211C"/><path d="M100 248 L126 248 C132 250 132 258 126 260 L100 260 Z" fill="#2B211C"/>
+            <path d="M58 96 C74 88 104 88 118 96 L130 214 C110 222 64 222 44 214 Z" fill="#C8A77B" stroke="#2B211C" stroke-width="2.2"/>
+            <path d="M72 94 L88 126 L104 94" fill="none" stroke="#2B211C" stroke-width="2"/>
+            <path d="M48 156 C72 162 104 162 126 156" stroke="#2B211C" stroke-width="2.4" fill="none"/>
+            <!-- notebook arm -->
+            <path d="M62 104 L52 146 L70 162" stroke="#2B211C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M62 104 L52 146 L70 162" stroke="#A9895F" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <rect x="60" y="146" width="34" height="42" rx="2" fill="#FBF7EE" stroke="#2B211C" stroke-width="2" transform="rotate(-10 77 167)"/>
+            <path d="M68 158 h18 M68 166 h16 M68 174 h12" stroke="#CFC3AE" stroke-width="1.5" transform="rotate(-10 77 167)"/>
+            <circle cx="72" cy="164" r="6.5" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+            <!-- pointing arm -->
+            <path d="M108 104 L130 70 L140 36" stroke="#2B211C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <path d="M108 104 L130 70 L140 36" stroke="#C8A77B" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <circle cx="141" cy="32" r="7" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+            <path d="M143 26 L148 12" stroke="#2B211C" stroke-width="7" stroke-linecap="round"/><path d="M143 26 L148 12" stroke="#F5D7B9" stroke-width="3.5" stroke-linecap="round"/>
+            <use href="#det-head" x="38" y="4" width="100" height="100" transform="rotate(-10 88 54)"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="evboard" id="evboard">
+        <svg class="threads" id="threads" aria-hidden="true"></svg>
+        <svg class="threads top" id="threadsTop" aria-hidden="true"></svg>
+        <div class="subject-card" id="subjectCard">
+          <span class="pin"></span>
+          <div class="sc-name" id="subjectName">Nimbus</div>
+          <div class="sc-ctx" id="subjectCtx"></div>
+        </div>
+        <div class="polaroid-deco" aria-hidden="true"><svg viewBox="0 0 120 140"><use href="#polaroid"/></svg><span class="tape"></span></div>
+        <div class="note-card" id="noteCard"><span class="tape"></span><span id="noteText">—</span></div>
+        <div class="ev-grid" id="evGrid"></div>
+      </div>
+    </div>
+
+    <!-- the case summary -->
+    <article class="summary" id="summary" aria-label="Case summary">
+      <div class="sum-head">
+        <div><div class="kicker">CASE <span data-case-no>0001</span> · SUMMARY</div><h3 class="sum-title" id="stampName">Nimbus</h3></div>
+        <div class="verdict-stamp" id="stampEl">—</div>
+      </div>
+      <div class="sum-grid">
+        <div><div class="kicker">WHAT WE FOUND</div><ul class="found" id="reportRows"></ul></div>
+        <div>
+          <div class="kicker">WHY</div><p class="why" id="stampSub"></p>
+          <div class="kicker" style="margin-top:22px">YOUR NEXT MOVE</div><ul class="next" id="nextMoves"></ul>
+        </div>
+      </div>
+      <div class="sum-actions">
+        <button class="btn-red" id="runAgainBtn" type="button"><span>Investigate another name</span><span class="arr" aria-hidden="true">→</span></button>
+        <button class="btn-line" id="copyBtn" type="button">Copy report</button>
+        <button class="txt-btn" id="rawToggle" type="button">show raw response</button>
+      </div>
+      <div id="rawOutput"><pre id="rawPre"></pre></div>
+    </article>
+  </section>
+</main>
+
+<!-- full evidence -->
+<div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle" aria-hidden="true">
-  <div class="dr-band"><span id="drRef">—</span><button type="button" id="drClose">CLOSE ×</button></div>
+  <div class="dr-head"><span id="drKicker">EVIDENCE</span><button type="button" id="drClose" aria-label="Close">Close ×</button></div>
   <div class="dr-body" id="drBody"></div>
 </aside>
 
-<script src="/assets/case.js"></script>
+<script src="/assets/app.js"></script>
 </body>
 </html>
