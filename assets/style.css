@@ -188,10 +188,11 @@ h1 em, h2 em{ font-style:italic; color:var(--red); }
 .prog-art .walker{ width:100%; max-width:380px; height:auto; display:block; margin:0 auto; }
 .prog-art .scribble.right{ position:absolute; right:0; top:4%; margin:0; text-align:right; }
 .walk{ animation:bob .6s ease-in-out infinite alternate; }
-.walk .leg-a{ transform-origin:70px 196px; animation:swing .6s ease-in-out infinite alternate; }
-.walk .leg-b{ transform-origin:98px 196px; animation:swing .6s ease-in-out infinite alternate-reverse; }
-@keyframes bob{ from{ transform:translate(150px, 70px); } to{ transform:translate(150px, 66px); } }
-@keyframes swing{ from{ transform:rotate(9deg); } to{ transform:rotate(-9deg); } }
+.walk .leg-a, .walk .leg-b{ transform-box:fill-box; transform-origin:50% 0; }
+.walk .leg-a{ animation:swing .6s ease-in-out infinite alternate; }
+.walk .leg-b{ animation:swing .6s ease-in-out infinite alternate-reverse; }
+@keyframes bob{ from{ transform:translateY(0); } to{ transform:translateY(-3px); } }
+@keyframes swing{ from{ transform:rotate(12deg); } to{ transform:rotate(-12deg); } }
 .steps ellipse{ animation:fadeStep 2.4s ease-in-out infinite; animation-delay:var(--d); opacity:.2; }
 @keyframes fadeStep{ 0%,100%{ opacity:.15; } 40%{ opacity:1; } }
 #progress.done .walk, #progress.done .walk *, #progress.done .steps ellipse{ animation-play-state:paused; }
