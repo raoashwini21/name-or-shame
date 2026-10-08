@@ -358,10 +358,15 @@
     const s = Math.min((r.width / 2) / Math.abs(dx || 1e-6), (r.height / 2) / Math.abs(dy || 1e-6), 1);
     return [cx + dx * s, cy + dy * s, r];
   }
+  // crisp right-angle connector: out horizontally, across, then in — label sits on the middle run
   function curve(a, b){
-    const dist = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + Math.min(28, dist * 0.08);
-    return ['M' + a[0].toFixed(1) + ' ' + a[1].toFixed(1) + ' Q' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + b[0].toFixed(1) + ' ' + b[1].toFixed(1), (a[0] + 2 * mx + b[0]) / 4, (a[1] + 2 * my + b[1]) / 4];
+    const f = (n) => n.toFixed(1);
+    if (Math.abs(b[0] - a[0]) >= Math.abs(b[1] - a[1])){
+      const mx = (a[0] + b[0]) / 2;
+      return ['M' + f(a[0]) + ' ' + f(a[1]) + ' H' + f(mx) + ' V' + f(b[1]) + ' H' + f(b[0]), mx, (a[1] + b[1]) / 2];
+    }
+    const my = (a[1] + b[1]) / 2;
+    return ['M' + f(a[0]) + ' ' + f(a[1]) + ' V' + f(my) + ' H' + f(b[0]) + ' V' + f(b[1]), (a[0] + b[0]) / 2, my];
   }
   const artEl = (key) => board.querySelector('.art[data-art="' + key + '"]');
   const isStacked = () => getComputedStyle(board).gridTemplateColumns.trim().split(/\s+/).length === 1;
