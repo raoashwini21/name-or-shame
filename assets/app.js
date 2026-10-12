@@ -42,7 +42,7 @@
   };
   const CHECKS = [
     { key: 'domains',    label: 'Checking domains',          title: 'Domains',         wait: 'Querying registries…' },
-    { key: 'collisions', label: 'Scanning for collisions',   title: 'Competitors',     wait: 'Searching the web…' },
+    { key: 'collisions', label: 'Scanning for collisions',   title: 'Who already uses this name', wait: 'Searching the web…' },
     { key: 'handles',    label: 'Checking social handles',   title: 'Social handles',  wait: 'Scanning…' },
     { key: 'market',     label: 'Reading the market signal', title: 'Market signal',   wait: 'Searching…' },
     { key: 'relatives',  label: 'Tracing similar names',     title: 'Similar names',   wait: 'Trying variants…' },
@@ -97,7 +97,27 @@
     if (!s || s.taken === null || s.taken === undefined) return { cls: 'unk', label: s && s.note ? 'Too long' : 'Unknown' };
     return s.taken ? { cls: 'bad', label: 'Taken' } : { cls: 'ok', label: 'Open' };
   }
-  // Match and risk are a rough read of a search snippet against the name and the one-liner.
+  // Root domain: the registrable part of a host — the last two labels, or the
+  // last three under a two-part country suffix (example.co.uk). Hand-picked
+  // suffix list, not the full public-suffix list.
+  const TWO_PART_SUFFIX = new Set(['co.uk','org.uk','ac.uk','gov.uk','me.uk','ltd.uk','plc.uk','co.jp','ne.jp','or.jp','co.in','net.in','org.in','co.nz','org.nz','co.za','co.kr','com.au','net.au','org.au','com.br','com.cn','com.mx','com.sg','com.tr','com.hk','com.tw','com.ar','com.my','com.ph','com.vn','com.pk','com.ng','com.eg','co.id','co.il']);
+  function rootDomain(host){
+    const labels = host.split('.').filter(Boolean);
+    if (labels.length <= 2) return labels.join('.');
+    return labels.slice(TWO_PART_SUFFIX.has(labels.slice(-2).join('.')) ? -3 : -2).join('.');
+  }
+  // Does any label of the host, before its suffix, contain the name? Hyphens
+  // are ignored so "name-worth-it.com" matches "Name Worth".
+  function domainHasName(host){
+    const slug = state.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!slug || !host) return false;
+    const root = rootDomain(host), labels = host.split('.');
+    const keep = labels.slice(0, labels.length - (root.split('.').length - 1));
+    return keep.some(l => l.replace(/[^a-z0-9]/g, '').includes(slug));
+  }
+  // Match and risk are a rough read of a search result against the name and the one-liner.
+  // A result whose domain carries the name is always HIGH; otherwise the
+  // title/snippet read decides.
   const STOP = new Set(['that','with','your','from','this','tool','tools','helps','help','their','them','into','about','which','where','when','what','have','will','more','than','they','team','teams','based','using','used','makes','make']);
   function roughRead(m){
     const n = state.name.toLowerCase().trim();
@@ -107,7 +127,25 @@
     const exact = reName.test(title);
     const words = Array.from(new Set((state.context.toLowerCase().match(/[a-z]{4,}/g) || []).filter(w => !STOP.has(w))));
     const overlap = words.filter(w => text.includes(w)).length;
-    return { host: hostOf(m.link) || '—', match: exact ? 'name in title' : 'mentioned', risk: exact && overlap >= 2 ? 'HIGH' : (exact || overlap >= 2) ? 'MEDIUM' : 'LOW' };
+    const host = hostOf(m.link);
+    if (domainHasName(host)) return { host, root: rootDomain(host), match: 'name in domain', risk: 'HIGH' };
+    return { host: host || '—', root: host ? rootDomain(host) : '—', match: exact ? 'name in title' : 'mentioned', risk: exact && overlap >= 2 ? 'HIGH' : (exact || overlap >= 2) ? 'MEDIUM' : 'LOW' };
+  }
+  // One entry per root domain, rated by its highest-risk result, sorted high to
+  // low (search order kept within the same rating).
+  const RISK_RANK = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+  function nicheByDomain(d){
+    const groups = new Map();
+    (d.niche_matches || []).forEach((x, i) => {
+      const r = roughRead(x), key = r.root;
+      const g = groups.get(key);
+      if (!g) groups.set(key, { x, r, i, count: 1, others: [] });
+      else {
+        g.count++;
+        if (RISK_RANK[r.risk] > RISK_RANK[g.r.risk]){ g.others.push(g.x); g.x = x; g.r = r; } else g.others.push(x);
+      }
+    });
+    return Array.from(groups.values()).sort((a, b) => (RISK_RANK[b.r.risk] - RISK_RANK[a.r.risk]) || (a.i - b.i));
   }
   function retrieved(){ return state.receivedAt ? clock(state.receivedAt) : '—'; }
   function domainConfidence(list){
@@ -144,7 +182,7 @@
       return open.length ? '@' + s[0].handle + ' open on ' + open.map(x => x.label).join(', ') : 'Could not confirm';
     }
     if (key === 'collisions'){
-      const n = (d.niche_matches || []).length;
+      const n = nicheByDomain(d).length;
       return n ? plural(n, 'existing use') + ' in your niche' : (d.serp_error ? 'Search unavailable' : 'No major conflicts');
     }
     if (key === 'market'){
@@ -212,9 +250,9 @@
         : '<li><span class="w">Could not check handles this run.</span></li>') + '</ul>';
     },
     collisions(d){
-      const m = d.niche_matches || [];
-      return '<ul class="ev-list">' + (m.length ? m.slice(0, 3).map(x => { const r = roughRead(x);
-        return '<li><span><a href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(r.host) + '</a></span><span class="' + (r.risk === 'HIGH' ? 'bad' : 'unk') + '">' + r.risk.toLowerCase() + '</span></li>'; }).join('') +
+      const m = nicheByDomain(d);
+      return '<ul class="ev-list">' + (m.length ? m.slice(0, 3).map(({ x, r }) =>
+        '<li><span><a href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(r.root) + '</a></span><span class="' + (r.risk === 'HIGH' ? 'bad' : 'unk') + '">' + r.risk.toLowerCase() + '</span></li>').join('') +
         (m.length > 3 ? '<li><span class="unk">+ ' + (m.length - 3) + ' more</span></li>' : '')
         : '<li><span class="w">' + escapeHtml(d.serp_error || 'Nobody obvious is using it in your niche.') + '</span></li>') + '</ul>';
     },
@@ -377,8 +415,9 @@
             '<div class="mt">' + (x.note ? escapeHtml(x.note) : '<a href="' + escapeHtml(x.url) + '" target="_blank" rel="noopener">' + escapeHtml(x.url) + ' ↗</a>') + '</div></div>'; }).join('') || '<p>Handles were not checked this run.</p>';
       } else if (key === 'collisions'){
         meta.push(['Source', 'Web search · "' + state.name + '" + your one-liner'], ['Confidence', 'Rough read of snippets']);
-        items = (d.niche_matches || []).map(x => { const r = roughRead(x); return '<div class="dr-item"><div class="mt">' + escapeHtml(r.host) + ' · ' + r.match + ' · risk ' + r.risk.toLowerCase() + '</div>' +
-          '<a class="tt" href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(x.title) + '</a><p>' + escapeHtml(x.snippet) + '</p></div>'; }).join('') ||
+        items = nicheByDomain(d).map(({ x, r, others }) => '<div class="dr-item"><div class="mt">' + escapeHtml(r.root) + ' · ' + r.match + ' · risk ' + r.risk.toLowerCase() + '</div>' +
+          '<a class="tt" href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(x.title) + '</a><p>' + escapeHtml(x.snippet) + '</p>' +
+          (others.length ? '<div class="mt">Also from ' + escapeHtml(r.root) + ': ' + others.map(o => '<a href="' + escapeHtml(o.link) + '" target="_blank" rel="noopener">' + escapeHtml(o.title || hostOf(o.link)) + '</a>').join(' · ') + '</div>' : '') + '</div>').join('') ||
           '<p>' + escapeHtml(d.serp_error || 'No existing company or product turned up in your niche.') + '</p>';
       } else if (key === 'market'){
         meta.push(['Source', 'Web search · "' + state.name + '" trademark'], ['Confidence', 'Signal — not a register search']);
@@ -450,7 +489,7 @@
       const com = d.domains && d.domains.com;
       const hs = ['x', 'instagram'].map(p => d.socials && d.socials[p]).filter(Boolean);
       const hTaken = hs.filter(x => x.taken === true), hOpen = hs.filter(x => x.taken === false);
-      const niche = (d.niche_matches || []).length, tm = (d.trademark_matches || []).length;
+      const niche = nicheByDomain(d).length, tm = (d.trademark_matches || []).length;
       const viable = (d.variants || []).filter(v => v.domains && v.domains.com && v.domains.com.available === true);
       const handlesLine = !hs.length || hTaken.length + hOpen.length === 0 ? ['Could not be confirmed', 'unk']
         : hTaken.length === hs.length ? ['Primary handle occupied on ' + hTaken.map(x => x.label).join(' and '), 'found']
@@ -459,7 +498,7 @@
       const rows = [
         ['DOMAINS', own.length ? taken + ' of ' + own.length + ' registered · .com ' + (com ? domainVerdict(com).label.toLowerCase() : 'unknown') : 'No records returned', own.length ? (com && com.available === true ? 'clear' : 'found') : 'unk'],
         ['HANDLES', handlesLine[0], handlesLine[1]],
-        ['COMPETITORS', (niche ? niche + ' direct/adjacent collision' + (niche === 1 ? '' : 's') : 'No collisions in your niche') + ' · ' + (tm ? tm + ' trademark mention' + (tm === 1 ? '' : 's') : 'no trademark chatter'), niche || tm ? 'found' : 'clear'],
+        ['WHO ALREADY USES THIS NAME', (niche ? niche + ' direct/adjacent collision' + (niche === 1 ? '' : 's') : 'No collisions in your niche') + ' · ' + (tm ? tm + ' trademark mention' + (tm === 1 ? '' : 's') : 'no trademark chatter'), niche || tm ? 'found' : 'clear'],
         ['SIMILAR NAMES', viable.length ? viable.length + ' viable alternative' + (viable.length === 1 ? '' : 's') + ' (free .com)' : 'None with a free .com', viable.length ? 'clear' : 'unk'],
         ['MEMORABILITY', pct(scores.memorable) + (g < 0.5 ? ' · distinctive' : ' · not very distinctive'), m >= 0.65 ? 'clear' : 'found']
       ];
