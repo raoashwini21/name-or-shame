@@ -28,7 +28,7 @@
 
     <main class="hero">
       <section class="hero-copy">
-        <p class="kicker"><span class="dot"></span>Brand name investigation</p>
+        <p class="kicker"><span class="dot"></span>Open a case on your name</p>
         <h1>Find out if your name is worth building.</h1>
         <p class="lede">Check domains, social handles, existing brands and naming risks before you commit.</p>
 
@@ -43,7 +43,7 @@
           </div>
           <div class="intake-foot">
             <button class="btn btn-primary" id="runBtn" type="submit"><span id="runBtnLabel">Investigate a name</span><span aria-hidden="true">→</span></button>
-            <span class="muted small">Six live lookups · no sign-up</span>
+            <span class="muted small">Opens case <span class="mono">NW-<span data-case-no>0001</span></span> · six live lookups</span>
           </div>
           <div class="error-box" id="errorBox" role="alert"></div>
         </form>
@@ -53,8 +53,9 @@
       <aside class="dossier-wrap" aria-label="Example case file">
         <div class="dossier-cap"><span>Example case file</span><span class="muted">Sample data — your case runs live lookups</span></div>
         <div class="dossier" id="dossier">
+          <div class="folder" aria-hidden="true"><span class="folder-label mono"><svg class="sig" aria-hidden="true"><use href="#sig"/></svg>Case file</span></div>
           <article class="sheet" data-sheet="brands" data-pos="2" tabindex="0" aria-label="Existing brands record">
-            <header class="sh-head"><span class="sh-title">Existing brands</span><span class="state" data-t="evidence">Evidence found</span></header>
+            <span class="exhibit mono">Exhibit C</span><header class="sh-head"><span class="sh-title">Existing brands</span><span class="state" data-t="evidence">Evidence found</span></header>
             <div class="sh-meta mono">Web search · "Nimbus" LinkedIn outreach for sales teams</div>
             <div class="brief" data-r="High"><div class="brief-top"><span class="mono">nimbus-sales.example</span><span class="overlap"><i class="on"></i><i class="on"></i><i class="on"></i>High overlap</span></div><div class="bt">Nimbus — prospecting assistant for B2B sales teams</div></div>
             <div class="brief" data-r="High"><div class="brief-top"><span class="mono">nimbuscrm.example</span><span class="overlap"><i class="on"></i><i class="on"></i><i class="on"></i>High overlap</span></div><div class="bt">Nimbus CRM: lightweight pipeline for small sales teams</div></div>
@@ -62,7 +63,7 @@
           </article>
 
           <article class="sheet" data-sheet="registry" data-pos="1" tabindex="0" aria-label="Domain registry record">
-            <header class="sh-head"><span class="sh-title">Registry extract</span><span class="state" data-t="review">Review needed</span></header>
+            <svg class="clip" viewBox="0 0 16 44" aria-hidden="true"><path d="M5 12 V5 a4 4 0 0 1 8 0 V34 a6 6 0 0 1 -12 0 V14"/></svg><span class="exhibit mono">Exhibit B</span><header class="sh-head"><span class="sh-title">Registry extract</span><span class="state" data-t="review">Review needed</span></header>
             <div class="sh-meta mono">RDAP · DNS fallback</div>
             <table class="registry"><tbody>
               <tr class="taken"><td class="d">nimbus.com</td><td><span class="taken-l">Registered</span></td><td class="src">RDAP</td></tr>
@@ -76,7 +77,7 @@
 
           <article class="sheet sheet-subject" data-sheet="subject" data-pos="0" tabindex="0" aria-label="Subject record">
             <div class="folder-tab mono">NW-EXAMPLE</div>
-            <header class="sh-head"><span class="sh-title">Subject record</span><span class="classif" data-v="bad">High collision risk</span></header>
+            <span class="exhibit mono">Exhibit A</span><header class="sh-head"><span class="sh-title">Subject record</span><span class="classif" data-v="bad">High collision risk</span></header>
             <div class="doc-name">Nimbus</div>
             <div class="doc-ctx">LinkedIn outreach for sales teams</div>
             <div class="doc-verdict"><span class="muted small">Is it worth pursuing?</span><b>Not as it stands.</b></div>
@@ -100,17 +101,17 @@
   <section class="checks" id="checks">
     <div class="checks-inner">
       <div class="checks-head">
-        <h2>Six investigations, filed into one case.</h2>
+        <h2>Six lines of inquiry. One case file.</h2>
         <p>Every finding comes from a live lookup run the moment you investigate. Memorability is the one judgement call, and it's labelled as a model read.</p>
         <a class="btn btn-ghost" href="#top" id="toForm">Start an investigation ↑</a>
       </div>
       <ol class="check-list" id="sources">
-        <li><span class="n mono">01</span><div><h3>Domains</h3><p>.com, .io, .net, .ai, .app and .co against the registry, with a DNS fallback marked as such.</p></div><span class="src mono">RDAP · DNS</span></li>
-        <li><span class="n mono">02</span><div><h3>Social handles</h3><p>Whether the plain @handle is free on X and Instagram.</p></div><span class="src mono">HTTP status</span></li>
-        <li><span class="n mono">03</span><div><h3>Existing brands</h3><p>Who already uses the name in your space, searched against your description.</p></div><span class="src mono">Web search</span></li>
-        <li><span class="n mono">04</span><div><h3>Trademark mentions</h3><p>A signal from the open web — not a register search. Run a proper one before you file.</p></div><span class="src mono">Web search</span></li>
-        <li><span class="n mono">05</span><div><h3>Similar names</h3><p>Close variants with their own domain and search checks, in case the original is crowded.</p></div><span class="src mono">RDAP · Web</span></li>
-        <li><span class="n mono">06</span><div><h3>Memorability</h3><p>How sticky, sayable and distinctive it is, and whether it sounds like an existing brand.</p></div><span class="src mono">Jev</span></li>
+        <li><span class="n mono">Exhibit A</span><div><h3>Domains</h3><p>.com, .io, .net, .ai, .app and .co against the registry, with a DNS fallback marked as such.</p></div><span class="src mono">RDAP · DNS</span></li>
+        <li><span class="n mono">Exhibit B</span><div><h3>Social handles</h3><p>Whether the plain @handle is free on X and Instagram.</p></div><span class="src mono">HTTP status</span></li>
+        <li><span class="n mono">Exhibit C</span><div><h3>Existing brands</h3><p>Who already uses the name in your space, searched against your description.</p></div><span class="src mono">Web search</span></li>
+        <li><span class="n mono">Exhibit D</span><div><h3>Trademark mentions</h3><p>A signal from the open web — not a register search. Run a proper one before you file.</p></div><span class="src mono">Web search</span></li>
+        <li><span class="n mono">Exhibit E</span><div><h3>Similar names</h3><p>Close variants with their own domain and search checks, in case the original is crowded.</p></div><span class="src mono">RDAP · Web</span></li>
+        <li><span class="n mono">Exhibit F</span><div><h3>Memorability</h3><p>How sticky, sayable and distinctive it is, and whether it sounds like an existing brand.</p></div><span class="src mono">Jev</span></li>
       </ol>
     </div>
   </section>
@@ -132,7 +133,7 @@
       <div class="sp-row"><span id="progText">Opening case</span><span class="mono" id="elapsed">0.0s</span></div>
       <div class="sp-bar"><i id="progBar"></i></div>
     </div>
-    <nav aria-label="Checks"><ol class="side-checks" id="sideChecks"></ol></nav>
+    <nav aria-label="Lines of inquiry"><div class="side-label">Lines of inquiry</div><ol class="side-checks" id="sideChecks"></ol></nav>
     <button class="side-new" id="newBtn" type="button">New investigation</button>
 
   </aside>
@@ -147,7 +148,7 @@
         </div>
         <div class="ws-actions">
           <span class="status" id="statusPill" data-s="running"><span class="sdot"></span><span id="statusText">Investigating</span></span>
-          <button class="btn btn-ghost" id="copyBtn" type="button" disabled>Copy report</button>
+          <button class="btn btn-ghost" id="copyBtn" type="button" disabled>Copy case report</button>
         </div>
       </div>
       <div class="live" id="live"><svg class="sig" aria-hidden="true"><use href="#sig"/></svg><p id="liveLine" aria-live="polite">Six lookups running in parallel.</p></div>
@@ -158,7 +159,7 @@
     <article class="report" id="summary" aria-labelledby="verdictLabel" hidden>
       <header class="rp-strip">
         <span class="mono">Case report · NW-<span data-case-no>0001</span></span>
-        <span class="mono" id="rpFiled"></span>
+        <span class="closed"><svg class="sig" aria-hidden="true"><use href="#sig"/></svg><span class="mono" id="rpFiled"></span></span>
       </header>
       <div class="rp-verdict" id="rpVerdict" data-v="mid">
         <p class="rp-q" id="rpQuestion">Is this name worth pursuing?</p>
@@ -168,11 +169,11 @@
       </div>
       <div class="rp-cols">
         <section>
-          <h3 class="h-sm">Key findings</h3>
+          <h3 class="h-sm">Key evidence</h3>
           <ol class="keys" id="keyFindings"></ol>
         </section>
         <section class="rp-next">
-          <h3 class="h-sm">What to do next</h3>
+          <h3 class="h-sm">Recommended next steps</h3>
           <ol class="next" id="nextMoves"></ol>
           <button class="txt-btn" id="moreMoves" type="button" hidden></button>
         </section>
@@ -180,12 +181,12 @@
     </article>
 
     <section class="findings" aria-labelledby="findingsH">
-      <div class="sec-head"><h2 class="h-sm" id="findingsH">Investigations</h2><span class="muted small" id="findCount"></span></div>
+      <div class="sec-head"><h2 class="h-sm" id="findingsH">Exhibits</h2><span class="muted small" id="findCount"></span></div>
       <div class="grid" id="grid"></div>
     </section>
 
     <section class="links" id="linksSec" hidden>
-      <div class="sec-head"><h2 class="h-sm">Connections</h2><span class="muted small">Where one investigation backs up another</span></div>
+      <div class="sec-head"><h2 class="h-sm">Linked evidence</h2><span class="muted small">Where one exhibit backs up another</span></div>
       <ul class="link-list" id="linkList"></ul>
     </section>
 

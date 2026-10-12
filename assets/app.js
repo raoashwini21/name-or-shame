@@ -38,12 +38,12 @@
   };
   // the order findings are filed in, with what each one is called
   const CHECKS = [
-    { key: 'domains',    title: 'Domains',            src: 'RDAP · DNS',       meta: '6 TLDs' },
-    { key: 'handles',    title: 'Social handles',     src: 'HTTP status',      meta: 'X · Instagram' },
-    { key: 'collisions', title: 'Existing brands',    src: 'Web search',       meta: 'your niche' },
-    { key: 'market',     title: 'Trademark mentions', src: 'Web search',       meta: 'signal only' },
-    { key: 'relatives',  title: 'Similar names',      src: 'RDAP · Web search', meta: 'variants' },
-    { key: 'memory',     title: 'Memorability',       src: 'Jev',              meta: 'model read' }
+    { key: 'domains',    ex: 'A', title: 'Domains',            src: 'RDAP · DNS',        meta: '6 TLDs',        verb: 'Questioning the domain registries' },
+    { key: 'handles',    ex: 'B', title: 'Social handles',     src: 'HTTP status',       meta: 'X · Instagram', verb: 'Checking who holds the handle' },
+    { key: 'collisions', ex: 'C', title: 'Existing brands',    src: 'Web search',        meta: 'your niche',    verb: 'Canvassing the web for existing brands' },
+    { key: 'market',     ex: 'D', title: 'Trademark mentions', src: 'Web search',        meta: 'signal only',   verb: 'Looking for trademark mentions' },
+    { key: 'relatives',  ex: 'E', title: 'Similar names',      src: 'RDAP · Web search', meta: 'variants',      verb: 'Tracing close variants' },
+    { key: 'memory',     ex: 'F', title: 'Memorability',       src: 'Jev',               meta: 'model read',    verb: 'Taking a read on memorability' }
   ];
   const CHECK = Object.fromEntries(CHECKS.map(c => [c.key, c]));
   const icon = (k) => '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + ICON[k] + '</svg>';
@@ -203,7 +203,7 @@
   const Side = {
     render(){
       $('sideChecks').innerHTML = CHECKS.map(c => '<li><button type="button" data-k="' + c.key + '" data-st="queued">' + glyph('queued') +
-        '<span><span class="lbl">' + c.title + '</span><span class="res">' + c.meta + '</span></span></button></li>').join('');
+        '<span><span class="lbl"><b class="ex mono">' + c.ex + '</b>' + c.title + '</span><span class="res">' + c.meta + '</span></span></button></li>').join('');
     },
     set(key, st, text){
       state.status[key] = st;
@@ -235,8 +235,9 @@
       $('grid').classList.remove('focus');
       $('grid').innerHTML = CHECKS.map(c =>
         '<article class="card pending" data-k="' + c.key + '" aria-busy="true">' +
-        '<div class="card-h">' + icon(c.key) + '<h3>' + c.title + '</h3></div>' +
-        '<span class="searching"><span class="spin" aria-hidden="true"></span>Searching sources · <span class="mono">' + c.src + '</span></span></article>').join('');
+        '<div class="card-h"><span class="exhibit mono">Exhibit ' + c.ex + '</span><h3>' + c.title + '</h3></div>' +
+        '<span class="searching"><span class="spin" aria-hidden="true"></span>' + c.verb + '…</span>' +
+        '<div class="redacted" aria-hidden="true"><i></i><i></i><i></i></div></article>').join('');
       $('findCount').textContent = '';
     },
     file(key, d){
@@ -245,13 +246,14 @@
       el.className = 'card';
       el.removeAttribute('aria-busy');
       el.tabIndex = -1;
-      el.innerHTML = '<div class="card-h">' + icon(key) + '<h3>' + CHECK[key].title + '</h3><span class="state" data-t="' + st.t + '">' + st.label + '</span></div>' +
+      el.innerHTML = '<div class="card-h"><span class="exhibit mono">Exhibit ' + CHECK[key].ex + '</span><h3>' + CHECK[key].title + '</h3><span class="state" data-t="' + st.t + '">' + st.label + '</span></div>' +
         '<p class="card-sum">' + escapeHtml(resultLine(key, d)) + '</p>' +
-        '<div class="card-meta"><span>' + CHECK[key].src + '</span><span>·</span><span>filed ' + clockS(new Date()) + '</span></div>' +
+        '<div class="card-meta"><span>Source: ' + CHECK[key].src + '</span><span>·</span><span>filed ' + clockS(new Date()) + '</span></div>' +
         '<div class="card-body">' + BODY[key](d) + '</div>' +
         '<div class="card-foot"><span class="linked-note"></span><button class="txt-btn" type="button" data-open="' + key + '">Full evidence →</button></div>';
       if (!reduceMotion){
-        el.classList.add('filing', 'fresh');
+        el.classList.add('filing', 'fresh', 'declassify');
+        setTimeout(() => el.classList.remove('declassify'), 900);
         el.addEventListener('animationend', () => el.classList.remove('filing'), { once: true });
         setTimeout(() => el.classList.remove('fresh'), 900);
       }
@@ -268,6 +270,7 @@
       el.removeAttribute('aria-busy');
       el.classList.add('cold');
       el.querySelector('.searching').innerHTML = '<span class="spin"></span>Lookup did not return';
+      const r = el.querySelector('.redacted'); if (r) r.remove();
     },
     // hovering an investigation shows what else it is connected to
     focus(key){
@@ -389,7 +392,7 @@
           .map(r => '<div class="dr-item"><div class="row"><span>' + escapeHtml(r[0]) + '</span><span class="mono">' + pct(r[1]) + '</span></div></div>').join('');
       }
       const xr = linksFor(key);
-      $('drKicker').textContent = 'NW-' + state.caseNum + ' · ' + CHECK[key].title;
+      $('drKicker').textContent = 'NW-' + state.caseNum + ' · Exhibit ' + CHECK[key].ex;
       $('drBody').innerHTML = '<span class="muted small">' + escapeHtml(resultLine(key, d)) + '</span><h2 class="dr-title" id="drTitle">' + CHECK[key].title + '</h2>' +
         '<dl class="dr-meta">' + meta.map(m => '<dt>' + m[0] + '</dt><dd>' + escapeHtml(m[1]) + '</dd>').join('') + '</dl>' + items +
         (xr.length ? '<h3 class="h-sm" style="margin-top:22px">Connected findings</h3>' + xr.map(x => '<div class="dr-item"><b>' + CHECK[x.other].title + '</b> — ' + escapeHtml(x.why) + '</div>').join('') : '');
@@ -414,7 +417,7 @@
   function renderLinks(){
     $('linksSec').hidden = false;
     $('linkList').innerHTML = state.links.length ? state.links.map(l =>
-      '<li data-a="' + l.a + '" data-b="' + l.b + '"><span class="chip">' + CHECK[l.a].title + '</span><span class="join" aria-hidden="true"></span><span class="chip">' + CHECK[l.b].title + '</span><p class="why">' + escapeHtml(l.why.charAt(0).toUpperCase() + l.why.slice(1)) + '</p></li>').join('')
+      '<li data-a="' + l.a + '" data-b="' + l.b + '"><span class="chip"><b class="mono">' + CHECK[l.a].ex + '</b> ' + CHECK[l.a].title + '</span><span class="join" aria-hidden="true"></span><span class="chip"><b class="mono">' + CHECK[l.b].ex + '</b> ' + CHECK[l.b].title + '</span><p class="why">' + escapeHtml(l.why.charAt(0).toUpperCase() + l.why.slice(1)) + '</p></li>').join('')
       : '<li>' + emptySig('No investigation here backs up another — each stands on its own.') + '</li>';
     $('linkList').querySelectorAll('li[data-a]').forEach(li => {
       li.addEventListener('mouseenter', () => { $('grid').classList.add('focus'); [li.dataset.a, li.dataset.b].forEach(k => document.querySelector('.card[data-k="' + k + '"]').classList.add('linked')); });
@@ -487,7 +490,7 @@
     const niche = (d.niche_matches || []).length;
     const viable = (d.variants || []).filter(v => v.domains && v.domains.com && v.domains.com.available === true);
 
-    $('rpFiled').textContent = 'Filed ' + clock(state.receivedAt) + ', ' + state.today;
+    $('rpFiled').textContent = 'Case closed ' + clock(state.receivedAt) + ', ' + state.today;
     $('rpVerdict').dataset.v = verdictClass;
     $('rpQuestion').textContent = 'Is ' + state.name + ' worth pursuing?';
     $('verdictLabel').textContent = ANSWER[verdict];
@@ -498,7 +501,7 @@
 
     $('keyFindings').innerHTML = keyFindings(d).map((k, i) => '<li data-t="' + k.t + '"><span class="rk" aria-hidden="true">' + (k.t === 'risk' ? '!' : '✓') + '</span><div>' +
       '<div class="kt">' + escapeHtml(k.title) + '</div><div class="kd">' + escapeHtml(k.detail) + '</div>' +
-      '<button class="kl" type="button" data-goto="' + k.key + '">See the ' + CHECK[k.key].title.toLowerCase() + ' investigation ↓</button></div></li>').join('');
+      '<button class="kl" type="button" data-goto="' + k.key + '">See exhibit ' + CHECK[k.key].ex + ' — ' + CHECK[k.key].title.toLowerCase() + ' ↓</button></div></li>').join('');
     $('keyFindings').querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', () => {
       const card = document.querySelector('.card[data-k="' + b.dataset.goto + '"]'); if (!card) return;
       card.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
@@ -565,16 +568,21 @@
     $('wsName').textContent = name; $('wsCtx').textContent = context;
     $('demoTag').hidden = !DEMO;
     $('summary').hidden = true; $('linksSec').hidden = true;
-    $('findingsH').textContent = 'Investigations';
+    $('findingsH').textContent = 'Exhibits';
     $('copyBtn').disabled = true;
     $('rawOutput').style.display = 'none'; $('rawToggle').textContent = 'Show raw response';
     setStatus('running', 'Investigating');
     Side.render(); Side.progress(); Grid.reset();
-    $('liveLine').innerHTML = '<b>Case opened.</b> Six lookups running in parallel.';
+    $('liveLine').innerHTML = '<b>Case NW-' + state.caseNum + ' opened.</b> Six lines of inquiry running in parallel.';
     // every lookup is dispatched at once on the server
     CHECKS.forEach((c, i) => queued.push(setTimeout(() => Side.set(c.key, 'running', c.src), reduceMotion ? 0 : 120 + i * 90)));
     const t0 = performance.now();
-    tick = setInterval(() => { $('elapsed').textContent = ((performance.now() - t0) / 1000).toFixed(1) + 's'; }, 100);
+    let n = 0;
+    tick = setInterval(() => {
+      $('elapsed').textContent = ((performance.now() - t0) / 1000).toFixed(1) + 's';
+      // all six run at once on the server; the line names each line of inquiry in turn
+      if (++n % 14 === 0){ const c = CHECKS[(n / 14) % CHECKS.length]; $('liveLine').innerHTML = '<b>' + c.verb + '…</b> <span class="muted">Six lines of inquiry open.</span>'; }
+    }, 100);
   }
 
   async function fileEvidence(d){
@@ -591,7 +599,7 @@
       Side.set(c.key, GLYPH_FOR[s.t], s.label + ' · ' + resultLine(c.key, d));
       state.filed++;
       Side.progress();
-      $('liveLine').innerHTML = '<b>' + CHECK[c.key].title + ':</b> ' + escapeHtml(s.label.toLowerCase()) + '.';
+      $('liveLine').innerHTML = '<b>Exhibit ' + CHECK[c.key].ex + ' filed.</b> ' + CHECK[c.key].title + ': ' + escapeHtml(s.label.toLowerCase()) + '.';
       $('findCount').textContent = state.filed + ' of 6 filed';
     }
     await sleep(step);
@@ -599,10 +607,10 @@
     await sleep(step);
     renderReport(d);
     const review = CHECKS.filter(c => state.status[c.key] === 'found' || state.status[c.key] === 'evidence').length;
-    $('liveLine').innerHTML = '<b>Check completed.</b> ' + (review ? plural(review, 'investigation') + ' turned up something to review' : 'Nothing to review') + ' · ' + plural(state.links.length, 'connection') + '.';
-    $('findingsH').textContent = 'All six investigations';
+    $('liveLine').innerHTML = '<b>Case closed.</b> ' + (review ? plural(review, 'exhibit') + ' turned up something to review' : 'Nothing to review') + ' · ' + plural(state.links.length, 'piece') + ' of linked evidence.';
+    $('findingsH').textContent = 'Exhibits A–F';
     $('findCount').textContent = 'Hover one to see what it connects to';
-    setStatus('complete', 'Complete');
+    setStatus('complete', 'Case closed');
     $('copyBtn').disabled = false;
   }
 
@@ -694,8 +702,8 @@
     try{
       await navigator.clipboard.writeText(txt);
       copyBtn.textContent = 'Copied';
-      setTimeout(() => { copyBtn.textContent = 'Copy report'; }, 1500);
-    }catch(e){ copyBtn.textContent = 'Copy failed'; setTimeout(() => { copyBtn.textContent = 'Copy report'; }, 2000); }
+      setTimeout(() => { copyBtn.textContent = 'Copy case report'; }, 1500);
+    }catch(e){ copyBtn.textContent = 'Copy failed'; setTimeout(() => { copyBtn.textContent = 'Copy case report'; }, 2000); }
   });
   const rawToggle = $('rawToggle'), rawOutput = $('rawOutput');
   rawToggle.addEventListener('click', function(){

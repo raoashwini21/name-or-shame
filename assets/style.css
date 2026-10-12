@@ -517,3 +517,59 @@ h1, h2, h3{ font-family:var(--f-head); margin:0; color:var(--text); }
   .profile .state{ grid-column:2; justify-self:start; }
   .compare th:nth-child(3), .compare td:nth-child(3){ display:none; }
 }
+
+/* =========================================================================
+   Case-file details: exhibits, redaction, the lamp and the investigator
+   ========================================================================= */
+.exhibit{ display:inline-flex; align-items:center; font-size:11px; font-weight:600; letter-spacing:.02em; color:#8A7146; border:1px solid rgba(184,155,104,.6); border-radius:4px; padding:1px 6px; white-space:nowrap; }
+
+/* hero: a desk lamp over the file */
+.hero-band::before{
+  background:
+    radial-gradient(520px 420px at 76% 46%, rgba(214,190,140,.16), transparent 70%),
+    radial-gradient(900px 520px at 78% 40%, rgba(255,255,255,.04), transparent 70%);
+}
+.folder{ position:absolute; left:-6%; top:30px; width:108%; height:420px; background:#24394C; border:1px solid rgba(184,155,104,.18); border-radius:6px 14px 14px 14px; transform:rotate(-1.8deg); box-shadow:0 30px 50px -30px rgba(0,0,0,.8); }
+.folder::before{ content:''; position:absolute; left:-1px; top:-22px; width:150px; height:23px; background:#24394C; border:1px solid rgba(184,155,104,.18); border-bottom:0; border-radius:8px 8px 0 0; }
+.folder-label{ position:absolute; left:12px; top:-17px; display:inline-flex; align-items:center; gap:7px; font-size:11px; color:var(--brass); letter-spacing:.04em; white-space:nowrap; }
+.folder-label .sig{ width:15px; height:13px; color:var(--brass); }
+.folder{ left:0; width:100%; }
+.sheet .exhibit{ position:absolute; top:12px; left:22px; }
+.sheet .sh-head{ margin-top:16px; }
+.sheet-subject .exhibit{ top:12px; }
+.clip{ position:absolute; top:-12px; right:56px; width:14px; height:40px; fill:none; stroke:#8C969B; stroke-width:2; stroke-linecap:round; z-index:2; }
+
+/* sidebar */
+.side-label{ font-family:var(--f-head); font-weight:600; font-size:12px; color:var(--on-deep-muted); margin:0 0 6px 10px; }
+.side-checks .ex{ display:inline-block; width:16px; color:var(--brass); font-size:12px; font-weight:500; }
+
+/* a record still under redaction while its line of inquiry runs */
+.card.pending .card-h .exhibit{ order:-1; }
+.redacted{ grid-column:1 / -1; display:grid; gap:7px; margin-top:4px; }
+.redacted i{ display:block; height:9px; border-radius:2px; background:var(--navy); opacity:.82; }
+.redacted i:nth-child(1){ width:72%; } .redacted i:nth-child(2){ width:88%; } .redacted i:nth-child(3){ width:46%; }
+.card.pending.cold .redacted{ display:none; }
+
+/* filed: the redaction bars lift off the record */
+.card{ position:relative; }
+.card.declassify::after{
+  content:''; position:absolute; left:20px; right:20px; top:62px; height:44px; pointer-events:none;
+  background:
+    linear-gradient(var(--navy), var(--navy)) 0 0 / 72% 9px no-repeat,
+    linear-gradient(var(--navy), var(--navy)) 0 16px / 88% 9px no-repeat,
+    linear-gradient(var(--navy), var(--navy)) 0 32px / 46% 9px no-repeat;
+  transform-origin:right center; animation:declassify .55s cubic-bezier(.6,0,.2,1) .05s both;
+}
+@keyframes declassify{ from{ transform:scaleX(1); opacity:.85; } to{ transform:scaleX(0); opacity:.85; } }
+.card-h .exhibit{ margin-right:2px; }
+
+/* report: the case closes */
+.rp-strip{ align-items:center; }
+.rp-strip .closed{ display:inline-flex; align-items:center; gap:8px; color:var(--brass); }
+.rp-strip .sig{ width:18px; height:16px; color:var(--brass); }
+.link-list .chip b{ color:var(--brass); margin-right:4px; font-weight:600; }
+
+@media (max-width: 560px){
+  .folder{ height:360px; }
+  }
+@media (prefers-reduced-motion: reduce){ .card.declassify::after{ display:none; } }
