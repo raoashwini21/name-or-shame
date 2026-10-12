@@ -1,8 +1,8 @@
 {
-  "name": "name-worth-it",
+  "name": "name-or-shame",
   "version": "1.0.0",
   "private": true,
-  "description": "Name Worth It? - checks if a product/company name is a good pick, with live domain + niche-collision checks grounding a Jev verdict.",
+  "description": "Name or Shame - checks if a product/company name is a good pick, with live domain + niche-collision checks grounding a Jev verdict.",
   "scripts": {
     "dev": "vercel dev"
   }

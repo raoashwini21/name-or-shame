@@ -3,8 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Name Worth It?</title>
-<meta name="description" content="Open a file on your name. Check domains, who already uses the name, handles and memorability — so you know if it's a name worth it.">
+<title>Name or Shame | Check a product name before you commit</title>
+<meta name="description" content="Free name checker. Enter a product or company name and a one-line description. Get domain availability, social handles, who already uses the name, and a verdict. No signup.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<!-- link previews -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Name or Shame">
+<meta property="og:url" content="https://name-or-shame.vercel.app/">
+<meta property="og:title" content="Name or Shame | Check a product name before you commit">
+<meta property="og:description" content="Free name checker. Enter a product or company name and a one-line description. Get domain availability, social handles, who already uses the name, and a verdict. No signup.">
+<meta property="og:image" content="https://name-or-shame.vercel.app/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A detective reading a case file at a desk, with the words Name or Shame: Check a name before you commit to it.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Name or Shame | Check a product name before you commit">
+<meta name="twitter:description" content="Free name checker. Enter a product or company name and a one-line description. Get domain availability, social handles, who already uses the name, and a verdict. No signup.">
+<meta name="twitter:image" content="https://name-or-shame.vercel.app/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Courier+Prime:wght@400;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
@@ -31,7 +46,10 @@
 </svg>
 
 <header class="topbar">
-  <a class="logo" href="#" id="homeLink">Name Worth It?</a>
+  <div class="brandmark">
+    <a class="logo" href="#" id="homeLink">Name or Shame</a>
+    <span class="logo-sub">Check a name before you commit to it.</span>
+  </div>
   <span class="topmeta">CASE <b data-case-no>0001</b><span class="dt"> &nbsp;·&nbsp; <span class="js-date">—</span></span></span>
 </header>
 
@@ -41,11 +59,11 @@
 <main id="landing" class="screen on">
 
   <section class="panel" aria-labelledby="h01">
-    <div class="panel-head"><span class="pn">01</span><span class="pt">Case File</span><span class="dash"></span><span class="tag">OPEN. INVESTIGATE. CLARIFY.</span><span class="brand">Name Worth It?</span></div>
+    <div class="panel-head"><span class="pn">01</span><span class="pt">Case File</span><span class="dash"></span><span class="tag">OPEN. INVESTIGATE. CLARIFY.</span><span class="brand">Name or Shame</span></div>
     <div class="hero">
       <div class="hero-copy">
         <h1 id="h01">Open a file<br>on <em>your name.</em></h1>
-        <p class="lede">Check domains, who already uses the name, clarity and more — so you know if it's a name worth it.</p>
+        <p class="lede">Check domains, who already uses the name, clarity and more — so you know whether to keep it or ditch it.</p>
 
         <form class="intake" id="intakeForm" autocomplete="off" novalidate>
           <label class="sr" for="nameInput">Name to investigate</label>
@@ -76,7 +94,7 @@
           <g transform="rotate(-2 330 170)">
             <rect x="252" y="58" width="196" height="250" fill="#FBF7EE" stroke="#DCD0BA" stroke-width="1.5"/>
             <text x="270" y="84" class="sv-mono" font-size="9" letter-spacing="1.5">CASE FILE</text>
-            <text x="270" y="103" class="sv-serif" font-size="14">Name Worth It?</text>
+            <text x="270" y="103" class="sv-serif" font-size="14">Name or Shame</text>
             <line x1="270" y1="118" x2="430" y2="118" stroke="#E2D8C6"/>
             <text x="270" y="140" class="sv-mono" font-size="8.5" letter-spacing="1">NAME</text><text x="320" y="140" class="sv-serif" font-size="11.5" id="artName">Nimbus</text>
             <line x1="270" y1="150" x2="430" y2="150" stroke="#EEE6D8"/>
@@ -111,7 +129,7 @@
   </section>
 
   <section class="panel" aria-labelledby="h02">
-    <div class="panel-head"><span class="pn">02</span><span class="pt">Investigation Desk</span><span class="dash"></span><span class="tag">DIG DEEPER. SEE THE WHOLE PICTURE.</span><span class="brand">Name Worth It?</span></div>
+    <div class="panel-head"><span class="pn">02</span><span class="pt">Investigation Desk</span><span class="dash"></span><span class="tag">DIG DEEPER. SEE THE WHOLE PICTURE.</span><span class="brand">Name or Shame</span></div>
     <div class="desk-hero">
       <div class="desk-copy">
         <h2 id="h02">A closer look<br>at <em class="js-name">Nimbus.</em></h2>
@@ -142,7 +160,7 @@
           <!-- mug -->
           <path d="M150 196 h52 v36 a8 8 0 0 1 -8 8 h-36 a8 8 0 0 1 -8 -8 z" fill="#F6F0E4" stroke="#2B211C" stroke-width="2"/>
           <path d="M202 206 c14 0 14 22 0 22" fill="none" stroke="#2B211C" stroke-width="2"/>
-          <text x="176" y="222" text-anchor="middle" class="sv-serif" font-size="13">NW?</text>
+          <text x="176" y="222" text-anchor="middle" class="sv-serif" font-size="13">N/S?</text>
           <!-- three label books: one width, offset to look stacked; labels are fitted in app.js -->
           <g class="stack">
             <g transform="translate(446 158)"><rect width="164" height="26" fill="#E3D1AA" stroke="#2B211C" stroke-width="2"/><text x="82" y="17.5" text-anchor="middle" class="sv-serif stack-label" font-size="13" letter-spacing="1" data-fit="140">DOMAINS</text></g>
@@ -191,7 +209,7 @@
      ====================================================================== -->
 <main id="progress" class="screen" aria-live="polite">
   <section class="panel">
-    <div class="panel-head"><span class="pn">04</span><span class="pt">Search in Progress</span><span class="dash"></span><span class="tag">REAL CHECKS. REAL ANSWERS.</span><span class="brand">Name Worth It?</span></div>
+    <div class="panel-head"><span class="pn">04</span><span class="pt">Search in Progress</span><span class="dash"></span><span class="tag">REAL CHECKS. REAL ANSWERS.</span><span class="brand">Name or Shame</span></div>
     <div class="prog">
       <div class="prog-copy">
         <h2>Investigating<br><em id="progName">Nimbus…</em></h2>
@@ -219,7 +237,7 @@
      ====================================================================== -->
 <main id="board" class="screen">
   <section class="panel">
-    <div class="panel-head"><span class="pn">03</span><span class="pt">Evidence Board</span><span class="dash"></span><span class="tag">CONNECT THE CLUES. SEE THE STORY.</span><span class="brand">Name Worth It?</span></div>
+    <div class="panel-head"><span class="pn">03</span><span class="pt">Evidence Board</span><span class="dash"></span><span class="tag">CONNECT THE CLUES. SEE THE STORY.</span><span class="brand">Name or Shame</span></div>
     <div class="board-wrap" id="result">
       <div class="board-copy">
         <h2>The bigger picture<br>behind <em id="boardName">Nimbus.</em></h2>
