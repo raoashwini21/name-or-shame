@@ -12,6 +12,7 @@
   --ink:#1E1A16;
   --ink-2:#4A423A;
   --ink-3:#857A6C;
+  --fine:#6E6458;      /* fine print: ≥4.5:1 on paper, card and page backgrounds */
   --red:#9E1D17;
   --red-2:#B42B22;
   --red-soft:#F3DCD6;
@@ -421,3 +422,6 @@ svg.threads .lbl text{ font-family:var(--mono); font-size:10.5px; fill:var(--red
   .hero-copy, .lede{ min-width:0; max-width:100%; }
   .panel{ padding-left:14px; padding-right:14px; }
 }
+
+/* fine print: disclaimers, confidence notes and caveats — small but readable */
+.fine, .ev-list li span.fine, .dr-meta .fine, .next .k.fine, .foot p.fine{ font-size:11.5px; color:var(--fine); letter-spacing:.02em; line-height:1.55; }
