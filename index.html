@@ -4,200 +4,271 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Name Worth It?</title>
-<meta name="description" content="Find out if your name is worth building. Check domains, social handles, existing brands and naming risks before you commit.">
+<meta name="description" content="Open a file on your name. Check domains, competitors, handles and memorability — so you know if it's a name worth it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Courier+Prime:wght@400;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 </head>
-<body id="top">
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <!-- the investigator's signature: hat and shoulders, used sparingly -->
-  <symbol id="sig" viewBox="0 0 250 220"><path fill="currentColor" d="M118 18 C104 16 92 26 90 40 L88 52 C66 54 48 60 40 68 C38 72 42 74 48 73 C76 68 120 66 158 70 C166 71 170 68 164 64 C154 58 142 54 136 53 L134 40 C132 27 128 19 118 18 Z M98 76 C96 92 100 106 112 112 C92 116 66 128 52 150 C36 176 30 204 30 220 L220 220 C214 176 196 136 168 114 C176 104 178 90 176 78 C150 74 122 74 98 76 Z"/></symbol>
-</defs></svg>
+<body>
 
-<!-- ===================================================================
-     HOME
-     =================================================================== -->
-<div id="home" class="view on">
-  <section class="hero-band">
-    <header class="nav">
-      <a class="brand brand-light" href="#" data-home><svg class="mark" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="2" width="17" height="22" rx="2.5"/><path d="M8 8h7M8 12h5"/><circle cx="18.5" cy="18.5" r="5"/><path d="M22.2 22.2 26 26"/></svg><span>Name Worth It?</span></a>
-      <nav class="nav-links" aria-label="Page"><a href="#checks">What we check</a><a href="#sources">Sources</a></nav>
-    </header>
+<!-- ============ Illustration library: one detective, a few poses ============ -->
+<svg class="defs" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E6468"/><stop offset="1" stop-color="#C3C7C8"/></linearGradient>
+    <pattern id="tweed" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#A8432F"/><path d="M0 3.5 H7 M3.5 0 V7" stroke="#8C3426" stroke-width="1.2"/><path d="M0 0.6 H7" stroke="#BB5A44" stroke-width=".7"/></pattern>
+    <!-- polaroid with sky -->
+    <symbol id="polaroid" viewBox="0 0 120 140">
+      <rect x="1" y="1" width="118" height="138" fill="#FBF7EF" stroke="#D8CDB9" stroke-width="1.5"/>
+      <rect x="9" y="9" width="102" height="96" fill="url(#sky)"/>
+      <g fill="#F2F2F0">
+        <circle cx="38" cy="70" r="16"/><circle cx="58" cy="60" r="20"/><circle cx="80" cy="70" r="15"/><rect x="22" y="70" width="74" height="18" rx="9"/>
+        <circle cx="86" cy="36" r="8" opacity=".8"/><circle cx="96" cy="38" r="7" opacity=".8"/>
+      </g>
+      <g fill="#C9CDCF" opacity=".7"><rect x="26" y="80" width="66" height="8" rx="4"/></g>
+    </symbol>
+  </defs>
+</svg>
 
-    <main class="hero">
-      <section class="hero-copy">
-        <p class="kicker"><span class="dot"></span>Open a case on your name</p>
-        <h1>Find out if your name is worth building.</h1>
-        <p class="lede">Check domains, social handles, existing brands and naming risks before you commit.</p>
+<header class="topbar">
+  <a class="logo" href="#" id="homeLink">Name Worth It?</a>
+  <span class="topmeta">CASE <b data-case-no>0001</b><span class="dt"> &nbsp;·&nbsp; <span class="js-date">—</span></span></span>
+</header>
+
+<!-- ======================================================================
+     LANDING — 01 Case File + 02 Investigation Desk
+     ====================================================================== -->
+<main id="landing" class="screen on">
+
+  <section class="panel" aria-labelledby="h01">
+    <div class="panel-head"><span class="pn">01</span><span class="pt">Case File</span><span class="dash"></span><span class="tag">OPEN. INVESTIGATE. CLARIFY.</span><span class="brand">Name Worth It?</span></div>
+    <div class="hero">
+      <div class="hero-copy">
+        <h1 id="h01">Open a file<br>on <em>your name.</em></h1>
+        <p class="lede">Check domains, competitors, clarity and more — so you know if it's a name worth it.</p>
 
         <form class="intake" id="intakeForm" autocomplete="off" novalidate>
-          <div class="field">
-            <label for="nameInput">Name</label>
-            <input type="text" id="nameInput" class="input-name" placeholder="e.g. Nimbus" spellcheck="false" value="Nimbus">
+          <label class="sr" for="nameInput">Name to investigate</label>
+          <div class="field search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 L21 21"/></svg>
+            <input type="text" id="nameInput" placeholder="Your product name" spellcheck="false" value="Nimbus">
           </div>
-          <div class="field">
-            <div class="label-row"><label for="context">What it does</label><span class="hint" id="ctxHint">One line. We search the web against it.</span></div>
-            <input type="text" id="context" placeholder="LinkedIn outreach for sales teams" value="LinkedIn outreach for sales teams" aria-describedby="ctxHint">
+          <label class="sr" for="context">What it does</label>
+          <div class="field ctx">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg>
+            <input type="text" id="context" placeholder="What does it do? One line — we search against it" value="LinkedIn outreach for sales teams">
           </div>
-          <div class="intake-foot">
-            <button class="btn btn-primary" id="runBtn" type="submit"><span id="runBtnLabel">Investigate a name</span><span aria-hidden="true">→</span></button>
-            <span class="muted small">Opens case <span class="mono">NW-<span data-case-no>0001</span></span> · six live lookups</span>
-          </div>
+          <button class="btn-red" id="runBtn" type="submit"><span id="runBtnLabel">Investigate the name</span><span class="arr" aria-hidden="true">→</span></button>
           <div class="error-box" id="errorBox" role="alert"></div>
         </form>
-      </section>
 
-      <!-- An example case file. Click a record (or a tab) to bring it to the front. -->
-      <aside class="dossier-wrap" aria-label="Example case file">
-        <div class="dossier-cap"><span>Example case file</span><span class="muted">Sample data — your case runs live lookups</span></div>
-        <div class="dossier" id="dossier">
-          <div class="folder" aria-hidden="true"><span class="folder-label mono"><svg class="sig" aria-hidden="true"><use href="#sig"/></svg>Case file</span></div>
-          <article class="sheet" data-sheet="brands" data-pos="2" tabindex="0" aria-label="Existing brands record">
-            <span class="exhibit mono">Exhibit C</span><header class="sh-head"><span class="sh-title">Existing brands</span><span class="state" data-t="evidence">Evidence found</span></header>
-            <div class="sh-meta mono">Web search · "Nimbus" LinkedIn outreach for sales teams</div>
-            <div class="brief" data-r="High"><div class="brief-top"><span class="mono">nimbus-sales.example</span><span class="overlap"><i class="on"></i><i class="on"></i><i class="on"></i>High overlap</span></div><div class="bt">Nimbus — prospecting assistant for B2B sales teams</div></div>
-            <div class="brief" data-r="High"><div class="brief-top"><span class="mono">nimbuscrm.example</span><span class="overlap"><i class="on"></i><i class="on"></i><i class="on"></i>High overlap</span></div><div class="bt">Nimbus CRM: lightweight pipeline for small sales teams</div></div>
-            <div class="sh-more muted small">+ 2 more results</div>
-          </article>
-
-          <article class="sheet" data-sheet="registry" data-pos="1" tabindex="0" aria-label="Domain registry record">
-            <svg class="clip" viewBox="0 0 16 44" aria-hidden="true"><path d="M5 12 V5 a4 4 0 0 1 8 0 V34 a6 6 0 0 1 -12 0 V14"/></svg><span class="exhibit mono">Exhibit B</span><header class="sh-head"><span class="sh-title">Registry extract</span><span class="state" data-t="review">Review needed</span></header>
-            <div class="sh-meta mono">RDAP · DNS fallback</div>
-            <table class="registry"><tbody>
-              <tr class="taken"><td class="d">nimbus.com</td><td><span class="taken-l">Registered</span></td><td class="src">RDAP</td></tr>
-              <tr class="taken"><td class="d">nimbus.io</td><td><span class="taken-l">Registered</span></td><td class="src">RDAP</td></tr>
-              <tr class="taken"><td class="d">nimbus.net</td><td><span class="taken-l">Registered</span></td><td class="src">RDAP</td></tr>
-              <tr class="free"><td class="d">nimbus.ai</td><td><span class="ok-l">Likely free</span></td><td class="src">DNS</td></tr>
-              <tr class="free"><td class="d">nimbus.app</td><td><span class="ok-l">Available</span></td><td class="src">RDAP</td></tr>
-              <tr class="taken"><td class="d">nimbus.co</td><td><span class="taken-l">Registered</span></td><td class="src">RDAP</td></tr>
-            </tbody></table>
-          </article>
-
-          <article class="sheet sheet-subject" data-sheet="subject" data-pos="0" tabindex="0" aria-label="Subject record">
-            <div class="folder-tab mono">NW-EXAMPLE</div>
-            <span class="exhibit mono">Exhibit A</span><header class="sh-head"><span class="sh-title">Subject record</span><span class="classif" data-v="bad">High collision risk</span></header>
-            <div class="doc-name">Nimbus</div>
-            <div class="doc-ctx">LinkedIn outreach for sales teams</div>
-            <div class="doc-verdict"><span class="muted small">Is it worth pursuing?</span><b>Not as it stands.</b></div>
-            <dl class="fields">
-              <div><dt>Domains</dt><dd>.com registered · 2 of 6 free</dd></div>
-              <div><dt>Handles</dt><dd class="mono">@nimbus taken</dd></div>
-              <div><dt>Existing brands</dt><dd>4 in your space</dd></div>
-              <div><dt>Best variant</dt><dd>Nimbusly · .com free</dd></div>
-            </dl>
-          </article>
-        </div>
-        <div class="dossier-tabs" role="tablist" aria-label="Example records">
-          <button type="button" role="tab" data-show="subject" aria-selected="true">Subject</button>
-          <button type="button" role="tab" data-show="registry" aria-selected="false">Registry</button>
-          <button type="button" role="tab" data-show="brands" aria-selected="false">Existing brands</button>
-        </div>
-      </aside>
-    </main>
-  </section>
-
-  <section class="checks" id="checks">
-    <div class="checks-inner">
-      <div class="checks-head">
-        <h2>Six lines of inquiry. One case file.</h2>
-        <p>Every finding comes from a live lookup run the moment you investigate. Memorability is the one judgement call, and it's labelled as a model read.</p>
-        <a class="btn btn-ghost" href="#top" id="toForm">Start an investigation ↑</a>
+        <div class="scribble"><svg viewBox="0 0 30 40" aria-hidden="true"><path d="M20 3 C6 8 4 22 14 32 M14 32 L8 29 M14 32 L15 25"/></svg><span>real data. clear answers.<br>a brighter next step.</span></div>
       </div>
-      <ol class="check-list" id="sources">
-        <li><span class="n mono">Exhibit A</span><div><h3>Domains</h3><p>.com, .io, .net, .ai, .app and .co against the registry, with a DNS fallback marked as such.</p></div><span class="src mono">RDAP · DNS</span></li>
-        <li><span class="n mono">Exhibit B</span><div><h3>Social handles</h3><p>Whether the plain @handle is free on X and Instagram.</p></div><span class="src mono">HTTP status</span></li>
-        <li><span class="n mono">Exhibit C</span><div><h3>Existing brands</h3><p>Who already uses the name in your space, searched against your description.</p></div><span class="src mono">Web search</span></li>
-        <li><span class="n mono">Exhibit D</span><div><h3>Trademark mentions</h3><p>A signal from the open web — not a register search. Run a proper one before you file.</p></div><span class="src mono">Web search</span></li>
-        <li><span class="n mono">Exhibit E</span><div><h3>Similar names</h3><p>Close variants with their own domain and search checks, in case the original is crowded.</p></div><span class="src mono">RDAP · Web</span></li>
-        <li><span class="n mono">Exhibit F</span><div><h3>Memorability</h3><p>How sticky, sayable and distinctive it is, and whether it sounds like an existing brand.</p></div><span class="src mono">Jev</span></li>
-      </ol>
+
+      <!-- scene: the case file and the detective at work -->
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 560 470">
+          <!-- folder stack -->
+          <rect x="250" y="44" width="236" height="300" rx="6" fill="#DDC08D" stroke="#C3A472" stroke-width="1.5" transform="rotate(4 368 194)"/>
+          <rect x="244" y="40" width="236" height="300" rx="6" fill="#E3C997" stroke="#C3A472" stroke-width="1.5" transform="rotate(1.5 362 190)"/>
+          <path d="M238 40 h78 l12 -14 h70 l12 14 h66 v300 h-238 z" fill="#E9D3A6" stroke="#C3A472" stroke-width="1.5"/>
+          <!-- case file sheet -->
+          <g transform="rotate(-2 330 170)">
+            <rect x="252" y="58" width="196" height="250" fill="#FBF7EE" stroke="#DCD0BA" stroke-width="1.5"/>
+            <text x="270" y="84" class="sv-mono" font-size="9" letter-spacing="1.5">CASE FILE</text>
+            <text x="270" y="103" class="sv-serif" font-size="14">Name Worth It?</text>
+            <line x1="270" y1="118" x2="430" y2="118" stroke="#E2D8C6"/>
+            <text x="270" y="140" class="sv-mono" font-size="8.5" letter-spacing="1">NAME</text><text x="320" y="140" class="sv-serif" font-size="11.5" id="artName">Nimbus</text>
+            <line x1="270" y1="150" x2="430" y2="150" stroke="#EEE6D8"/>
+            <text x="270" y="170" class="sv-mono" font-size="8.5" letter-spacing="1">TYPE</text><text x="320" y="170" class="sv-serif" font-size="11.5">Brand Name</text>
+            <line x1="270" y1="180" x2="430" y2="180" stroke="#EEE6D8"/>
+            <text x="270" y="200" class="sv-mono" font-size="8.5" letter-spacing="1">STATUS</text><text x="320" y="200" class="sv-serif" font-size="11.5">Under Investigation</text>
+            <line x1="270" y1="210" x2="430" y2="210" stroke="#EEE6D8"/>
+            <line x1="270" y1="232" x2="400" y2="232" stroke="#EEE6D8"/><line x1="270" y1="250" x2="380" y2="250" stroke="#EEE6D8"/>
+          </g>
+          <!-- polaroid + clip -->
+          <use href="#polaroid" x="408" y="34" width="100" height="117" transform="rotate(6 458 92)"/>
+          <path d="M448 32 v-18 a7 7 0 0 1 14 0 v30" fill="none" stroke="#5A5650" stroke-width="2.4" stroke-linecap="round" transform="rotate(6 458 92)"/>
+          <!-- stamp -->
+          <g transform="rotate(-10 430 300)"><rect x="370" y="284" width="122" height="32" fill="none" stroke="#B42B22" stroke-width="2.5" rx="3"/><text x="431" y="306" text-anchor="middle" class="sv-mono" font-size="14" font-weight="700" fill="#B42B22" letter-spacing="1.5">INVESTIGATE</text></g>
+          <!-- floor shadow -->
+          <ellipse cx="330" cy="438" rx="230" ry="16" fill="#E7DCC9"/>
+          <!-- name card on the floor -->
+          <g transform="rotate(8 420 400)">
+            <rect x="320" y="352" width="200" height="104" fill="#F7EFDF" stroke="#D8CBB2" stroke-width="1.5"/>
+            <text x="420" y="410" text-anchor="middle" class="sv-serif" font-size="40" id="artCard">Nimbus</text>
+            <path d="M350 424 C390 430 440 428 488 420" stroke="#B42B22" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <circle cx="454" cy="346" r="6" fill="#B42B22" stroke="#7E1C15" stroke-width="1.5"/>
+          <path d="M454 352 L458 370" stroke="#7E1C15" stroke-width="2"/>
+          <path d="M478 344 l10 -8 M482 356 l12 -2" stroke="#B42B22" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- the detective, crouched with the glass -->
+          <g transform="translate(182 378) scale(1.15)"><g><path d="M-10.2 -0.8 L-6 46 L-44 46" stroke="#2B211C" stroke-width="21.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M-10.2 -0.8 L-6 46 L-44 46" stroke="#2F2C29" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-7 -5 C-7 -11 3 -12 9 -9 C17 -8 22 -4 22 1 L22 4 L-9 4 C-10 0 -9 -3 -7 -5 Z" transform="translate(-44 50) rotate(180) scale(1 -1)" fill="#5B3B2B" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><g transform="translate(0 0) rotate(16)"><path d="M-11 -82 C-18 -82 -25 -78 -27 -70 C-30 -40 -34 8 -35 26 C-14 32 14 32 37 26 C35 8 32 -40 28 -70 C26 -78 19 -82 12 -82 Z" fill="#CDA977" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><path d="M-27 -70 C-30 -40 -34 8 -35 26 C-28 28.5 -22 30 -16 30.5 C-18 6 -18 -40 -16 -72 Z" fill="#B38D5C" opacity=".75"/><path d="M6 8 L6 30" stroke="#2B211C" stroke-width="1.8"/><path d="M-30 -18 C-10 -14 12 -14 31 -18 L31.5 -9 C12 -5 -10 -5 -31 -9 Z" fill="#9C7746" stroke="#2B211C" stroke-width="2"/><rect x="1" y="-17.5" width="11" height="10" rx="1.5" fill="none" stroke="#D8B45A" stroke-width="2.4"/><path d="M-11 -82 L-17 -76 L-6 -46 L3 -62 Z" fill="#DBBD8E" stroke="#2B211C" stroke-width="2" stroke-linejoin="round"/><path d="M12 -82 L20 -76 L10 -46 L3 -62 Z" fill="#DBBD8E" stroke="#2B211C" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -46 L3 -62 L10 -46 L4 -26" fill="none" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/><circle cx="-3" cy="-38" r="2.2" fill="#2B211C"/><circle cx="12" cy="-38" r="2.2" fill="#2B211C"/><circle cx="-1" cy="-26" r="2.2" fill="#2B211C"/><circle cx="13" cy="-26" r="2.2" fill="#2B211C"/><path d="M-24 2 C-18 4 -14 4 -9 2 M15 2 C20 4 25 4 30 2" stroke="#2B211C" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g><path d="M9.1 4.7 L40 -2 L44 46" stroke="#2B211C" stroke-width="21.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M9.1 4.7 L40 -2 L44 46" stroke="#3A3632" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-7 -5 C-7 -11 3 -12 9 -9 C17 -8 22 -4 22 1 L22 4 L-9 4 C-10 0 -9 -3 -7 -5 Z" transform="translate(44 50) rotate(0)" fill="#5B3B2B" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><g><path d="M2.5 -74.2 L14 -34 L29.5 -21" stroke="#2B211C" stroke-width="19.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M2.5 -74.2 L14 -34 L29.5 -21" stroke="#B38D5C" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M29.5 -21 L34.2 -17.2" stroke="#2B211C" stroke-width="18.4" stroke-linecap="butt" fill="none"/><path d="M29.5 -21 L34.2 -17.2" stroke="#B38D5C" stroke-width="14" stroke-linecap="butt" fill="none"/><circle cx="38" cy="-14" r="7.6" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><g transform="translate(22.1 -76.9) rotate(22)"><path d="M-7 4 L-6 -16 L7 -16 L8 4 Z" fill="#E9BE98" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M-14 -24 C-28 -26 -30 -48 -18 -56 L-4 -40 Z" fill="#2E221C" stroke="#2B211C" stroke-width="2"/><path d="M-19 -40 C-20 -58 -4 -66 8 -65 C22 -64 30 -54 29 -40 C29 -36 31 -33 32 -30 C33 -28 31 -26 29 -26 C27 -16 18 -10 6 -10 C-8 -10 -18 -22 -19 -40 Z" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><ellipse cx="-11" cy="-36" rx="5.4" ry="7" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><path d="M-12 -38 C-10 -36 -10 -34 -12 -32" fill="none" stroke="#2B211C" stroke-width="1.5" stroke-linecap="round"/><path d="M-6 -50 C-6 -44 -5 -40 -3 -36 L-1 -50 Z" fill="#2E221C"/><path d="M-18 -50 C-10 -54 4 -55 10 -50 C14 -54 22 -54 27 -48 L28 -56 L-18 -58 Z" fill="#2E221C"/><ellipse cx="17" cy="-39" rx="2.6" ry="3.4" fill="#2B211C"/><circle cx="17.9" cy="-40.2" r=".9" fill="#fff"/><path d="M12 -46.5 C15 -48 19 -48 22 -46.5" fill="none" stroke="#2B211C" stroke-width="2" stroke-linecap="round"/><ellipse cx="19" cy="-29" rx="5" ry="3" fill="#E8907A" opacity=".45"/><path d="M13 -21 C16 -18.5 20 -18.5 23 -21.5" fill="none" stroke="#2B211C" stroke-width="2" stroke-linecap="round"/><path d="M-24 -50 C-34 -48 -40 -42 -40 -36 C-32 -38 -24 -42 -18 -45 Z" fill="#8C3426" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M-25 -50 C-27 -76 -6 -86 6 -85 C24 -84 34 -72 30 -50 C14 -54 -10 -54 -25 -50 Z" fill="url(#tweed)" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 -52 C32 -56 46 -54 50 -47 C42 -43 30 -43 18 -47 Z" fill="#8C3426" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M5 -84 C3 -72 3 -60 5 -53" fill="none" stroke="#2B211C" stroke-width="1.6"/><path d="M-21 -54 L-10 -56 L-14 -66 C-18 -64 -21 -60 -21 -54 Z" fill="#8C3426" stroke="#2B211C" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 -85 C0 -92 -6 -90 -4 -86 Z M5 -85 C10 -92 16 -90 14 -86 Z" fill="#8C3426" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/><circle cx="5" cy="-85" r="2.6" fill="#8C3426" stroke="#2B211C" stroke-width="1.6"/></g><g transform="translate(78 10) rotate(24) scale(1)"><path d="M-4 0 L14 0" stroke="#2B211C" stroke-width="7.4" stroke-linecap="round"/><path d="M-4 0 L14 0" stroke="#6B4A33" stroke-width="3.6" stroke-linecap="round"/><circle cx="30" cy="0" r="15" fill="#DCEAEC" fill-opacity=".6" stroke="#2B211C" stroke-width="6.6"/><circle cx="30" cy="0" r="15" fill="none" stroke="#5A4232" stroke-width="2.6"/><path d="M22 -6 C24 -10 29 -12 33 -11" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/></g><g><path d="M37.1 -64.2 L48 -22 L70.5 2" stroke="#2B211C" stroke-width="19.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M37.1 -64.2 L48 -22 L70.5 2" stroke="#CDA977" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M70.5 2 L74.6 6.4" stroke="#2B211C" stroke-width="18.4" stroke-linecap="butt" fill="none"/><path d="M70.5 2 L74.6 6.4" stroke="#B38D5C" stroke-width="14" stroke-linecap="butt" fill="none"/><circle cx="78" cy="10" r="7.6" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/></g>
+        </svg>
+      </div>
     </div>
   </section>
-  <footer class="foot"><span>Name Worth It?</span><span class="muted">Judgement by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. Not legal advice.</span></footer>
-</div>
 
-<div id="workspace" class="view">
-  <aside class="side" aria-label="Case">
-    <a class="brand brand-light" href="#" data-home>
-      <svg class="mark" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="2" width="17" height="22" rx="2.5"/><path d="M8 8h7M8 12h5"/><circle cx="18.5" cy="18.5" r="5"/><path d="M22.2 22.2 26 26"/></svg>
-      <span>Name Worth It?</span>
-    </a>
-    <div class="side-case">
-      <div class="side-meta mono"><span>NW-<span data-case-no>0001</span></span><span id="openedAt">—</span></div>
-      <div class="side-name" id="sideName">—</div>
-      <div class="side-ctx" id="sideCtx"></div>
+  <section class="panel" aria-labelledby="h02">
+    <div class="panel-head"><span class="pn">02</span><span class="pt">Investigation Desk</span><span class="dash"></span><span class="tag">DIG DEEPER. SEE THE WHOLE PICTURE.</span><span class="brand">Name Worth It?</span></div>
+    <div class="desk-hero">
+      <div class="desk-copy">
+        <h2 id="h02">A closer look<br>at <em class="js-name">Nimbus.</em></h2>
+        <p class="lede">We investigate the key signals that make a name work — so you can move forward with confidence.</p>
+      </div>
+      <div class="desk-art" aria-hidden="true">
+        <svg viewBox="0 0 620 330">
+          <!-- room -->
+          <rect x="0" y="0" width="620" height="240" fill="#EADFCB"/>
+          <path d="M150 0 V240 M470 0 V240" stroke="#E0D3BC" stroke-width="2"/>
+          <!-- wall polaroid + note -->
+          <use href="#polaroid" x="186" y="14" width="88" height="103" transform="rotate(-3 230 66)"/>
+          <rect x="224" y="6" width="14" height="12" fill="#C9A66A" transform="rotate(-8 231 12)"/>
+          <g transform="rotate(4 528 70)"><rect x="472" y="26" width="116" height="92" fill="#FBF7EE" stroke="#DCD0BA"/>
+            <text x="530" y="56" text-anchor="middle" class="sv-hand" font-size="16">Same name.</text><text x="530" y="85" text-anchor="middle" class="sv-hand" font-size="16">Different story.</text>
+            <path d="M500 98 C520 94 540 92 560 94" stroke="#B42B22" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>
+          <rect x="40" y="30" width="70" height="54" fill="#F6F0E4" stroke="#DCD0BA"/><path d="M52 46 h46 M52 58 h40 M52 70 h30" stroke="#D5C9B4"/>
+          <!-- desk -->
+          <rect x="0" y="236" width="620" height="94" fill="#8A5A3C"/>
+          <rect x="0" y="232" width="620" height="10" fill="#9C6847"/>
+          <!-- plant -->
+          <path d="M60 236 L66 196 L104 196 L110 236 Z" fill="#7A4B32" stroke="#2B211C" stroke-width="2"/>
+          <g fill="#6E7F4E" stroke="#2B211C" stroke-width="1.6">
+            <path d="M84 196 C60 170 50 140 62 110 C78 140 86 168 84 196 Z"/>
+            <path d="M86 196 C96 160 112 140 132 130 C126 160 108 182 86 196 Z"/>
+            <path d="M84 196 C74 170 74 150 84 130 C94 152 92 174 84 196 Z" fill="#83955C"/>
+          </g>
+          <!-- mug -->
+          <path d="M214 196 h52 v36 a8 8 0 0 1 -8 8 h-36 a8 8 0 0 1 -8 -8 z" fill="#F6F0E4" stroke="#2B211C" stroke-width="2"/>
+          <path d="M266 206 c14 0 14 22 0 22" fill="none" stroke="#2B211C" stroke-width="2"/>
+          <text x="240" y="222" text-anchor="middle" class="sv-serif" font-size="13">NW?</text>
+          <!-- books -->
+          <g stroke="#2B211C" stroke-width="2">
+            <rect x="470" y="210" width="140" height="26" fill="#E8D8B4"/><rect x="478" y="184" width="132" height="26" fill="#F0E2C0"/><rect x="466" y="158" width="140" height="26" fill="#E3D1AA"/>
+          </g>
+          <g class="sv-serif" font-size="13" text-anchor="middle" letter-spacing="1"><text x="540" y="228">MEMORABILITY</text><text x="544" y="202">COMPETITORS</text><text x="536" y="176">DOMAINS</text></g>
+          <!-- the detective reading the case file -->
+          <g transform="translate(300 40)">
+            <g transform="translate(92 175) scale(1.2)"><g transform="translate(0 0) rotate(4)"><path d="M-11 -82 C-18 -82 -25 -78 -27 -70 C-30 -40 -34 2 -35 20 C-14 26 14 26 37 20 C35 2 32 -40 28 -70 C26 -78 19 -82 12 -82 Z" fill="#CDA977" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><path d="M-27 -70 C-30 -40 -34 2 -35 20 C-28 22.5 -22 24 -16 24.5 C-18 0 -18 -40 -16 -72 Z" fill="#B38D5C" opacity=".75"/><path d="M6 2 L6 24" stroke="#2B211C" stroke-width="1.8"/><path d="M-30 -18 C-10 -14 12 -14 31 -18 L31.5 -9 C12 -5 -10 -5 -31 -9 Z" fill="#9C7746" stroke="#2B211C" stroke-width="2"/><rect x="1" y="-17.5" width="11" height="10" rx="1.5" fill="none" stroke="#D8B45A" stroke-width="2.4"/><path d="M-11 -82 L-17 -76 L-6 -46 L3 -62 Z" fill="#DBBD8E" stroke="#2B211C" stroke-width="2" stroke-linejoin="round"/><path d="M12 -82 L20 -76 L10 -46 L3 -62 Z" fill="#DBBD8E" stroke="#2B211C" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -46 L3 -62 L10 -46 L4 -26" fill="none" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/><circle cx="-3" cy="-38" r="2.2" fill="#2B211C"/><circle cx="12" cy="-38" r="2.2" fill="#2B211C"/><circle cx="-1" cy="-26" r="2.2" fill="#2B211C"/><circle cx="13" cy="-26" r="2.2" fill="#2B211C"/><path d="M-24 2 C-18 4 -14 4 -9 2 M15 2 C20 4 25 4 30 2" stroke="#2B211C" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g transform="translate(5.6 -79.8) rotate(10)"><path d="M-7 4 L-6 -16 L7 -16 L8 4 Z" fill="#E9BE98" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M-14 -24 C-28 -26 -30 -48 -18 -56 L-4 -40 Z" fill="#2E221C" stroke="#2B211C" stroke-width="2"/><path d="M-19 -40 C-20 -58 -4 -66 8 -65 C22 -64 30 -54 29 -40 C29 -36 31 -33 32 -30 C33 -28 31 -26 29 -26 C27 -16 18 -10 6 -10 C-8 -10 -18 -22 -19 -40 Z" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><ellipse cx="-11" cy="-36" rx="5.4" ry="7" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><path d="M-12 -38 C-10 -36 -10 -34 -12 -32" fill="none" stroke="#2B211C" stroke-width="1.5" stroke-linecap="round"/><path d="M-6 -50 C-6 -44 -5 -40 -3 -36 L-1 -50 Z" fill="#2E221C"/><path d="M-18 -50 C-10 -54 4 -55 10 -50 C14 -54 22 -54 27 -48 L28 -56 L-18 -58 Z" fill="#2E221C"/><ellipse cx="17" cy="-39" rx="2.6" ry="3.4" fill="#2B211C"/><circle cx="17.9" cy="-40.2" r=".9" fill="#fff"/><path d="M12 -46.5 C15 -48 19 -48 22 -46.5" fill="none" stroke="#2B211C" stroke-width="2" stroke-linecap="round"/><ellipse cx="19" cy="-29" rx="5" ry="3" fill="#E8907A" opacity=".45"/><path d="M13 -21 C16 -18.5 20 -18.5 23 -21.5" fill="none" stroke="#2B211C" stroke-width="2" stroke-linecap="round"/><path d="M-24 -50 C-34 -48 -40 -42 -40 -36 C-32 -38 -24 -42 -18 -45 Z" fill="#8C3426" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M-25 -50 C-27 -76 -6 -86 6 -85 C24 -84 34 -72 30 -50 C14 -54 -10 -54 -25 -50 Z" fill="url(#tweed)" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 -52 C32 -56 46 -54 50 -47 C42 -43 30 -43 18 -47 Z" fill="#8C3426" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M5 -84 C3 -72 3 -60 5 -53" fill="none" stroke="#2B211C" stroke-width="1.6"/><path d="M-21 -54 L-10 -56 L-14 -66 C-18 -64 -21 -60 -21 -54 Z" fill="#8C3426" stroke="#2B211C" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 -85 C0 -92 -6 -90 -4 -86 Z M5 -85 C10 -92 16 -90 14 -86 Z" fill="#8C3426" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/><circle cx="5" cy="-85" r="2.6" fill="#8C3426" stroke="#2B211C" stroke-width="1.6"/></g><g><path d="M-12.9 -73.1 L-46 -30 L-54 -9.3" stroke="#2B211C" stroke-width="19.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M-12.9 -73.1 L-46 -30 L-54 -9.3" stroke="#B38D5C" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-54 -9.3 L-56.2 -3.7" stroke="#2B211C" stroke-width="18.4" stroke-linecap="butt" fill="none"/><path d="M-54 -9.3 L-56.2 -3.7" stroke="#B38D5C" stroke-width="14" stroke-linecap="butt" fill="none"/><circle cx="-58" cy="1" r="7.6" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><g><path d="M23 -70.6 L50 -32 L55.4 -9.7" stroke="#2B211C" stroke-width="19.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M23 -70.6 L50 -32 L55.4 -9.7" stroke="#CDA977" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M55.4 -9.7 L56.8 -3.9" stroke="#2B211C" stroke-width="18.4" stroke-linecap="butt" fill="none"/><path d="M55.4 -9.7 L56.8 -3.9" stroke="#B38D5C" stroke-width="14" stroke-linecap="butt" fill="none"/><circle cx="58" cy="1" r="7.6" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/></g>
+            <!-- open book -->
+            <path d="M18 140 C50 130 80 132 92 142 L92 210 C78 200 50 198 18 206 Z" fill="#E3C997" stroke="#2B211C" stroke-width="2"/>
+            <path d="M166 140 C134 130 104 132 92 142 L92 210 C106 200 134 198 166 206 Z" fill="#E9D3A6" stroke="#2B211C" stroke-width="2"/>
+            <text x="130" y="176" text-anchor="middle" class="sv-serif js-name-svg" font-size="21" transform="rotate(-8 130 176)">Nimbus</text>
+            <text x="133" y="199" text-anchor="middle" class="sv-mono" font-size="7" letter-spacing="1" transform="rotate(-8 133 199)">CASE FILE</text>
+            <circle cx="22" cy="176" r="8" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+            <circle cx="162" cy="176" r="8" fill="#F5D7B9" stroke="#2B211C" stroke-width="2"/>
+          </g>
+          <rect x="300" y="250" width="120" height="8" fill="#F5EEDF" transform="rotate(-3 360 254)"/>
+          <rect x="420" y="256" width="90" height="6" fill="#F5EEDF" transform="rotate(4 465 259)"/>
+        </svg>
+      </div>
     </div>
-    <div class="side-progress">
-      <div class="sp-row"><span id="progText">Opening case</span><span class="mono" id="elapsed">0.0s</span></div>
-      <div class="sp-bar"><i id="progBar"></i></div>
+
+    <div class="signals">
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 7.5h14M5 16.5h14"/></svg>
+        <div><h3>Domains</h3><p>Check availability across popular TLDs.</p><div class="chips"><span>.com</span><span>.io</span><span>.ai</span><span>.app</span><span>+ more</span></div></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><circle cx="16.5" cy="9" r="2.6"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M14 14.2c3.2-.4 6 1.3 6 4.8"/></svg>
+        <div><h3>Competitors</h3><p>See who's already using it and how they position it.</p></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>
+        <div><h3>Memorability</h3><p>Get a read on clarity, uniqueness and recall.</p></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-3.5 7.1"/></svg>
+        <div><h3>Social handles</h3><p>Is the @handle free on X and Instagram?</p></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><path d="M6 20V10M12 20V4M18 20v-7"/></svg>
+        <div><h3>Market signal</h3><p>Trademark mentions turning up on the open web.</p></div></div>
+      <div class="signal"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12l8-8h8v8l-8 8z"/><circle cx="15.5" cy="8.5" r="1.5"/></svg>
+        <div><h3>Similar names</h3><p>Close variants, in case the original is crowded.</p></div></div>
     </div>
-    <nav aria-label="Lines of inquiry"><div class="side-label">Lines of inquiry</div><ol class="side-checks" id="sideChecks"></ol></nav>
-    <button class="side-new" id="newBtn" type="button">New investigation</button>
+  </section>
 
-  </aside>
+  <footer class="foot"><p>Domains checked live via RDAP (DNS when RDAP is inconclusive), competitors via live web search (for the name and a few close variants), handles checked live on X and Instagram, name judged by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. The market signal is a web search, not a trademark search — still run a proper one before you file anything.</p></footer>
+</main>
 
-  <main class="ws" id="result">
-    <header class="ws-head">
-      <div class="crumbs"><a href="#" data-home>Investigations</a><span aria-hidden="true">/</span><span class="mono">NW-<span data-case-no>0001</span></span><span class="tag tag-demo" id="demoTag" hidden>Demo data</span></div>
-      <div class="ws-title">
+<!-- ======================================================================
+     04 — Search in Progress
+     ====================================================================== -->
+<main id="progress" class="screen" aria-live="polite">
+  <section class="panel">
+    <div class="panel-head"><span class="pn">04</span><span class="pt">Search in Progress</span><span class="dash"></span><span class="tag">REAL CHECKS. REAL ANSWERS.</span><span class="brand">Name Worth It?</span></div>
+    <div class="prog">
+      <div class="prog-copy">
+        <h2>Investigating<br><em id="progName">Nimbus…</em></h2>
+        <p class="lede">Running checks across the web to see what we can uncover.</p>
+        <ol class="checklist" id="checklist"></ol>
+        <div class="ws-error" id="wsError" role="alert"></div>
+      </div>
+      <div class="prog-art" aria-hidden="true">
+        <div class="scribble right"><span>following the trail<br>to a clearer answer.</span></div>
+        <svg viewBox="0 0 380 360" class="walker">
+          <g class="steps">
+            <ellipse cx="30" cy="340" rx="14" ry="6" fill="#D9CFBF" style="--d:0s"/><ellipse cx="68" cy="330" rx="14" ry="6" fill="#D9CFBF" style="--d:.3s"/>
+            <ellipse cx="106" cy="342" rx="14" ry="6" fill="#D9CFBF" style="--d:.6s"/><ellipse cx="144" cy="330" rx="14" ry="6" fill="#D9CFBF" style="--d:.9s"/>
+            <ellipse cx="180" cy="340" rx="14" ry="6" fill="#D9CFBF" style="--d:1.2s"/>
+          </g>
+          <g transform="translate(240 255) scale(1.15)"><g class="walk"><g class="leg-b"><g><path d="M-10.2 0.9 L-10 34 L-20 66" stroke="#2B211C" stroke-width="21.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M-10.2 0.9 L-10 34 L-20 66" stroke="#2F2C29" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-7 -5 C-7 -11 3 -12 9 -9 C17 -8 22 -4 22 1 L22 4 L-9 4 C-10 0 -9 -3 -7 -5 Z" transform="translate(-20 70) rotate(-6)" fill="#5B3B2B" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/></g><g><path d="M-10.4 -73.5 L-22 -34 L-18.3 -16.8" stroke="#2B211C" stroke-width="19.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M-10.4 -73.5 L-22 -34 L-18.3 -16.8" stroke="#B38D5C" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-18.3 -16.8 L-17 -10.9" stroke="#2B211C" stroke-width="18.4" stroke-linecap="butt" fill="none"/><path d="M-18.3 -16.8 L-17 -10.9" stroke="#B38D5C" stroke-width="14" stroke-linecap="butt" fill="none"/><circle cx="-16" cy="-6" r="7.6" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><g class="leg-a"><g><path d="M9.7 3 L18 34 L24 66" stroke="#2B211C" stroke-width="21.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M9.7 3 L18 34 L24 66" stroke="#3A3632" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-7 -5 C-7 -11 3 -12 9 -9 C17 -8 22 -4 22 1 L22 4 L-9 4 C-10 0 -9 -3 -7 -5 Z" transform="translate(24 70) rotate(4)" fill="#5B3B2B" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/></g><g transform="translate(0 0) rotate(6)"><path d="M-11 -82 C-18 -82 -25 -78 -27 -70 C-30 -40 -34 16 -35 34 C-14 40 14 40 37 34 C35 16 32 -40 28 -70 C26 -78 19 -82 12 -82 Z" fill="#CDA977" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><path d="M-27 -70 C-30 -40 -34 16 -35 34 C-28 36.5 -22 38 -16 38.5 C-18 14 -18 -40 -16 -72 Z" fill="#B38D5C" opacity=".75"/><path d="M6 16 L6 38" stroke="#2B211C" stroke-width="1.8"/><path d="M-30 -18 C-10 -14 12 -14 31 -18 L31.5 -9 C12 -5 -10 -5 -31 -9 Z" fill="#9C7746" stroke="#2B211C" stroke-width="2"/><rect x="1" y="-17.5" width="11" height="10" rx="1.5" fill="none" stroke="#D8B45A" stroke-width="2.4"/><path d="M-11 -82 L-17 -76 L-6 -46 L3 -62 Z" fill="#DBBD8E" stroke="#2B211C" stroke-width="2" stroke-linejoin="round"/><path d="M12 -82 L20 -76 L10 -46 L3 -62 Z" fill="#DBBD8E" stroke="#2B211C" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -46 L3 -62 L10 -46 L4 -26" fill="none" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/><circle cx="-3" cy="-38" r="2.2" fill="#2B211C"/><circle cx="12" cy="-38" r="2.2" fill="#2B211C"/><circle cx="-1" cy="-26" r="2.2" fill="#2B211C"/><circle cx="13" cy="-26" r="2.2" fill="#2B211C"/><path d="M-24 2 C-18 4 -14 4 -9 2 M15 2 C20 4 25 4 30 2" stroke="#2B211C" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g transform="translate(8.4 -79.6) rotate(4)"><path d="M-7 4 L-6 -16 L7 -16 L8 4 Z" fill="#E9BE98" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M-14 -24 C-28 -26 -30 -48 -18 -56 L-4 -40 Z" fill="#2E221C" stroke="#2B211C" stroke-width="2"/><path d="M-19 -40 C-20 -58 -4 -66 8 -65 C22 -64 30 -54 29 -40 C29 -36 31 -33 32 -30 C33 -28 31 -26 29 -26 C27 -16 18 -10 6 -10 C-8 -10 -18 -22 -19 -40 Z" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><ellipse cx="-11" cy="-36" rx="5.4" ry="7" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><path d="M-12 -38 C-10 -36 -10 -34 -12 -32" fill="none" stroke="#2B211C" stroke-width="1.5" stroke-linecap="round"/><path d="M-6 -50 C-6 -44 -5 -40 -3 -36 L-1 -50 Z" fill="#2E221C"/><path d="M-18 -50 C-10 -54 4 -55 10 -50 C14 -54 22 -54 27 -48 L28 -56 L-18 -58 Z" fill="#2E221C"/><ellipse cx="17" cy="-39" rx="2.6" ry="3.4" fill="#2B211C"/><circle cx="17.9" cy="-40.2" r=".9" fill="#fff"/><path d="M12 -46.5 C15 -48 19 -48 22 -46.5" fill="none" stroke="#2B211C" stroke-width="2" stroke-linecap="round"/><ellipse cx="19" cy="-29" rx="5" ry="3" fill="#E8907A" opacity=".45"/><path d="M13 -21 C16 -18.5 20 -18.5 23 -21.5" fill="none" stroke="#2B211C" stroke-width="2" stroke-linecap="round"/><path d="M-24 -50 C-34 -48 -40 -42 -40 -36 C-32 -38 -24 -42 -18 -45 Z" fill="#8C3426" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M-25 -50 C-27 -76 -6 -86 6 -85 C24 -84 34 -72 30 -50 C14 -54 -10 -54 -25 -50 Z" fill="url(#tweed)" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 -52 C32 -56 46 -54 50 -47 C42 -43 30 -43 18 -47 Z" fill="#8C3426" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M5 -84 C3 -72 3 -60 5 -53" fill="none" stroke="#2B211C" stroke-width="1.6"/><path d="M-21 -54 L-10 -56 L-14 -66 C-18 -64 -21 -60 -21 -54 Z" fill="#8C3426" stroke="#2B211C" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 -85 C0 -92 -6 -90 -4 -86 Z M5 -85 C10 -92 16 -90 14 -86 Z" fill="#8C3426" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/><circle cx="5" cy="-85" r="2.6" fill="#8C3426" stroke="#2B211C" stroke-width="1.6"/></g><g transform="translate(56 -66) rotate(-38) scale(1)"><path d="M-4 0 L14 0" stroke="#2B211C" stroke-width="7.4" stroke-linecap="round"/><path d="M-4 0 L14 0" stroke="#6B4A33" stroke-width="3.6" stroke-linecap="round"/><circle cx="30" cy="0" r="15" fill="#DCEAEC" fill-opacity=".6" stroke="#2B211C" stroke-width="6.6"/><circle cx="30" cy="0" r="15" fill="none" stroke="#5A4232" stroke-width="2.6"/><path d="M22 -6 C24 -10 29 -12 33 -11" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".9"/></g><g><path d="M25.4 -69.7 L40 -44 L49.5 -57.1" stroke="#2B211C" stroke-width="19.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M25.4 -69.7 L40 -44 L49.5 -57.1" stroke="#CDA977" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M49.5 -57.1 L53.1 -62" stroke="#2B211C" stroke-width="18.4" stroke-linecap="butt" fill="none"/><path d="M49.5 -57.1 L53.1 -62" stroke="#B38D5C" stroke-width="14" stroke-linecap="butt" fill="none"/><circle cx="56" cy="-66" r="7.6" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/></g></g>
+        </svg>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ======================================================================
+     03 — Evidence Board + case summary
+     ====================================================================== -->
+<main id="board" class="screen">
+  <section class="panel">
+    <div class="panel-head"><span class="pn">03</span><span class="pt">Evidence Board</span><span class="dash"></span><span class="tag">CONNECT THE CLUES. SEE THE STORY.</span><span class="brand">Name Worth It?</span></div>
+    <div class="board-wrap" id="result">
+      <div class="board-copy">
+        <h2>The bigger picture<br>behind <em id="boardName">Nimbus.</em></h2>
+        <p class="lede">We pull the key signals together so you can see what the name is really up against.</p>
+        <svg class="pointer" viewBox="-75 -215 175 296" aria-hidden="true">
+          <path d="M58 -176 l8 -14 M70 -164 l14 -6 M50 -182 l-2 -14" stroke="#B42B22" stroke-width="2.6" stroke-linecap="round"/>
+          <g><path d="M-9.9 2.3 L-8 34 L-12 66" stroke="#2B211C" stroke-width="21.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M-9.9 2.3 L-8 34 L-12 66" stroke="#2F2C29" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-7 -5 C-7 -11 3 -12 9 -9 C17 -8 22 -4 22 1 L22 4 L-9 4 C-10 0 -9 -3 -7 -5 Z" transform="translate(-12 70) rotate(0)" fill="#5B3B2B" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><g><path d="M10.1 1.6 L12 34 L16 66" stroke="#2B211C" stroke-width="21.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M10.1 1.6 L12 34 L16 66" stroke="#3A3632" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-7 -5 C-7 -11 3 -12 9 -9 C17 -8 22 -4 22 1 L22 4 L-9 4 C-10 0 -9 -3 -7 -5 Z" transform="translate(16 70) rotate(0)" fill="#5B3B2B" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><g transform="translate(0 0) rotate(-2)"><path d="M-11 -82 C-18 -82 -25 -78 -27 -70 C-30 -40 -34 16 -35 34 C-14 40 14 40 37 34 C35 16 32 -40 28 -70 C26 -78 19 -82 12 -82 Z" fill="#CDA977" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><path d="M-27 -70 C-30 -40 -34 16 -35 34 C-28 36.5 -22 38 -16 38.5 C-18 14 -18 -40 -16 -72 Z" fill="#B38D5C" opacity=".75"/><path d="M6 16 L6 38" stroke="#2B211C" stroke-width="1.8"/><path d="M-30 -18 C-10 -14 12 -14 31 -18 L31.5 -9 C12 -5 -10 -5 -31 -9 Z" fill="#9C7746" stroke="#2B211C" stroke-width="2"/><rect x="1" y="-17.5" width="11" height="10" rx="1.5" fill="none" stroke="#D8B45A" stroke-width="2.4"/><path d="M-11 -82 L-17 -76 L-6 -46 L3 -62 Z" fill="#DBBD8E" stroke="#2B211C" stroke-width="2" stroke-linejoin="round"/><path d="M12 -82 L20 -76 L10 -46 L3 -62 Z" fill="#DBBD8E" stroke="#2B211C" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -46 L3 -62 L10 -46 L4 -26" fill="none" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/><circle cx="-3" cy="-38" r="2.2" fill="#2B211C"/><circle cx="12" cy="-38" r="2.2" fill="#2B211C"/><circle cx="-1" cy="-26" r="2.2" fill="#2B211C"/><circle cx="13" cy="-26" r="2.2" fill="#2B211C"/><path d="M-24 2 C-18 4 -14 4 -9 2 M15 2 C20 4 25 4 30 2" stroke="#2B211C" stroke-width="1.8" fill="none" stroke-linecap="round"/></g><g transform="translate(-8 -34) rotate(-12)"><rect x="-13" y="-16" width="26" height="32" rx="2" fill="#FBF7EE" stroke="#2B211C" stroke-width="2"/><path d="M-7 -8 h14 M-7 -2 h12 M-7 4 h9" stroke="#CFC3AE" stroke-width="1.6"/></g><g><path d="M-20.5 -71.3 L-26 -40 L-19.8 -33.8" stroke="#2B211C" stroke-width="19.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M-20.5 -71.3 L-26 -40 L-19.8 -33.8" stroke="#B38D5C" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M-19.8 -33.8 L-15.5 -29.5" stroke="#2B211C" stroke-width="18.4" stroke-linecap="butt" fill="none"/><path d="M-19.8 -33.8 L-15.5 -29.5" stroke="#B38D5C" stroke-width="14" stroke-linecap="butt" fill="none"/><circle cx="-12" cy="-26" r="7.6" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><g transform="translate(-2.8 -80) rotate(-14)"><path d="M-7 4 L-6 -16 L7 -16 L8 4 Z" fill="#E9BE98" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M-14 -24 C-28 -26 -30 -48 -18 -56 L-4 -40 Z" fill="#2E221C" stroke="#2B211C" stroke-width="2"/><path d="M-19 -40 C-20 -58 -4 -66 8 -65 C22 -64 30 -54 29 -40 C29 -36 31 -33 32 -30 C33 -28 31 -26 29 -26 C27 -16 18 -10 6 -10 C-8 -10 -18 -22 -19 -40 Z" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><ellipse cx="-11" cy="-36" rx="5.4" ry="7" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><path d="M-12 -38 C-10 -36 -10 -34 -12 -32" fill="none" stroke="#2B211C" stroke-width="1.5" stroke-linecap="round"/><path d="M-6 -50 C-6 -44 -5 -40 -3 -36 L-1 -50 Z" fill="#2E221C"/><path d="M-18 -50 C-10 -54 4 -55 10 -50 C14 -54 22 -54 27 -48 L28 -56 L-18 -58 Z" fill="#2E221C"/><ellipse cx="17" cy="-39" rx="2.6" ry="3.4" fill="#2B211C"/><circle cx="17.9" cy="-40.2" r=".9" fill="#fff"/><path d="M12 -46.5 C15 -48 19 -48 22 -46.5" fill="none" stroke="#2B211C" stroke-width="2" stroke-linecap="round"/><ellipse cx="19" cy="-29" rx="5" ry="3" fill="#E8907A" opacity=".45"/><path d="M13 -21 C16 -18.5 20 -18.5 23 -21.5" fill="none" stroke="#2B211C" stroke-width="2" stroke-linecap="round"/><path d="M-24 -50 C-34 -48 -40 -42 -40 -36 C-32 -38 -24 -42 -18 -45 Z" fill="#8C3426" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M-25 -50 C-27 -76 -6 -86 6 -85 C24 -84 34 -72 30 -50 C14 -54 -10 -54 -25 -50 Z" fill="url(#tweed)" stroke="#2B211C" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 -52 C32 -56 46 -54 50 -47 C42 -43 30 -43 18 -47 Z" fill="#8C3426" stroke="#2B211C" stroke-width="2.2" stroke-linejoin="round"/><path d="M5 -84 C3 -72 3 -60 5 -53" fill="none" stroke="#2B211C" stroke-width="1.6"/><path d="M-21 -54 L-10 -56 L-14 -66 C-18 -64 -21 -60 -21 -54 Z" fill="#8C3426" stroke="#2B211C" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 -85 C0 -92 -6 -90 -4 -86 Z M5 -85 C10 -92 16 -90 14 -86 Z" fill="#8C3426" stroke="#2B211C" stroke-width="1.6" stroke-linejoin="round"/><circle cx="5" cy="-85" r="2.6" fill="#8C3426" stroke="#2B211C" stroke-width="1.6"/></g><g><path d="M15.5 -72.6 L36 -100 L44.5 -125.6" stroke="#2B211C" stroke-width="19.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M15.5 -72.6 L36 -100 L44.5 -125.6" stroke="#CDA977" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g><path d="M44.5 -125.6 L46.4 -131.3" stroke="#2B211C" stroke-width="18.4" stroke-linecap="butt" fill="none"/><path d="M44.5 -125.6 L46.4 -131.3" stroke="#B38D5C" stroke-width="14" stroke-linecap="butt" fill="none"/><circle cx="48" cy="-136" r="7.6" fill="#F6D5B5" stroke="#2B211C" stroke-width="2.2"/><g><path d="M48 -136 L52.1 -148.3" stroke="#2B211C" stroke-width="8.9" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M48 -136 L52.1 -148.3" stroke="#F6D5B5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+        </svg>
+      </div>
+
+      <div class="evboard" id="evboard">
+        <svg class="threads" id="threads" aria-hidden="true"></svg>
+        <svg class="threads top" id="threadsTop" aria-hidden="true"></svg>
+        <div class="subject-card" id="subjectCard">
+          <span class="pin"></span>
+          <div class="sc-name" id="subjectName">Nimbus</div>
+          <div class="sc-ctx" id="subjectCtx"></div>
+        </div>
+        <div class="polaroid-deco" aria-hidden="true"><svg viewBox="0 0 120 140"><use href="#polaroid"/></svg><span class="tape"></span></div>
+        <div class="note-card" id="noteCard"><span class="tape"></span><span id="noteText">—</span></div>
+        <div class="ev-grid" id="evGrid"></div>
+      </div>
+    </div>
+
+    <!-- the case summary -->
+    <article class="summary" id="summary" aria-label="Case summary">
+      <div class="sum-head">
+        <div><div class="kicker">CASE <span data-case-no>0001</span> · SUMMARY</div><h3 class="sum-title" id="stampName">Nimbus</h3></div>
+        <div class="verdict-stamp" id="stampEl">—</div>
+      </div>
+      <div class="sum-grid">
+        <div><div class="kicker">WHAT WE FOUND</div><ul class="found" id="reportRows"></ul></div>
         <div>
-          <h1 id="wsName">—</h1>
-          <p class="ws-ctx" id="wsCtx"></p>
-        </div>
-        <div class="ws-actions">
-          <span class="status" id="statusPill" data-s="running"><span class="sdot"></span><span id="statusText">Investigating</span></span>
-          <button class="btn btn-ghost" id="copyBtn" type="button" disabled>Copy case report</button>
+          <div class="kicker">WHY</div><p class="why" id="stampSub"></p>
+          <div class="kicker" style="margin-top:22px">YOUR NEXT MOVE</div><ul class="next" id="nextMoves"></ul>
         </div>
       </div>
-      <div class="live" id="live"><svg class="sig" aria-hidden="true"><use href="#sig"/></svg><p id="liveLine" aria-live="polite">Six lookups running in parallel.</p></div>
-    </header>
-
-    <div class="ws-error" id="wsError" role="alert"></div>
-
-    <article class="report" id="summary" aria-labelledby="verdictLabel" hidden>
-      <header class="rp-strip">
-        <span class="mono">Case report · NW-<span data-case-no>0001</span></span>
-        <span class="closed"><svg class="sig" aria-hidden="true"><use href="#sig"/></svg><span class="mono" id="rpFiled"></span></span>
-      </header>
-      <div class="rp-verdict" id="rpVerdict" data-v="mid">
-        <p class="rp-q" id="rpQuestion">Is this name worth pursuing?</p>
-        <h2 class="rp-a" id="verdictLabel">—</h2>
-        <p class="why" id="stampSub"></p>
-        <div class="rp-class"><span class="muted small">Classification</span><span class="classif" id="rpClass">—</span><span class="muted small" id="rpScores"></span></div>
+      <div class="sum-actions">
+        <button class="btn-red" id="runAgainBtn" type="button"><span>Investigate another name</span><span class="arr" aria-hidden="true">→</span></button>
+        <button class="btn-line" id="copyBtn" type="button">Copy report</button>
+        <button class="txt-btn" id="rawToggle" type="button">show raw response</button>
       </div>
-      <div class="rp-cols">
-        <section>
-          <h3 class="h-sm">Key evidence</h3>
-          <ol class="keys" id="keyFindings"></ol>
-        </section>
-        <section class="rp-next">
-          <h3 class="h-sm">Recommended next steps</h3>
-          <ol class="next" id="nextMoves"></ol>
-          <button class="txt-btn" id="moreMoves" type="button" hidden></button>
-        </section>
-      </div>
+      <div id="rawOutput"><pre id="rawPre"></pre></div>
     </article>
-
-    <section class="findings" aria-labelledby="findingsH">
-      <div class="sec-head"><h2 class="h-sm" id="findingsH">Exhibits</h2><span class="muted small" id="findCount"></span></div>
-      <div class="grid" id="grid"></div>
-    </section>
-
-    <section class="links" id="linksSec" hidden>
-      <div class="sec-head"><h2 class="h-sm">Linked evidence</h2><span class="muted small">Where one exhibit backs up another</span></div>
-      <ul class="link-list" id="linkList"></ul>
-    </section>
-
-    <div class="raw"><button class="txt-btn" id="rawToggle" type="button">Show raw response</button><div id="rawOutput"><pre id="rawPre"></pre></div></div>
-  </main>
-</div>
+  </section>
+</main>
 
 <!-- full evidence -->
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle" aria-hidden="true">
-  <div class="dr-head"><span class="mono muted" id="drKicker">Evidence</span><button type="button" class="btn btn-ghost btn-sm" id="drClose">Close</button></div>
+  <div class="dr-head"><span id="drKicker">EVIDENCE</span><button type="button" id="drClose" aria-label="Close">Close ×</button></div>
   <div class="dr-body" id="drBody"></div>
 </aside>
 
