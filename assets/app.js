@@ -75,13 +75,38 @@
     card.textContent = short;
     card.setAttribute('font-size', String(Math.max(16, Math.min(40, Math.floor(300 / Math.max(short.length, 1))))));
     document.querySelectorAll('.js-name').forEach(el => { el.textContent = clip(name, 24) + '.'; });
-    document.querySelectorAll('.js-name-svg').forEach(el => {
-      el.textContent = clip(name, 12);
-      el.setAttribute('font-size', String(Math.max(11, Math.min(21, Math.floor(110 / Math.max(clip(name, 12).length, 1))))));
-    });
+    document.querySelectorAll('.js-name-svg').forEach(el => fitSvgText(el, name, 10));
+  }
+  // Fit an SVG label inside its box (data-fit, in SVG units): shrink the
+  // font, then drop the letter-spacing, then truncate with an ellipsis.
+  // Measures the rendered text, so it holds whatever the font or name.
+  function fitSvgText(el, text, minSize){
+    const max = +el.dataset.fit - 1;               // 1 unit of slack for glyph edges at any pixel density
+    if (!el.dataset.size) el.dataset.size = el.getAttribute('font-size');
+    if (!el.dataset.ls) el.dataset.ls = el.getAttribute('letter-spacing') || '0';
+    const big = +el.dataset.size;
+    el.textContent = text;
+    el.setAttribute('font-size', big);
+    el.setAttribute('letter-spacing', el.dataset.ls);
+    const width = () => el.getBBox().width;
+    if (!width()) return;                         // not rendered yet; fonts.ready runs it again
+    if (width() > max) el.setAttribute('letter-spacing', '0');
+    if (width() > max) el.setAttribute('font-size', Math.max(minSize, Math.floor(big * max / width() * 10) / 10));
+    let t = text;
+    while (width() > max && t.length > 1){ t = t.slice(0, -1).trimEnd(); el.textContent = t + '…'; }
+  }
+  // the three spine labels share one size: the largest that fits all of them
+  function fitStack(){
+    const labels = Array.from(document.querySelectorAll('.stack-label'));
+    labels.forEach(el => { if (!el.dataset.text) el.dataset.text = el.textContent; fitSvgText(el, el.dataset.text, 7); });
+    const size = Math.min(...labels.map(el => +el.getAttribute('font-size')));
+    const ls = labels.some(el => el.getAttribute('letter-spacing') === '0') ? '0' : null;
+    labels.forEach(el => { el.setAttribute('font-size', size); if (ls) el.setAttribute('letter-spacing', ls); });
   }
   $('nameInput').addEventListener('input', (e) => paintName(e.target.value));
   paintName($('nameInput').value);
+  fitStack();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { paintName($('nameInput').value); fitStack(); });
 
   // ---------------------------------------------------------------------
   //  Evidence helpers
@@ -259,7 +284,7 @@
     market(d){
       const m = d.trademark_matches || [];
       return '<ul class="ev-list">' + (m.length ? m.slice(0, 2).map(x => '<li><span><a href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(hostOf(x.link)) + '</a></span></li>').join('') : '') +
-        '<li><span class="w unk">' + escapeHtml(d.trademark_error || 'A web signal — not a trademark register search.') + '</span></li></ul>';
+        '<li><span class="w ' + (d.trademark_error ? 'unk' : 'fine') + '">' + escapeHtml(d.trademark_error || 'A web signal — not a trademark register search.') + '</span></li></ul>';
     },
     relatives(d){
       const v = d.variants || [];
@@ -437,7 +462,7 @@
       const xr = linksFor(key);
       $('drKicker').textContent = 'CASE ' + state.caseNum + ' · EVIDENCE';
       $('drBody').innerHTML = '<div class="kicker">' + escapeHtml(resultLine(key, d)) + '</div><h2 class="dr-title" id="drTitle">' + escapeHtml(title) + '</h2>' +
-        '<dl class="dr-meta">' + meta.map(m => '<dt>' + m[0] + '</dt><dd>' + escapeHtml(m[1]) + '</dd>').join('') + '</dl>' + items +
+        '<dl class="dr-meta">' + meta.map(m => { const f = m[0] === 'Confidence' ? ' class="fine"' : ''; return '<dt' + f + '>' + m[0] + '</dt><dd' + f + '>' + escapeHtml(m[1]) + '</dd>'; }).join('') + '</dl>' + items +
         (xr.length ? '<div class="dr-xref"><div class="kicker">CONNECTED CLUES</div><ul>' + xr.map(x => '<li><b>' + escapeHtml(CHECK[x.other].title) + '</b> — ' + escapeHtml(x.why) + '</li>').join('') + '</ul></div>' : '');
       $('drawer').classList.add('on'); $('drawer').setAttribute('aria-hidden', 'false');
       $('scrim').classList.add('on');
@@ -517,7 +542,7 @@
 
       // NEXT MOVE — only options the lookups actually returned
       const next = [];
-      own.filter(x => x.available === true).slice(0, 3).forEach(x => next.push('Claim <a class="dom" href="' + buyUrl(x.domain) + '" target="_blank" rel="noopener">' + escapeHtml(x.domain) + '</a> while it\'s unregistered' + (x.source === 'dns' ? ' <span class="k">(DNS CHECK — CONFIRM)</span>' : '')));
+      own.filter(x => x.available === true).slice(0, 3).forEach(x => next.push('Claim <a class="dom" href="' + buyUrl(x.domain) + '" target="_blank" rel="noopener">' + escapeHtml(x.domain) + '</a> while it\'s unregistered' + (x.source === 'dns' ? ' <span class="k fine">(DNS CHECK — CONFIRM)</span>' : '')));
       viable.forEach(v => next.push('Consider <b>' + escapeHtml(v.name) + '</b> — <a class="dom" href="' + buyUrl(v.domains.com.domain) + '" target="_blank" rel="noopener">' + escapeHtml(v.domains.com.domain) + '</a> is clear'));
       if (hTaken.length) next.push('Primary handles are occupied — plan a modifier for social and check it before launch');
       if (verdict === 'IMPERSONATION' || verdict === 'NO WITNESSES') next.push('Keep looking — this name carries real collision or recall risk');
