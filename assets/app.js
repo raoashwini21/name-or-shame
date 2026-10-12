@@ -73,7 +73,7 @@
     $('artName').textContent = clip(name, 16);
     const card = $('artCard');
     card.textContent = short;
-    card.setAttribute('font-size', String(Math.max(16, Math.min(40, Math.floor(300 / Math.max(short.length, 1))))));
+    card.setAttribute('font-size', String(Math.max(22, Math.min(66, Math.floor(470 / Math.max(short.length, 1))))));
     document.querySelectorAll('.js-name').forEach(el => { el.textContent = clip(name, 24) + '.'; });
     document.querySelectorAll('.js-name-svg').forEach(el => {
       el.textContent = clip(name, 12);
