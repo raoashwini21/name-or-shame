@@ -258,7 +258,7 @@ svg.threads .lbl text{ font-family:var(--mono); font-size:10.5px; fill:var(--red
 /* evidence card */
 .ev{
   position:relative; z-index:2; cursor:pointer; text-align:left;
-  background:var(--card); border:1px solid var(--line-2); padding:20px 16px 14px;
+  background:var(--card); border:1px solid var(--line-2); padding:20px 16px 26px;
   box-shadow:0 10px 18px -14px rgba(40,20,10,.55);
   transform:rotate(var(--r, 0deg)); transition:transform .18s, opacity .2s, box-shadow .18s;
 }
@@ -288,7 +288,7 @@ svg.threads .lbl text{ font-family:var(--mono); font-size:10.5px; fill:var(--red
 .ev-list li span.w{ white-space:normal; display:block; overflow:visible; }
 .ev-list a{ text-decoration:none; border-bottom:1px solid var(--line-2); }
 .ev-list a:hover{ border-color:var(--red); color:var(--red); }
-.ev-open{ position:absolute; right:12px; top:12px; font-size:11px; color:var(--ink-3); letter-spacing:.06em; opacity:0; transition:opacity .15s; }
+.ev-open{ position:absolute; right:12px; bottom:7px; font-size:11px; color:var(--ink-3); letter-spacing:.06em; opacity:0; transition:opacity .15s; }
 .ev:hover .ev-open, .ev:focus-visible .ev-open{ opacity:1; }
 .ok{ color:var(--green); }
 .bad{ color:var(--red); }
