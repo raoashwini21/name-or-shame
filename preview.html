@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Name Worth It? — Midnight Archive preview</title>
+<meta name="description" content="Find out if your name is worth building. Check domains, social handles, existing brands and naming risks before you commit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/midnight.css">
+</head>
+<body>
+
+<!-- ===================================================================
+     HOME
+     =================================================================== -->
+<div id="home" class="view on">
+  <header class="nav">
+    <a class="brand" href="#" data-home>
+      <svg class="mark" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="2" width="17" height="22" rx="2.5"/><path d="M8 8h7M8 12h5"/><circle cx="18.5" cy="18.5" r="5"/><path d="M22.2 22.2 26 26"/></svg>
+      <span>Name Worth It?</span>
+    </a>
+    <nav class="nav-links" aria-label="Page">
+      <a href="#how">How it works</a>
+      <a href="#sources">Sources</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <section class="hero-copy">
+      <p class="kicker"><span class="dot"></span>Name research for founders</p>
+      <h1>Find out if your name is worth building.</h1>
+      <p class="lede">Check domains, social handles, existing brands and naming risks before you commit.</p>
+
+      <form class="intake" id="intakeForm" autocomplete="off" novalidate>
+        <div class="field">
+          <label for="nameInput">Name</label>
+          <input type="text" id="nameInput" class="input-name" placeholder="e.g. Nimbus" spellcheck="false" value="Nimbus">
+        </div>
+        <div class="field">
+          <div class="label-row"><label for="context">What it does</label><span class="hint" id="ctxHint">One line. We search the web against it.</span></div>
+          <input type="text" id="context" placeholder="LinkedIn outreach for sales teams" value="LinkedIn outreach for sales teams" aria-describedby="ctxHint">
+        </div>
+        <div class="intake-foot">
+          <button class="btn btn-primary" id="runBtn" type="submit"><span id="runBtnLabel">Investigate a name</span><span aria-hidden="true">→</span></button>
+          <span class="muted small">No sign-up needed.</span>
+        </div>
+        <div class="error-box" id="errorBox" role="alert"></div>
+      </form>
+    </section>
+
+    <!-- The case that will be opened, filled in as you type -->
+    <aside class="case-stage" aria-label="Case preview">
+      <div class="case-doc" id="caseDoc">
+        <!-- the investigator's shadow, falling across the file from over your shoulder -->
+        <svg class="cast-shadow" viewBox="0 0 250 220" aria-hidden="true"><path fill="currentColor" d="M118 18 C104 16 92 26 90 40 L88 52 C66 54 48 60 40 68 C38 72 42 74 48 73 C76 68 120 66 158 70 C166 71 170 68 164 64 C154 58 142 54 136 53 L134 40 C132 27 128 19 118 18 Z M98 76 C96 92 100 106 112 112 C92 116 66 128 52 150 C36 176 30 204 30 220 L250 220 L250 178 C236 150 206 124 168 114 C176 104 178 90 176 78 C150 74 122 74 98 76 Z"/></svg>
+        <div class="doc-top">
+          <span class="mono">Case NW-<span data-case-no>0001</span></span>
+          <span class="tag tag-draft">Draft</span>
+        </div>
+        <div class="doc-subject">
+          <span class="muted small">Subject</span>
+          <div class="doc-name" id="docName">Nimbus</div>
+          <div class="doc-ctx" id="docCtx">LinkedIn outreach for sales teams</div>
+        </div>
+        <ol class="doc-checks">
+          <li><span class="q"></span><span>Domains</span><span class="mono muted" id="docSlug">nimbus.com + 5 TLDs</span></li>
+          <li><span class="q"></span><span>Social handles</span><span class="mono muted" id="docHandle">@nimbus on X, Instagram</span></li>
+          <li><span class="q"></span><span>Existing brands</span><span class="mono muted">web search</span></li>
+          <li><span class="q"></span><span>Trademark mentions</span><span class="mono muted">web search</span></li>
+          <li><span class="q"></span><span>Similar names</span><span class="mono muted">2–3 variants</span></li>
+          <li><span class="q"></span><span>Memorability</span><span class="mono muted">model read</span></li>
+        </ol>
+        <div class="doc-foot muted small">Opens the moment you investigate. Six lookups run in parallel.</div>
+      </div>
+    </aside>
+  </main>
+
+  <section class="how" id="how">
+    <div class="how-inner">
+      <div class="how-head">
+        <h2>One name. Six sources. One answer.</h2>
+        <p>Every finding comes from a live lookup. Nothing is estimated from the name alone except memorability, and that's labelled as a model read.</p>
+      </div>
+      <ol class="how-list" id="sources">
+        <li><span class="n mono">01</span><div><h3>Domains</h3><p>.com, .io, .net, .ai, .app and .co, checked against the registry. When the registry doesn't answer, a DNS lookup fills in and is marked as such.</p></div><span class="src mono">RDAP · DNS</span></li>
+        <li><span class="n mono">02</span><div><h3>Social handles</h3><p>Whether the plain @handle is free on X and Instagram.</p></div><span class="src mono">HTTP status</span></li>
+        <li><span class="n mono">03</span><div><h3>Existing brands</h3><p>Who already uses the name in your space, searched against your one-line description.</p></div><span class="src mono">Web search</span></li>
+        <li><span class="n mono">04</span><div><h3>Trademark mentions</h3><p>A signal from the open web — not a register search. Run a proper one before you file.</p></div><span class="src mono">Web search</span></li>
+        <li><span class="n mono">05</span><div><h3>Similar names</h3><p>A few close variants with their own domain and search checks, in case the original is crowded.</p></div><span class="src mono">RDAP · Web</span></li>
+        <li><span class="n mono">06</span><div><h3>Memorability</h3><p>How sticky, sayable and distinctive the name is, and whether it sounds like a brand that already exists.</p></div><span class="src mono">Jev</span></li>
+      </ol>
+    </div>
+  </section>
+  <footer class="foot"><span>Name Worth It?</span><span class="muted">Judgement by <a href="https://typesafe.ai" target="_blank" rel="noopener">TypeSafe's Jev</a>. Not legal advice.</span></footer>
+</div>
+
+<!-- ===================================================================
+     WORKSPACE
+     =================================================================== -->
+<div id="workspace" class="view">
+  <aside class="side" aria-label="Case">
+    <a class="brand brand-light" href="#" data-home>
+      <svg class="mark" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="2" width="17" height="22" rx="2.5"/><path d="M8 8h7M8 12h5"/><circle cx="18.5" cy="18.5" r="5"/><path d="M22.2 22.2 26 26"/></svg>
+      <span>Name Worth It?</span>
+    </a>
+    <div class="side-case">
+      <div class="side-meta mono"><span>NW-<span data-case-no>0001</span></span><span id="openedAt">—</span></div>
+      <div class="side-name" id="sideName">—</div>
+      <div class="side-ctx" id="sideCtx"></div>
+    </div>
+    <div class="side-progress">
+      <div class="sp-row"><span id="progText">Opening case</span><span class="mono" id="elapsed">0.0s</span></div>
+      <div class="sp-bar"><i id="progBar"></i></div>
+    </div>
+    <nav aria-label="Checks"><ol class="side-checks" id="sideChecks"></ol></nav>
+    <button class="side-new" id="newBtn" type="button">New investigation</button>
+    <!-- a cameo while the case is open -->
+    <svg class="cameo" viewBox="0 0 120 70" aria-hidden="true">
+      <path d="M38 36 C37 26 44 18 56 17 C66 16 74 22 76 31 Z" fill="#203447"/>
+      <path d="M22 36 C40 30 76 30 98 37 C100 38 99 40 96 40 C76 36 42 36 24 39 C20 39 19 37 22 36 Z" fill="#203447"/>
+      <path d="M40 34.5 C52 32 64 32 75 34" stroke="#B89B68" stroke-width="1.6" fill="none"/>
+      <path d="M44 40 C44 48 50 54 58 54 C66 54 72 48 72 40 Z" fill="#1A2B3A"/>
+      <path d="M10 70 C14 58 30 52 46 52 L72 52 C88 52 104 58 110 70 Z" fill="#203447"/>
+      <path d="M72 52 C88 52 104 58 110 70" stroke="#B89B68" stroke-width="1.2" fill="none" opacity=".6"/>
+    </svg>
+  </aside>
+
+  <main class="ws" id="result">
+    <header class="ws-head">
+      <div class="crumbs"><a href="#" data-home>Investigations</a><span aria-hidden="true">/</span><span class="mono">NW-<span data-case-no>0001</span></span><span class="tag tag-demo" id="demoTag" hidden>Demo data</span></div>
+      <div class="ws-title">
+        <div>
+          <h1 id="wsName">—</h1>
+          <p class="ws-ctx" id="wsCtx"></p>
+        </div>
+        <div class="ws-actions">
+          <span class="status" id="statusPill" data-s="running"><span class="sdot"></span><span id="statusText">Investigating</span></span>
+          <button class="btn btn-ghost" id="copyBtn" type="button" disabled>Copy report</button>
+        </div>
+      </div>
+      <p class="live" id="liveLine" aria-live="polite">Six lookups running in parallel.</p>
+    </header>
+
+    <div class="ws-error" id="wsError" role="alert"></div>
+
+    <section class="assessment" id="summary" aria-labelledby="verdictLabel" hidden>
+      <div class="as-main">
+        <span class="muted small">Assessment</span>
+        <div class="verdict" id="verdictLabel" data-v="mid">—</div>
+        <p class="why" id="stampSub"></p>
+        <div class="meters" id="meters"></div>
+      </div>
+      <div class="as-next">
+        <h2 class="h-sm">Next moves</h2>
+        <ol class="next" id="nextMoves"></ol>
+      </div>
+    </section>
+
+    <section class="findings" aria-labelledby="findingsH">
+      <div class="sec-head"><h2 class="h-sm" id="findingsH">Findings</h2><span class="muted small" id="findCount"></span></div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="links" id="linksSec" hidden>
+      <div class="sec-head"><h2 class="h-sm">Connections</h2><span class="muted small">Where one finding backs up another</span></div>
+      <ul class="link-list" id="linkList"></ul>
+    </section>
+
+    <div class="raw"><button class="txt-btn" id="rawToggle" type="button">Show raw response</button><div id="rawOutput"><pre id="rawPre"></pre></div></div>
+  </main>
+</div>
+
+<!-- full evidence -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle" aria-hidden="true">
+  <div class="dr-head"><span class="mono muted" id="drKicker">Evidence</span><button type="button" class="btn btn-ghost btn-sm" id="drClose">Close</button></div>
+  <div class="dr-body" id="drBody"></div>
+</aside>
+
+<script src="/assets/midnight.js"></script>
+</body>
+</html>
