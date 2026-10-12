@@ -11,6 +11,10 @@
 <link rel="stylesheet" href="/assets/midnight.css">
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- the investigator's signature: hat and shoulders, used sparingly -->
+  <symbol id="sig" viewBox="0 0 250 220"><path fill="currentColor" d="M118 18 C104 16 92 26 90 40 L88 52 C66 54 48 60 40 68 C38 72 42 74 48 73 C76 68 120 66 158 70 C166 71 170 68 164 64 C154 58 142 54 136 53 L134 40 C132 27 128 19 118 18 Z M98 76 C96 92 100 106 112 112 C92 116 66 128 52 150 C36 176 30 204 30 220 L220 220 C214 176 196 136 168 114 C176 104 178 90 176 78 C150 74 122 74 98 76 Z"/></symbol>
+</defs></svg>
 
 <!-- ===================================================================
      HOME
@@ -50,29 +54,39 @@
       </form>
     </section>
 
-    <!-- The case that will be opened, filled in as you type -->
-    <aside class="case-stage" aria-label="Case preview">
-      <div class="case-doc" id="caseDoc">
-        <!-- the investigator's shadow, falling across the file from over your shoulder -->
-        <svg class="cast-shadow" viewBox="0 0 250 220" aria-hidden="true"><path fill="currentColor" d="M118 18 C104 16 92 26 90 40 L88 52 C66 54 48 60 40 68 C38 72 42 74 48 73 C76 68 120 66 158 70 C166 71 170 68 164 64 C154 58 142 54 136 53 L134 40 C132 27 128 19 118 18 Z M98 76 C96 92 100 106 112 112 C92 116 66 128 52 150 C36 176 30 204 30 220 L250 220 L250 178 C236 150 206 124 168 114 C176 104 178 90 176 78 C150 74 122 74 98 76 Z"/></svg>
-        <div class="doc-top">
-          <span class="mono">Case NW-<span data-case-no>0001</span></span>
-          <span class="tag tag-draft">Draft</span>
-        </div>
-        <div class="doc-subject">
-          <span class="muted small">Subject</span>
+    <!-- The dossier this name will get: real records, queued until you investigate -->
+    <aside class="case-stage" aria-label="Case file preview">
+      <div class="dossier">
+        <article class="sheet sheet-brands" aria-hidden="true">
+          <header class="sh-head"><span class="sh-title">Existing brands</span><span class="mono muted">Web search</span></header>
+          <div class="sh-label">Query</div>
+          <div class="mono sh-query" id="docQuery">"Nimbus" LinkedIn outreach for sales teams</div>
+          <div class="sh-label">Findings</div>
+          <div class="brief-pending"><span class="bar"></span><span class="bar s"></span></div>
+          <div class="brief-pending"><span class="bar"></span><span class="bar s"></span></div>
+          <div class="sh-foot muted small">Results filed when the search returns</div>
+        </article>
+
+        <article class="sheet sheet-registry" aria-hidden="true">
+          <header class="sh-head"><span class="sh-title">Registry extract</span><span class="mono muted">RDAP · DNS</span></header>
+          <table class="reg"><tbody id="docDomains"></tbody></table>
+        </article>
+
+        <article class="sheet sheet-subject">
+          <div class="folder-tab mono">NW-<span data-case-no>0001</span></div>
+          <header class="sh-head"><span class="sh-title">Subject record</span><span class="classif" id="docClass">Unclassified</span></header>
           <div class="doc-name" id="docName">Nimbus</div>
           <div class="doc-ctx" id="docCtx">LinkedIn outreach for sales teams</div>
-        </div>
-        <ol class="doc-checks">
-          <li><span class="q"></span><span>Domains</span><span class="mono muted" id="docSlug">nimbus.com + 5 TLDs</span></li>
-          <li><span class="q"></span><span>Social handles</span><span class="mono muted" id="docHandle">@nimbus on X, Instagram</span></li>
-          <li><span class="q"></span><span>Existing brands</span><span class="mono muted">web search</span></li>
-          <li><span class="q"></span><span>Trademark mentions</span><span class="mono muted">web search</span></li>
-          <li><span class="q"></span><span>Similar names</span><span class="mono muted">2–3 variants</span></li>
-          <li><span class="q"></span><span>Memorability</span><span class="mono muted">model read</span></li>
-        </ol>
-        <div class="doc-foot muted small">Opens the moment you investigate. Six lookups run in parallel.</div>
+          <dl class="fields">
+            <div><dt>Opened</dt><dd class="mono" id="docOpened">On investigate</dd></div>
+            <div><dt>Handles</dt><dd class="mono" id="docHandle">@nimbus</dd></div>
+            <div><dt>Variants</dt><dd id="docVariants">Generated on open</dd></div>
+            <div><dt>Checks</dt><dd>6 queued</dd></div>
+          </dl>
+          <div class="evidence-index">
+            <span>Domains</span><span>Handles</span><span>Brands</span><span>Trademarks</span><span>Variants</span><span>Memorability</span>
+          </div>
+        </article>
       </div>
     </aside>
   </main>
@@ -116,15 +130,7 @@
     </div>
     <nav aria-label="Checks"><ol class="side-checks" id="sideChecks"></ol></nav>
     <button class="side-new" id="newBtn" type="button">New investigation</button>
-    <!-- a cameo while the case is open -->
-    <svg class="cameo" viewBox="0 0 120 70" aria-hidden="true">
-      <path d="M38 36 C37 26 44 18 56 17 C66 16 74 22 76 31 Z" fill="#203447"/>
-      <path d="M22 36 C40 30 76 30 98 37 C100 38 99 40 96 40 C76 36 42 36 24 39 C20 39 19 37 22 36 Z" fill="#203447"/>
-      <path d="M40 34.5 C52 32 64 32 75 34" stroke="#B89B68" stroke-width="1.6" fill="none"/>
-      <path d="M44 40 C44 48 50 54 58 54 C66 54 72 48 72 40 Z" fill="#1A2B3A"/>
-      <path d="M10 70 C14 58 30 52 46 52 L72 52 C88 52 104 58 110 70 Z" fill="#203447"/>
-      <path d="M72 52 C88 52 104 58 110 70" stroke="#B89B68" stroke-width="1.2" fill="none" opacity=".6"/>
-    </svg>
+
   </aside>
 
   <main class="ws" id="result">
@@ -140,31 +146,42 @@
           <button class="btn btn-ghost" id="copyBtn" type="button" disabled>Copy report</button>
         </div>
       </div>
-      <p class="live" id="liveLine" aria-live="polite">Six lookups running in parallel.</p>
+      <div class="live" id="live"><svg class="sig" aria-hidden="true"><use href="#sig"/></svg><p id="liveLine" aria-live="polite">Six lookups running in parallel.</p></div>
     </header>
 
     <div class="ws-error" id="wsError" role="alert"></div>
 
-    <section class="assessment" id="summary" aria-labelledby="verdictLabel" hidden>
-      <div class="as-main">
-        <span class="muted small">Assessment</span>
-        <div class="verdict" id="verdictLabel" data-v="mid">—</div>
+    <article class="report" id="summary" aria-labelledby="verdictLabel" hidden>
+      <header class="rp-strip">
+        <span class="mono">Case report · NW-<span data-case-no>0001</span></span>
+        <span class="mono" id="rpFiled"></span>
+      </header>
+      <div class="rp-verdict" id="rpVerdict" data-v="mid">
+        <p class="rp-q" id="rpQuestion">Is this name worth pursuing?</p>
+        <h2 class="rp-a" id="verdictLabel">—</h2>
         <p class="why" id="stampSub"></p>
-        <div class="meters" id="meters"></div>
+        <div class="rp-class"><span class="muted small">Classification</span><span class="classif" id="rpClass">—</span><span class="muted small" id="rpScores"></span></div>
       </div>
-      <div class="as-next">
-        <h2 class="h-sm">Next moves</h2>
-        <ol class="next" id="nextMoves"></ol>
+      <div class="rp-cols">
+        <section>
+          <h3 class="h-sm">Key findings</h3>
+          <ol class="keys" id="keyFindings"></ol>
+        </section>
+        <section class="rp-next">
+          <h3 class="h-sm">What to do next</h3>
+          <ol class="next" id="nextMoves"></ol>
+          <button class="txt-btn" id="moreMoves" type="button" hidden></button>
+        </section>
       </div>
-    </section>
+    </article>
 
     <section class="findings" aria-labelledby="findingsH">
-      <div class="sec-head"><h2 class="h-sm" id="findingsH">Findings</h2><span class="muted small" id="findCount"></span></div>
+      <div class="sec-head"><h2 class="h-sm" id="findingsH">Investigations</h2><span class="muted small" id="findCount"></span></div>
       <div class="grid" id="grid"></div>
     </section>
 
     <section class="links" id="linksSec" hidden>
-      <div class="sec-head"><h2 class="h-sm">Connections</h2><span class="muted small">Where one finding backs up another</span></div>
+      <div class="sec-head"><h2 class="h-sm">Connections</h2><span class="muted small">Where one investigation backs up another</span></div>
       <ul class="link-list" id="linkList"></ul>
     </section>
 

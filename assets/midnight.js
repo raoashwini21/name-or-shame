@@ -23,6 +23,7 @@
   function hostOf(url){ try{ return new URL(url).hostname.replace(/^www\./, '').toLowerCase(); }catch(e){ return ''; } }
   function buyUrl(domain){ return 'https://www.namecheap.com/domains/registration/results/?domain=' + encodeURIComponent(domain); }
   const clock = (d) => pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+  const clockS = (d) => clock(d) + ':' + pad2(d.getSeconds());
   const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
   const slugOf = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 
@@ -51,6 +52,7 @@
     running: '<svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="2"/><path d="M9 2a7 7 0 0 1 7 7" fill="none" stroke="#B89B68" stroke-width="2" stroke-linecap="round"/></svg>',
     clear: '<svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#3D7567"/><path d="M5.5 9.2 7.9 11.5 12.6 6.6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     found: '<svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#B77C48"/><path d="M9 5v5" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="9" cy="12.8" r="1.1" fill="#fff"/></svg>',
+    evidence: '<svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#B89B68"/><circle cx="9" cy="9" r="3" fill="#fff"/></svg>',
     cold: '<svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#5B6B73"/><path d="M6.4 6.4l5.2 5.2M11.6 6.4l-5.2 5.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>'
   };
   const glyph = (st) => '<span class="st st-' + st + '" aria-hidden="true">' + GLYPH[st] + '</span>';
@@ -73,8 +75,10 @@
     const name = $('nameInput').value.trim(), ctx = $('context').value.trim(), slug = slugOf(name);
     $('docName').textContent = name || 'Your name';
     $('docCtx').textContent = ctx || 'What it does, in one line';
-    $('docSlug').textContent = slug ? slug + '.com + 5 TLDs' : '6 TLDs';
-    $('docHandle').textContent = slug ? '@' + slug + ' on X, Instagram' : 'X, Instagram';
+    $('docHandle').textContent = slug ? '@' + slug.slice(0, 30) : '—';
+    // the exact query and records the backend will run for this name
+    $('docQuery').textContent = '"' + (name || 'Name') + '" ' + (ctx || 'your one-liner');
+    $('docDomains').innerHTML = TLD_ORDER.map(t => '<tr><td>' + escapeHtml((slug || 'name') + '.' + t) + '</td><td class="q">queued</td></tr>').join('');
   }
   $('nameInput').addEventListener('input', paintDoc);
   $('context').addEventListener('input', paintDoc);
@@ -110,15 +114,6 @@
     if (list.some(x => x.available === null || x.available === undefined)) return 'Incomplete';
     return list.some(x => x.source === 'dns') ? 'Partial — DNS fallback used' : 'Verified';
   }
-  function leadOutcome(key, d){
-    if (key === 'domains'){ const c = d.domains && d.domains.com; return c && c.available === true ? 'clear' : 'found'; }
-    if (key === 'handles') return ['x', 'instagram'].some(p => d.socials && d.socials[p] && d.socials[p].taken === true) ? 'found' : 'clear';
-    if (key === 'collisions') return (d.niche_matches || []).length ? 'found' : 'clear';
-    if (key === 'market') return (d.trademark_matches || []).length ? 'found' : 'clear';
-    if (key === 'relatives') return (d.variants || []).some(v => v.domains && v.domains.com && v.domains.com.available === true) ? 'clear' : 'found';
-    if (key === 'memory') return ((d.scores.memorable ?? 0) >= 0.65 && (d.scores.too_generic ?? 0) < 0.5) ? 'clear' : 'found';
-    return 'clear';
-  }
   function resultLine(key, d){
     if (key === 'domains'){
       const own = TLD_ORDER.map(t => d.domains && d.domains[t]).filter(Boolean);
@@ -143,17 +138,38 @@
       if (!(d.variants || []).length) return 'No close variants';
       return v.length ? plural(v.length, 'variant') + ' with a free .com' : 'No variant has a free .com';
     }
-    const m = d.scores.memorable ?? 0, g = d.scores.too_generic ?? 0;
+    const m = d.scores.memorable ?? 0, g = d.scores.too_generic ?? 0, c = d.scores.brand_collision ?? 0;
+    if (c >= 0.55) return 'Sounds like an existing brand · ' + pct(d.scores.brand_collision);
     return pct(d.scores.memorable) + ' memorable · ' + (m >= 0.65 && g < 0.5 ? 'strong recall' : g < 0.5 ? 'distinctive' : 'not very distinctive');
   }
-  const TAG = {
-    domains:    { clear: ['.com free', 'tag-ok'],       found: ['.com taken', 'tag-warn'] },
-    handles:    { clear: ['Open', 'tag-ok'],            found: ['Taken', 'tag-warn'] },
-    collisions: { clear: ['No conflicts', 'tag-ok'],    found: ['Conflicts', 'tag-warn'] },
-    market:     { clear: ['Quiet', 'tag-ok'],           found: ['Mentions', 'tag-warn'] },
-    relatives:  { clear: ['Options found', 'tag-ok'],   found: ['None free', 'tag-neutral'] },
-    memory:     { clear: ['Strong', 'tag-ok'],          found: ['Mixed', 'tag-warn'] }
-  };
+  // What a filed lookup turned up, in the words the progress view uses.
+  // Every branch reads a real field of the response, errors included.
+  function stateOf(key, d){
+    const S = (t, label) => ({ t, label });
+    if (key === 'domains'){
+      const own = TLD_ORDER.map(t => d.domains && d.domains[t]).filter(Boolean);
+      if (!own.length) return S('unavailable', 'Source unavailable');
+      const c = d.domains.com;
+      return c && c.available === false ? S('review', 'Review needed') : S('done', 'Check completed');
+    }
+    if (key === 'handles'){
+      const s = ['x', 'instagram'].map(p => d.socials && d.socials[p]).filter(Boolean);
+      if (!s.length || s.every(x => x.taken === null || x.taken === undefined)) return S('unavailable', 'Inconclusive');
+      return s.some(x => x.taken === true) ? S('review', 'Review needed') : S('done', 'Check completed');
+    }
+    if (key === 'collisions'){
+      if ((d.niche_matches || []).length) return S('evidence', 'Evidence found');
+      return d.serp_error ? S('unavailable', 'Source unavailable') : S('clear', 'No significant matches');
+    }
+    if (key === 'market'){
+      if ((d.trademark_matches || []).length) return S('evidence', 'Evidence found');
+      return d.trademark_error ? S('unavailable', 'Source unavailable') : S('clear', 'No significant matches');
+    }
+    if (key === 'relatives') return (d.variants || []).length ? S('done', 'Check completed') : S('clear', 'No significant matches');
+    const m = d.scores.memorable ?? 0, g = d.scores.too_generic ?? 0, c = d.scores.brand_collision ?? 0;
+    return (m < 0.5 || g >= 0.6 || c >= 0.55) ? S('review', 'Review needed') : S('done', 'Check completed');
+  }
+  const GLYPH_FOR = { review: 'found', evidence: 'evidence', clear: 'clear', done: 'clear', unavailable: 'cold' };
 
   // ---------------------------------------------------------------------
   //  Connections — only where the data genuinely relates two findings
@@ -193,11 +209,11 @@
       b.dataset.st = st;
       b.querySelector('.st').outerHTML = glyph(st);
       if (text != null) b.querySelector('.res').textContent = text;
-      const words = { queued: 'queued', running: 'running', found: 'needs a look', clear: 'clear', cold: 'no answer' };
+      const words = { queued: 'queued', running: 'searching sources', found: 'review needed', evidence: 'evidence found', clear: 'completed', cold: 'no answer' };
       b.setAttribute('aria-label', CHECK[key].title + ' — ' + words[st] + (text ? ': ' + text : ''));
     },
     progress(){
-      const done = CHECKS.filter(c => ['clear', 'found', 'cold'].includes(state.status[c.key])).length;
+      const done = CHECKS.filter(c => ['clear', 'found', 'evidence', 'cold'].includes(state.status[c.key])).length;
       $('progBar').style.width = Math.round(done / CHECKS.length * 100) + '%';
       $('progText').textContent = done === CHECKS.length ? 'All six checks in' : done + ' of 6 checks in';
     }
@@ -212,99 +228,121 @@
   //  Findings
   // ---------------------------------------------------------------------
   const Grid = {
+    // while the lookups run, each investigation is a slim record that says what it is searching
     reset(){
       $('grid').classList.remove('focus');
       $('grid').innerHTML = CHECKS.map(c =>
         '<article class="card pending" data-k="' + c.key + '" aria-busy="true">' +
-        '<div class="card-h">' + icon(c.key) + '<h3>' + c.title + '</h3><span class="tag tag-neutral">Checking</span></div>' +
-        '<p class="card-sum">Waiting on ' + c.src.toLowerCase() + '…</p><div class="sk w1"></div><div class="sk w2"></div><div class="sk w3"></div></article>').join('');
+        '<div class="card-h">' + icon(c.key) + '<h3>' + c.title + '</h3></div>' +
+        '<span class="searching"><span class="spin" aria-hidden="true"></span>Searching sources · <span class="mono">' + c.src + '</span></span></article>').join('');
       $('findCount').textContent = '';
     },
     file(key, d){
       const el = document.querySelector('.card[data-k="' + key + '"]');
-      const out = leadOutcome(key, d), tag = TAG[key][out];
-      el.className = 'card filed';
+      const st = stateOf(key, d);
+      el.className = 'card';
       el.removeAttribute('aria-busy');
       el.tabIndex = -1;
-      el.innerHTML = '<div class="card-h">' + icon(key) + '<h3>' + CHECK[key].title + '</h3><span class="tag ' + tag[1] + '">' + tag[0] + '</span></div>' +
+      el.innerHTML = '<div class="card-h">' + icon(key) + '<h3>' + CHECK[key].title + '</h3><span class="state" data-t="' + st.t + '">' + st.label + '</span></div>' +
         '<p class="card-sum">' + escapeHtml(resultLine(key, d)) + '</p>' +
-        '<div class="card-src mono">' + CHECK[key].src + ' · retrieved ' + clock(state.receivedAt) + '</div>' +
+        '<div class="card-meta"><span>' + CHECK[key].src + '</span><span>·</span><span>filed ' + clockS(new Date()) + '</span></div>' +
         '<div class="card-body">' + BODY[key](d) + '</div>' +
         '<div class="card-foot"><span class="linked-note"></span><button class="txt-btn" type="button" data-open="' + key + '">Full evidence →</button></div>';
-      requestAnimationFrame(() => requestAnimationFrame(() => el.querySelectorAll('.mb i').forEach(b => { b.style.width = b.dataset.w + '%'; })));
+      if (!reduceMotion){
+        el.classList.add('filing', 'fresh');
+        el.addEventListener('animationend', () => el.classList.remove('filing'), { once: true });
+        setTimeout(() => el.classList.remove('fresh'), 900);
+      }
+      requestAnimationFrame(() => requestAnimationFrame(() => el.querySelectorAll('.mtrack i').forEach(b => { b.style.width = b.dataset.w + '%'; })));
       el.querySelector('[data-open]').addEventListener('click', () => Drawer.open(key, el.querySelector('[data-open]')));
       el.addEventListener('mouseenter', () => Grid.focus(key));
       el.addEventListener('mouseleave', () => Grid.blur());
       el.addEventListener('focusin', () => Grid.focus(key));
       el.addEventListener('focusout', () => Grid.blur());
+      return st;
     },
     cold(key){
       const el = document.querySelector('.card.pending[data-k="' + key + '"]'); if (!el) return;
       el.removeAttribute('aria-busy');
-      el.querySelector('.tag').textContent = 'No answer';
-      el.querySelector('.card-sum').textContent = 'This lookup did not return.';
-      el.querySelectorAll('.sk').forEach(s => s.remove());
+      el.classList.add('cold');
+      el.querySelector('.searching').innerHTML = '<span class="spin"></span>Lookup did not return';
     },
-    // hovering a finding shows what else it is connected to
+    // hovering an investigation shows what else it is connected to
     focus(key){
       const xs = linksFor(key); if (!xs.length) return;
       $('grid').classList.add('focus');
       document.querySelector('.card[data-k="' + key + '"]').classList.add('hot');
-      xs.forEach(x => { const o = document.querySelector('.card[data-k="' + x.other + '"]'); if (!o) return; o.classList.add('linked'); o.querySelector('.linked-note').textContent = 'Linked: ' + x.why; });
+      xs.forEach(x => { const o = document.querySelector('.card[data-k="' + x.other + '"]'); if (!o || !o.querySelector('.linked-note')) return; o.classList.add('linked'); o.querySelector('.linked-note').textContent = 'Linked: ' + x.why; });
     },
     blur(){
       $('grid').classList.remove('focus');
       document.querySelectorAll('.card.hot, .card.linked').forEach(c => c.classList.remove('hot', 'linked'));
     }
   };
-  const tag = (v, href) => href ? '<a class="tag ' + v.cls + '" href="' + href + '" target="_blank" rel="noopener" title="Register it">' + v.label + ' ↗</a>' : '<span class="tag ' + v.cls + '">' + v.label + '</span>';
+
+  // ---- one evidence format per investigation
+  const st = (t, label) => '<span class="state" data-t="' + t + '">' + label + '</span>';
   const BODY = {
+    // registry-style records
     domains(d){
       const own = TLD_ORDER.map(t => d.domains && d.domains[t]).filter(Boolean);
       if (!own.length) return '<p class="empty">Could not reach the registry this run.</p>';
-      return '<div class="domain-strip" aria-hidden="true">' + own.map(x => '<span class="' + domainVerdict(x).strip + '"></span>').join('') + '</div>' +
-        '<table class="records" style="margin-top:12px"><tbody>' + own.map(x => { const v = domainVerdict(x);
-          return '<tr><td class="d">' + escapeHtml(x.domain) + '</td><td class="s">' + tag(v, x.available === true ? buyUrl(x.domain) : null) + '</td><td class="src">' + escapeHtml((x.source || 'rdap').toUpperCase()) + '</td></tr>'; }).join('') + '</tbody></table>';
+      return '<table class="registry"><thead><tr><th>Domain</th><th>Status</th><th>Source</th></tr></thead><tbody>' + own.map(x => {
+        const v = domainVerdict(x), cls = x.available === true ? 'free' : x.available === false ? 'taken' : '';
+        const status = x.available === true ? '<a href="' + buyUrl(x.domain) + '" target="_blank" rel="noopener" title="Register ' + escapeHtml(x.domain) + '">' + v.label + ' ↗</a>'
+          : '<span class="' + (x.available === false ? 'taken-l' : 'unk-l') + '">' + v.label + '</span>';
+        return '<tr class="' + cls + '"><td class="d">' + escapeHtml(x.domain) + '</td><td>' + status + '</td><td class="src">' + escapeHtml((x.source || 'rdap').toUpperCase()) + '</td></tr>'; }).join('') + '</tbody></table>';
     },
+    // compact profile extracts
     handles(d){
       const s = ['x', 'instagram'].filter(p => d.socials && d.socials[p]).map(p => d.socials[p]);
       if (!s.length) return '<p class="empty">Could not check handles this run.</p>';
-      return '<table class="records"><tbody>' + s.map(x => '<tr><td>' + escapeHtml(x.label) + '</td><td class="d">' +
-        (x.note ? '@' + escapeHtml(x.handle) : '<a href="' + escapeHtml(x.url) + '" target="_blank" rel="noopener">@' + escapeHtml(x.handle) + '</a>') + '</td><td class="s">' + tag(handleVerdict(x)) + '</td></tr>').join('') + '</tbody></table>';
+      return '<div class="profiles">' + s.map(x => { const v = handleVerdict(x);
+        return '<div class="profile"><span class="av" aria-hidden="true">' + (x.platform === 'x' ? 'X' : 'IG') + '</span><div style="min-width:0"><div class="h">@' + escapeHtml(x.handle) + '</div>' +
+          '<div class="p">' + escapeHtml(x.label) + (x.note ? ' · ' + escapeHtml(x.note) : ' · <a href="' + escapeHtml(x.url) + '" target="_blank" rel="noopener">open profile ↗</a>') + '</div></div>' +
+          st(v.label === 'Taken' ? 'review' : v.label === 'Open' ? 'clear' : 'unavailable', v.label) + '</div>'; }).join('') + '</div>';
     },
+    // company intelligence briefs
     collisions(d){
       const m = d.niche_matches || [];
-      if (!m.length) return '<p class="empty">' + escapeHtml(d.serp_error || 'No existing company or product turned up for this name in your space.') + '</p>';
-      return '<ul class="hits">' + m.slice(0, 3).map(x => { const r = roughRead(x);
-        return '<li><div class="hm"><span class="mono">' + escapeHtml(r.host) + '</span><span class="tag ' + (r.risk === 'High' ? 'tag-warn' : 'tag-neutral') + '">' + r.risk + ' overlap</span></div>' +
-          '<a class="ht" href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(x.title) + '</a><p>' + escapeHtml(x.snippet) + '</p></li>'; }).join('') + '</ul>' +
+      if (!m.length) return emptySig(d.serp_error || 'No existing company or product turned up for this name in your space.');
+      const bars = (r) => { const n = r === 'High' ? 3 : r === 'Medium' ? 2 : 1; return '<span class="overlap">' + [1, 2, 3].map(i => '<i class="' + (i <= n ? 'on' : '') + '"></i>').join('') + r + ' overlap</span>'; };
+      return '<div class="briefs">' + m.slice(0, 3).map(x => { const r = roughRead(x);
+        return '<div class="brief" data-r="' + r.risk + '"><div class="brief-top"><span class="mono">' + escapeHtml(r.host) + '</span>' + bars(r.risk) + '</div>' +
+          '<a class="bt" href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(x.title) + '</a><p>' + escapeHtml(x.snippet) + '</p>' +
+          '<div class="basis">Basis: ' + r.match.toLowerCase() + (r.risk !== 'Low' ? ', overlaps your description' : '') + '</div></div>'; }).join('') + '</div>' +
         (m.length > 3 ? '<p class="disclaimer">' + (m.length - 3) + ' more in the full evidence.</p>' : '');
     },
+    // formal search findings
     market(d){
       const m = d.trademark_matches || [];
-      return (m.length ? '<ul class="hits">' + m.slice(0, 3).map(x => '<li><div class="hm"><span class="mono">' + escapeHtml(hostOf(x.link)) + '</span></div><a class="ht" href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(x.title) + '</a></li>').join('') + '</ul>'
-        : '<p class="empty">' + escapeHtml(d.trademark_error || 'Nothing turned up in a web search for trademark mentions.') + '</p>') +
-        '<p class="disclaimer">A web signal, not a search of any trademark register.</p>';
+      return '<dl class="scope"><dt>Query</dt><dd class="mono">"' + escapeHtml(state.name) + '" trademark</dd><dt>Scope</dt><dd>Open web only — no trademark register was searched</dd><dt>Findings</dt><dd>' + m.length + '</dd></dl>' +
+        (m.length ? '<ol class="formal">' + m.slice(0, 3).map(x => '<li><div><a href="' + escapeHtml(x.link) + '" target="_blank" rel="noopener">' + escapeHtml(x.title) + '</a><div class="src">' + escapeHtml(hostOf(x.link)) + '</div></div></li>').join('') + '</ol>'
+          : '<p class="empty" style="margin-top:12px">' + escapeHtml(d.trademark_error || 'No trademark mentions turned up.') + '</p>');
     },
+    // the subject against its variants
     relatives(d){
       const v = d.variants || [];
       if (!v.length) return '<p class="empty">No close variants for this name.</p>';
-      return '<table class="records"><tbody>' + v.map(x => { const com = x.domains && x.domains.com;
-        const free = TLD_ORDER.filter(t => x.domains && x.domains[t] && x.domains[t].available === true).length;
-        const total = TLD_ORDER.filter(t => x.domains && x.domains[t]).length;
-        return '<tr><td style="font-family:var(--f-head);font-weight:700">' + escapeHtml(x.name) + '</td><td class="d muted">' + free + '/' + total + ' free · ' + (x.niche_matches || []).length + ' in use</td><td class="s">' +
-          (com ? tag(domainVerdict(com), com.available === true ? buyUrl(com.domain) : null).replace(/(Available|Registered|Likely free|Unknown)/, '.com $1') : '') + '</td></tr>'; }).join('') + '</tbody></table>';
+      const dots = (doms) => '<span class="tld-dots" aria-hidden="true">' + TLD_ORDER.map(t => { const x = doms && doms[t]; return '<i class="' + (!x ? '' : x.available === true ? 'f' : x.available === false ? 't' : '') + '"></i>'; }).join('') + '</span>';
+      const freeOf = (doms) => TLD_ORDER.filter(t => doms && doms[t] && doms[t].available === true).length;
+      const com = (doms) => { const c = doms && doms.com; return !c ? '—' : c.available === true ? '<span class="com-ok">Free</span>' : c.available === false ? '<span class="com-no">Registered</span>' : '<span class="muted">Unknown</span>'; };
+      const row = (nm, sub, doms, inUse, cls) => '<tr class="' + cls + '"><td class="nm">' + escapeHtml(nm) + (sub ? '<small>' + sub + '</small>' : '') + '</td><td>' + com(doms) + '</td><td>' + dots(doms) + ' <span class="muted small">' + freeOf(doms) + '/6</span></td><td>' + inUse + '</td></tr>';
+      return '<table class="compare"><thead><tr><th>Name</th><th>.com</th><th>TLDs free</th><th>In your space</th></tr></thead><tbody>' +
+        row(state.name, 'Subject', d.domains, (d.niche_matches || []).length, 'subject') +
+        v.map(x => row(x.name, '', x.domains, (x.niche_matches || []).length, '')).join('') + '</tbody></table>';
     },
+    // the four scores against the lines the verdict is drawn on
     memory(d){
       const s = d.scores;
-      return '<div class="meters" style="grid-template-columns:1fr;margin-top:0">' +
-        meter('Memorable', s.memorable) + meter('Easy to say & spell', s.easy_say_spell) +
-        meter('Distinctive', s.too_generic == null ? null : 1 - s.too_generic) + meter('Sounds like an existing brand', s.brand_collision, true) + '</div>';
+      const row = (label, val, tick, risk) => '<div class="mrow"><div class="mt"><span>' + label + '</span><span class="mono">' + pct(val) + '</span></div>' +
+        '<div class="mtrack"><i class="' + (risk ? 'risk' : '') + '" data-w="' + (val == null ? 0 : Math.round(val * 100)) + '"></i><span class="tick" style="left:' + tick + '%" title="Verdict threshold: ' + tick + '%"></span></div></div>';
+      return '<div class="mviz">' + row('Memorable', s.memorable, 65) + row('Easy to say & spell', s.easy_say_spell, 60) +
+        row('Distinctive', s.too_generic == null ? null : 1 - s.too_generic, 50) + row('Sounds like an existing brand', s.brand_collision, 55, true) +
+        '<p class="mcap">Marks show the thresholds the verdict uses</p></div>';
     }
   };
-  function meter(label, val, risk){
-    return '<div class="meter"><div class="mt"><span>' + label + '</span><span class="mono">' + pct(val) + '</span></div><div class="mb"><i class="' + (risk ? 'risk' : '') + '" data-w="' + (val == null ? 0 : Math.round(val * 100)) + '"></i></div></div>';
-  }
+  const emptySig = (text) => '<p class="empty-sig"><svg aria-hidden="true"><use href="#sig"/></svg><span>' + escapeHtml(text) + '</span></p>';
 
   // ---------------------------------------------------------------------
   //  Drawer — the full evidence for one finding
@@ -375,7 +413,7 @@
     $('linksSec').hidden = false;
     $('linkList').innerHTML = state.links.length ? state.links.map(l =>
       '<li data-a="' + l.a + '" data-b="' + l.b + '"><span class="chip">' + CHECK[l.a].title + '</span><span class="join" aria-hidden="true"></span><span class="chip">' + CHECK[l.b].title + '</span><p class="why">' + escapeHtml(l.why.charAt(0).toUpperCase() + l.why.slice(1)) + '</p></li>').join('')
-      : '<li><p class="why">No finding here backs up another — each stands on its own.</p></li>';
+      : '<li>' + emptySig('No investigation here backs up another — each stands on its own.') + '</li>';
     $('linkList').querySelectorAll('li[data-a]').forEach(li => {
       li.addEventListener('mouseenter', () => { $('grid').classList.add('focus'); [li.dataset.a, li.dataset.b].forEach(k => document.querySelector('.card[data-k="' + k + '"]').classList.add('linked')); });
       li.addEventListener('mouseleave', () => Grid.blur());
@@ -387,13 +425,44 @@
   // ---------------------------------------------------------------------
   const CLASSIFICATION = { IMPERSONATION: 'HIGH COLLISION', 'NO WITNESSES': 'LOW RECALL', CLEARED: 'CLEARED', 'UNDER WATCH': 'UNDER WATCH' };
   const DISPLAY = { IMPERSONATION: 'High collision risk', 'NO WITNESSES': 'Low recall', CLEARED: 'Cleared', 'UNDER WATCH': 'Under watch' };
-  function renderAssessment(d){
+  // the direct answer to "is this name worth pursuing?"
+  const ANSWER = { IMPERSONATION: 'Not as it stands.', 'NO WITNESSES': 'Probably not.', CLEARED: 'Yes — worth pursuing.', 'UNDER WATCH': 'Possibly, with caution.' };
+
+  // the three findings that matter most: risks first, by weight, then strengths
+  function keyFindings(d){
+    const out = [];
+    const s = d.scores, m = s.memorable ?? 0, g = s.too_generic ?? 0, c = s.brand_collision ?? 0;
+    const own = TLD_ORDER.map(t => d.domains && d.domains[t]).filter(Boolean);
+    const com = d.domains && d.domains.com;
+    const free = own.filter(x => x.available === true);
+    const niche = d.niche_matches || [], tm = d.trademark_matches || [];
+    const hTaken = ['x', 'instagram'].map(p => d.socials && d.socials[p]).filter(x => x && x.taken === true);
+    const viable = (d.variants || []).filter(v => v.domains && v.domains.com && v.domains.com.available === true);
+    const add = (t, w, key, title, detail) => out.push({ t, w, key, title, detail });
+    if (niche.length){
+      const hi = niche.filter(x => roughRead(x).risk === 'High').length;
+      add('risk', 90 + niche.length, 'collisions', plural(niche.length, 'existing brand') + ' already use the name in your space', hi ? hi + ' with high overlap, including ' + roughRead(niche[0]).host : 'Top result: ' + roughRead(niche[0]).host);
+    }
+    if (c >= 0.55) add('risk', 85, 'memory', 'It sounds like a brand that already exists', 'Brand collision read ' + pct(c) + ' — the verdict line is 55%');
+    if (s.memorable != null && m < 0.5) add('risk', 80, 'memory', 'It may not stick', pct(m) + ' memorable — below the 50% line');
+    if (com && com.available === false) add('risk', 70, 'domains', com.domain + ' is registered', free.length ? free.length + ' of ' + own.length + ' TLDs free: ' + free.slice(0, 2).map(x => x.domain).join(', ') : 'None of the six TLDs is free');
+    if (tm.length) add('risk', 65, 'market', plural(tm.length, 'trademark mention') + ' on the open web', 'A signal only — check the register before filing');
+    if (hTaken.length) add('risk', 60, 'handles', '@' + hTaken[0].handle + ' is taken on ' + hTaken.map(x => x.label).join(' and '), "You'd need a modifier on social");
+    if (com && com.available === true) add('strength', 55, 'domains', com.domain + ' is available', 'Confirmed via ' + (com.source === 'dns' ? 'DNS — verify before buying' : 'the registry'));
+    if (!niche.length && !d.serp_error) add('strength', 50, 'collisions', 'No existing brand in your space', 'Web search for the name with your description');
+    if (viable.length) add('strength', 45, 'relatives', viable[0].name + ' has a free .com', viable.length > 1 ? 'And ' + (viable.length - 1) + ' more variant' + (viable.length > 2 ? 's' : '') : 'A close variant to fall back on');
+    if (m >= 0.65) add('strength', 40, 'memory', 'It sticks — ' + pct(m) + ' memorable', pct(s.easy_say_spell) + ' easy to say and spell');
+    return out.sort((a, b) => (a.t === b.t ? b.w - a.w : a.t === 'risk' ? -1 : 1)).slice(0, 3);
+  }
+
+  function renderReport(d){
     const scores = d.scores;
     const m = scores.memorable ?? 0;
     const e = scores.easy_say_spell ?? 0;
     const g = scores.too_generic ?? 0;
     const c = scores.brand_collision ?? 0;
 
+    // verdict logic unchanged from the live app
     let verdict, verdictClass, sub;
     if (c >= 0.55){
       verdict = 'IMPERSONATION'; verdictClass = 'bad';
@@ -416,33 +485,46 @@
     const niche = (d.niche_matches || []).length;
     const viable = (d.variants || []).filter(v => v.domains && v.domains.com && v.domains.com.available === true);
 
-    $('verdictLabel').textContent = DISPLAY[verdict];
-    $('verdictLabel').parentElement.dataset.v = verdictClass;
-    const because = [];
-    if (niche) because.push(niche + ' existing use' + (niche === 1 ? '' : 's') + ' turned up in your space');
-    if (com && com.available === false) because.push('the .com is already registered');
-    if (hTaken.length) because.push('the handle is taken on ' + hTaken.map(x => x.label).join(' and '));
-    $('stampSub').textContent = sub.charAt(0).toUpperCase() + sub.slice(1) + '.' + (because.length ? ' On the record: ' + because.join(', ') + '.' : '');
-    $('meters').innerHTML = meter('Memorable', scores.memorable) + meter('Easy to say & spell', scores.easy_say_spell) +
-      meter('Distinctive', scores.too_generic == null ? null : 1 - scores.too_generic) + meter('Brand collision risk', scores.brand_collision, true);
+    $('rpFiled').textContent = 'Filed ' + clock(state.receivedAt) + ', ' + state.today;
+    $('rpVerdict').dataset.v = verdictClass;
+    $('rpQuestion').textContent = 'Is ' + state.name + ' worth pursuing?';
+    $('verdictLabel').textContent = ANSWER[verdict];
+    $('stampSub').textContent = sub.charAt(0).toUpperCase() + sub.slice(1) + '.';
+    $('rpClass').textContent = DISPLAY[verdict];
+    $('rpClass').dataset.v = verdictClass;
+    $('rpScores').textContent = pct(m) + ' memorable · ' + pct(e) + ' easy to say · ' + pct(g) + ' generic · ' + pct(c) + ' collision';
+
+    $('keyFindings').innerHTML = keyFindings(d).map((k, i) => '<li data-t="' + k.t + '"><span class="rk" aria-hidden="true">' + (k.t === 'risk' ? '!' : '✓') + '</span><div>' +
+      '<div class="kt">' + escapeHtml(k.title) + '</div><div class="kd">' + escapeHtml(k.detail) + '</div>' +
+      '<button class="kl" type="button" data-goto="' + k.key + '">See the ' + CHECK[k.key].title.toLowerCase() + ' investigation ↓</button></div></li>').join('');
+    $('keyFindings').querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', () => {
+      const card = document.querySelector('.card[data-k="' + b.dataset.goto + '"]'); if (!card) return;
+      card.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+      card.classList.add('spot'); setTimeout(() => card.classList.remove('spot'), 1600);
+    }));
 
     // only options the lookups actually returned
     const next = [];
     own.filter(x => x.available === true).slice(0, 3).forEach(x => next.push('Register <a href="' + buyUrl(x.domain) + '" target="_blank" rel="noopener">' + escapeHtml(x.domain) + '</a> while it\'s free' + (x.source === 'dns' ? ' <span class="note">(DNS check — confirm first)</span>' : '')));
     viable.forEach(v => next.push('Consider <b>' + escapeHtml(v.name) + '</b> — <a href="' + buyUrl(v.domains.com.domain) + '" target="_blank" rel="noopener">' + escapeHtml(v.domains.com.domain) + '</a> is free'));
     if (hTaken.length) next.push('Plan a handle modifier for social and check it before launch');
-    if (verdict === 'IMPERSONATION' || verdict === 'NO WITNESSES') next.push('Keep looking — this name carries real collision or recall risk');
+    if (verdict === 'IMPERSONATION' || verdict === 'NO WITNESSES') next.unshift('Keep looking — this name carries real collision or recall risk');
     next.push('Run a formal trademark search before you file anything');
-    $('nextMoves').innerHTML = next.map(t => '<li><span>' + t + '</span></li>').join('');
+    $('nextMoves').classList.remove('all');
+    $('nextMoves').innerHTML = next.map((t, i) => '<li class="' + (i >= 3 ? 'extra' : '') + '"><span>' + t + '</span></li>').join('');
+    const more = $('moreMoves');
+    more.hidden = next.length <= 3;
+    more.textContent = 'Show ' + (next.length - 3) + ' more';
 
     $('rawPre').textContent = JSON.stringify(d.raw, null, 2);
     $('summary').hidden = false;
-    requestAnimationFrame(() => requestAnimationFrame(() => $('meters').querySelectorAll('.mb i').forEach(b => { b.style.width = b.dataset.w + '%'; })));
 
     $('result').dataset.shareText =
       'Name Worth It case file on "' + state.name + '": ' + label + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
       pct(g) + ' too generic, ' + pct(c) + ' brand collision risk).';
+    return { verdict, verdictClass };
   }
+  $('moreMoves').addEventListener('click', () => { $('nextMoves').classList.add('all'); $('moreMoves').hidden = true; });
 
   // ---------------------------------------------------------------------
   //  Views, status, errors
@@ -481,6 +563,7 @@
     $('wsName').textContent = name; $('wsCtx').textContent = context;
     $('demoTag').hidden = !DEMO;
     $('summary').hidden = true; $('linksSec').hidden = true;
+    $('findingsH').textContent = 'Investigations';
     $('copyBtn').disabled = true;
     $('rawOutput').style.display = 'none'; $('rawToggle').textContent = 'Show raw response';
     setStatus('running', 'Investigating');
@@ -498,24 +581,25 @@
     state.receivedAt = new Date();
     state.links = computeLinks(d);
     CHECKS.forEach(c => { if (state.status[c.key] !== 'running') Side.set(c.key, 'running', c.src); });
-    $('liveLine').innerHTML = '<b>Results in' + (d.cached ? ' (from a check in the last 10 minutes)' : '') + '.</b> Filing findings…';
-    const step = d.cached ? 140 : 340;
+    $('liveLine').innerHTML = '<b>Sources answered' + (d.cached ? ' (a check from the last 10 minutes)' : '') + '.</b> Filing evidence…';
+    const step = d.cached ? 160 : 420;
     for (const c of CHECKS){
       await sleep(step);
-      const out = leadOutcome(c.key, d);
-      Grid.file(c.key, d);
-      Side.set(c.key, out, resultLine(c.key, d));
+      const s = Grid.file(c.key, d);
+      Side.set(c.key, GLYPH_FOR[s.t], s.label + ' · ' + resultLine(c.key, d));
       state.filed++;
       Side.progress();
+      $('liveLine').innerHTML = '<b>' + CHECK[c.key].title + ':</b> ' + escapeHtml(s.label.toLowerCase()) + '.';
       $('findCount').textContent = state.filed + ' of 6 filed';
     }
     await sleep(step);
     renderLinks();
     await sleep(step);
-    renderAssessment(d);
-    const flagged = CHECKS.filter(c => state.status[c.key] === 'found').length;
-    $('liveLine').innerHTML = '<b>Case complete.</b> ' + (flagged ? plural(flagged, 'finding') + ' need' + (flagged === 1 ? 's' : '') + ' a closer look' : 'Nothing flagged') + ' · ' + plural(state.links.length, 'connection') + '.';
-    $('findCount').textContent = '6 findings';
+    renderReport(d);
+    const review = CHECKS.filter(c => state.status[c.key] === 'found' || state.status[c.key] === 'evidence').length;
+    $('liveLine').innerHTML = '<b>Check completed.</b> ' + (review ? plural(review, 'investigation') + ' turned up something to review' : 'Nothing to review') + ' · ' + plural(state.links.length, 'connection') + '.';
+    $('findingsH').textContent = 'All six investigations';
+    $('findCount').textContent = 'Hover one to see what it connects to';
     setStatus('complete', 'Complete');
     $('copyBtn').disabled = false;
   }
