@@ -161,11 +161,11 @@ h1, h2, h3{ font-family:var(--f-head); margin:0; color:var(--text); }
 .checks-head h2{ font-size:var(--t-xl); font-weight:800; letter-spacing:-.03em; line-height:1.1; max-width:14ch; }
 .checks-head p{ color:var(--muted); margin:16px 0 22px; max-width:38ch; font-size:var(--t-md); line-height:1.6; }
 .check-list{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:0 40px; }
-.check-list li{ display:grid; grid-template-columns:34px minmax(0, 1fr); grid-template-rows:auto auto; gap:2px 12px; padding:22px 0; border-top:1px solid var(--border); }
-.check-list .n{ grid-row:1 / span 2; color:var(--brass); font-size:13px; padding-top:3px; }
+.check-list li{ display:block; padding:22px 0; border-top:1px solid var(--border); }
+.check-list .n{ display:inline-block; color:#8A7146; font-size:12px; margin-bottom:8px; }
 .check-list h3{ font-size:var(--t-md); font-weight:700; }
 .check-list p{ margin:4px 0 0; color:var(--muted); font-size:15px; line-height:1.55; }
-.check-list .src{ grid-column:2; font-size:12px; color:var(--navy); margin-top:8px; }
+.check-list .src{ display:block; font-size:12px; color:var(--muted); margin-top:10px; }
 .foot{ max-width:1240px; margin:0 auto; padding:26px 32px 40px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-family:var(--f-head); font-weight:600; font-size:14px; border-top:1px solid var(--border); }
 
 @media (max-width: 1000px){
@@ -256,7 +256,7 @@ h1, h2, h3{ font-family:var(--f-head); margin:0; color:var(--text); }
 .card[data-k="domains"], .card[data-k="collisions"], .card[data-k="relatives"]{ grid-column:span 7; }
 .card[data-k="handles"], .card[data-k="memory"], .card[data-k="market"]{ grid-column:span 5; }
 @keyframes rise{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
-.card-h{ display:flex; align-items:center; gap:10px; }
+.card-h{ display:flex; align-items:center; flex-wrap:wrap; gap:8px 10px; min-width:0; }
 .card-h .ico{ width:20px; height:20px; fill:none; stroke:var(--navy); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; flex:none; }
 .card-h h3{ font-size:var(--t-md); font-weight:700; }
 .card-h .tag{ margin-left:auto; }
@@ -356,8 +356,8 @@ h1, h2, h3{ font-family:var(--f-head); margin:0; color:var(--text); }
    ========================================================================= */
 
 /* ---- investigations while they run: a slim record per lookup, no skeletons */
-.card.pending{ grid-column:span 6; padding:16px 18px; display:grid; grid-template-columns:auto minmax(0, 1fr) auto; gap:12px; align-items:center; border-style:dashed; background:transparent; }
-.card.pending .card-h{ display:contents; }
+.card.pending{ grid-column:span 6; padding:16px 18px; border-style:dashed; background:transparent; }
+.card.pending .searching{ display:flex; margin-top:10px; white-space:normal; }
 .card.pending h3{ font-size:15px; }
 .card.pending .ico{ stroke:var(--muted); }
 .searching{ display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); white-space:nowrap; }
@@ -545,7 +545,7 @@ h1, h2, h3{ font-family:var(--f-head); margin:0; color:var(--text); }
 
 /* a record still under redaction while its line of inquiry runs */
 .card.pending .card-h .exhibit{ order:-1; }
-.redacted{ grid-column:1 / -1; display:grid; gap:7px; margin-top:4px; }
+.redacted{ display:grid; gap:7px; margin-top:12px; }
 .redacted i{ display:block; height:9px; border-radius:2px; background:var(--navy); opacity:.82; }
 .redacted i:nth-child(1){ width:72%; } .redacted i:nth-child(2){ width:88%; } .redacted i:nth-child(3){ width:46%; }
 .card.pending.cold .redacted{ display:none; }
@@ -573,3 +573,12 @@ h1, h2, h3{ font-family:var(--f-head); margin:0; color:var(--text); }
   .folder{ height:360px; }
   }
 @media (prefers-reduced-motion: reduce){ .card.declassify::after{ display:none; } }
+
+/* narrow phones */
+@media (max-width: 380px){
+  .sheet{ width:94%; }
+  .sheet[data-pos="2"]{ transform:translate(5%, 0) rotate(2deg); }
+  .sheet[data-pos="0"]{ transform:translate(3%, 84px) rotate(.4deg); }
+  .fields{ grid-template-columns:1fr; }
+  .sheet-subject .fields div:nth-child(n+3){ display:none; }
+}
