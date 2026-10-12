@@ -236,7 +236,7 @@ async function checkHandle(social, handle) {
       fetch(url, {
         method: 'HEAD',
         redirect: 'manual',
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NameWorthIt/1.0)' }
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; NameOrShame/1.0)' }
       }),
       6000
     );

@@ -1,5 +1,5 @@
 /* =========================================================================
-   Name Worth It? — illustrated case file
+   Name or Shame — illustrated case file
    One request (POST /api/name-check) returns every lookup at once. The
    progress list then resolves each check in turn, and the evidence board
    pins up what came back. Nothing here invents data: every line, string
@@ -132,7 +132,7 @@
     return labels.slice(TWO_PART_SUFFIX.has(labels.slice(-2).join('.')) ? -3 : -2).join('.');
   }
   // Does any label of the host, before its suffix, contain the name? Hyphens
-  // are ignored so "name-worth-it.com" matches "Name Worth".
+  // are ignored so "name-or-shame.com" matches "Name or Shame".
   function domainHasName(host){
     const slug = state.name.toLowerCase().replace(/[^a-z0-9]/g, '');
     if (!slug || !host) return false;
@@ -555,7 +555,7 @@
       $('summary').classList.add('on');
 
       $('result').dataset.shareText =
-        'Name Worth It case file on "' + state.name + '": ' + label + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
+        'Name or Shame case file on "' + state.name + '": ' + label + ' (' + pct(m) + ' memorable, ' + pct(e) + ' easy to say/spell, ' +
         pct(g) + ' too generic, ' + pct(c) + ' brand collision risk).';
     }
   };
