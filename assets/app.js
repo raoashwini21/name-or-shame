@@ -392,11 +392,21 @@
     }
   };
 
+  // The case name on the board's subject card: shrink until its longest word fits on a line,
+  // so names wrap only between words. Below the floor, a word may still break.
+  function fitSubjectName(){
+    const el = $('subjectName'); if (!el || !el.offsetWidth) return;
+    el.style.fontSize = ''; el.style.overflowWrap = 'normal';
+    let size = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth + 1 && size > 16){ size -= 1; el.style.fontSize = size + 'px'; }
+    el.style.overflowWrap = '';
+  }
+  window.addEventListener('resize', fitSubjectName);
   const Board = {
     reset(name, ctx){
       $('evGrid').innerHTML = '';
       threads.innerHTML = ''; threadsTop.innerHTML = '';
-      $('subjectName').textContent = name;
+      $('subjectName').textContent = name; fitSubjectName();
       $('subjectCtx').innerHTML = escapeHtml(ctx) + '<div class="sc-state" id="subjectState">UNDER INVESTIGATION</div>';
       $('boardName').textContent = clip(name, 24) + '.';
       $('noteText').textContent = '—';
@@ -615,6 +625,7 @@
     // 03 — pin everything up
     Board.reset(state.name, state.context);
     showScreen('board');
+    fitSubjectName();
     await sleep(120);
     for (const c of CHECKS){
       Board.pin(c.key, d);
