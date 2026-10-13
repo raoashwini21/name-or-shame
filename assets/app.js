@@ -560,7 +560,6 @@
       $('nextMoves').innerHTML = next.map(t => '<li><span class="m">→</span><span>' + t + '</span></li>').join('');
 
       $('noteText').textContent = NOTE[verdict];
-      $('rawPre').textContent = JSON.stringify(d.raw, null, 2);
       stamp.style.animation = 'none'; void stamp.offsetWidth; stamp.style.animation = '';
       $('summary').classList.add('on');
 
@@ -577,10 +576,10 @@
     ['landing', 'progress', 'board'].forEach(id => $(id).classList.toggle('on', id === which));
     window.scrollTo(0, 0);
   }
-  function showError(title, detail, extra){
+  function showError(title, detail){
     const onProgress = $('progress').classList.contains('on');
     const box = onProgress ? $('wsError') : $('errorBox');
-    box.innerHTML = '<strong>' + escapeHtml(title) + '</strong><br>' + escapeHtml(detail) + (extra ? '<pre>' + escapeHtml(extra) + '</pre>' : '') +
+    box.innerHTML = '<strong>' + escapeHtml(title) + '</strong><br>' + escapeHtml(detail) +
       (onProgress ? '<br><button class="btn-line" type="button" data-back>← Try another name</button>' : '');
     box.style.display = 'block';
     const back = box.querySelector('[data-back]');
@@ -684,12 +683,12 @@
       }
       if (!res.ok){
         holdCase();
-        showError('Got an error back (' + res.status + ')', data.error || 'Something went wrong on the checker side.', JSON.stringify(data, null, 2));
+        showError('Got an error back (' + res.status + ')', data.error || 'Something went wrong on the checker side.');
         return;
       }
       if (!data.scores){
         holdCase();
-        showError('Got a response but couldn\'t read the scores out of it', 'Raw response below.', JSON.stringify(data, null, 2));
+        showError('Got a response but couldn\'t read the scores out of it', 'Try again in a moment.');
         return;
       }
 
@@ -727,12 +726,6 @@
       copyBtn.textContent = 'Copied';
       setTimeout(function(){ copyBtn.textContent = 'Copy report'; }, 1500);
     }catch(e){ copyBtn.textContent = 'Copy failed — select the verdict manually'; setTimeout(function(){ copyBtn.textContent = 'Copy report'; }, 2500); }
-  });
-  const rawToggle = $('rawToggle'), rawOutput = $('rawOutput');
-  rawToggle.addEventListener('click', function(){
-    const showing = rawOutput.style.display === 'block';
-    rawOutput.style.display = showing ? 'none' : 'block';
-    rawToggle.textContent = showing ? 'show raw response' : 'hide raw response';
   });
 
   let rt = null;
