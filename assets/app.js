@@ -560,7 +560,6 @@
       $('nextMoves').innerHTML = next.map(t => '<li><span class="m">→</span><span>' + t + '</span></li>').join('');
 
       $('noteText').textContent = NOTE[verdict];
-      $('rawPre').textContent = JSON.stringify(d.raw, null, 2);
       stamp.style.animation = 'none'; void stamp.offsetWidth; stamp.style.animation = '';
       $('summary').classList.add('on');
 
@@ -727,12 +726,6 @@
       copyBtn.textContent = 'Copied';
       setTimeout(function(){ copyBtn.textContent = 'Copy report'; }, 1500);
     }catch(e){ copyBtn.textContent = 'Copy failed — select the verdict manually'; setTimeout(function(){ copyBtn.textContent = 'Copy report'; }, 2500); }
-  });
-  const rawToggle = $('rawToggle'), rawOutput = $('rawOutput');
-  rawToggle.addEventListener('click', function(){
-    const showing = rawOutput.style.display === 'block';
-    rawOutput.style.display = showing ? 'none' : 'block';
-    rawToggle.textContent = showing ? 'show raw response' : 'hide raw response';
   });
 
   let rt = null;

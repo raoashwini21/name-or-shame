@@ -331,8 +331,6 @@ svg.threads .lbl text{ font-family:var(--mono); font-size:10.5px; fill:var(--red
 .next .dom{ color:var(--red); font-weight:700; text-decoration:none; border-bottom:1px solid currentColor; }
 .next .k{ font-size:11px; letter-spacing:.12em; color:var(--ink-3); }
 .sum-actions{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:24px; padding-top:20px; border-top:1px solid var(--line); }
-#rawOutput{ display:none; margin-top:14px; }
-#rawPre{ background:#F6EFE2; border:1px solid var(--line); border-radius:10px; padding:14px; font-size:12px; max-height:340px; overflow:auto; white-space:pre-wrap; word-break:break-word; margin:0; }
 
 /* ---------------------------------------------------------------- drawer */
 .scrim{ position:fixed; inset:0; background:rgba(30,22,14,.35); opacity:0; pointer-events:none; transition:opacity .2s; z-index:40; }
